@@ -148,7 +148,7 @@ sysdep_HEADERS = generic_pthread.h \
 sysdepdir = ${includedir}/atomic_ops/sysdeps
 
 #Headers for GCC
-sysdepgcc_HEADERS = gcc/x86.h gcc/ia64.h \
+sysdepgcc_HEADERS = gcc/x86.h gcc/x86_64.h gcc/ia64.h \
 	gcc/alpha.h gcc/arm.h \
 	gcc/powerpc.h gcc/sparc.h \
 	gcc/hppa.h gcc/m68k.h gcc/s390.h

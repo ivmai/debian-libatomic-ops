@@ -58,7 +58,7 @@ AO_fetch_and_add_full (volatile AO_t *p, long incr)
 {
   AO_t result = incr;
 
-  __asm__ __volatile__ ("lock; xaddl %0, %1" :
+  __asm__ __volatile__ ("lock; xaddq %0, %1" :
 			"+r" (result), "+m" (*p) : : "memory");
   return result;
 }
@@ -69,7 +69,7 @@ AO_fetch_and_add_full (volatile AO_t *p, long incr)
 AO_INLINE void
 AO_or_full (volatile AO_t *p, AO_t incr)
 {
-  __asm__ __volatile__ ("lock; orl %1, %0" :
+  __asm__ __volatile__ ("lock; orq %1, %0" :
 			"+m" (*p) : "r" (incr) : "memory");
 }
 
@@ -80,7 +80,7 @@ AO_test_and_set_full(volatile AO_t *addr)
 {
   AO_t oldval;
   /* Note: the "xchg" instruction does not need a "lock" prefix */
-  __asm__ __volatile__("xchgl %0, %1"
+  __asm__ __volatile__("xchgq %0, %1"
 		: "=r"(oldval), "+m"(*(addr))
 		: "0"(1) : "memory");
   return oldval;
@@ -94,7 +94,7 @@ AO_compare_and_swap_full(volatile AO_t *addr,
 		  	     AO_t old, AO_t new_val) 
 {
   char result;
-  __asm__ __volatile__("lock; cmpxchgl %2, %0; setz %1"
+  __asm__ __volatile__("lock; cmpxchgq %2, %0; setz %1"
 	    	       : "+m"(*(addr)), "=q"(result)
 		       : "r" (new_val), "a"(old) : "memory");
   return (int) result;

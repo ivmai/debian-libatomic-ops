@@ -193,6 +193,9 @@ typedef enum {AO_TS_clear = 0, AO_TS_set = 1} AO_TS_val;
 # if defined(__i386__)
 #   include "atomic_ops/sysdeps/gcc/x86.h"
 # endif /* __i386__ */
+# if defined(__x86_64__)
+#   include "atomic_ops/sysdeps/gcc/x86_64.h"
+# endif /* __i386__ */
 # if defined(__ia64__)
 #   include "atomic_ops/sysdeps/gcc/ia64.h"
 #   define AO_GENERALIZE_TWICE
