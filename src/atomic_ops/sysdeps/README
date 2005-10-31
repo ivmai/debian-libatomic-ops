@@ -1,5 +1,7 @@
-Copyright (c) 2002 by Hewlett-Packard Company.
+There are two kinds of entities in this directory:
 
-This is qprof, a set of simple profiling utilities.
+- Subdirectories corresponding to specific compilers (or compiler/OS combinations).
+  Each of these includes one or more architecture-specific headers.
 
-See doc/README.txt for licensing and instructions.
+- More generic header files corresponding to a particular ordering and/or
+  atomicity property that might be shared by multiple hardware platforms.

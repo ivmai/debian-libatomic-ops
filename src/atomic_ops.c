@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003 by Hewlett-Packard Company.  All rights reserved.
+ * Copyright (c) 2003 Hewlett-Packard Development Company, L.P.
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,9 +28,13 @@
  * cas emulation is not needed.  Thus we skip this on Windows.
  */
 
+#if defined(HAVE_CONFIG_H)
+# include "config.h"
+#endif
+
 #if !defined(_MSC_VER) && !defined(__MINGW32__) && !defined(__BORLANDC__)
 
-#undef AO_FORCE_CAS
+#undef AO_REQUIRE_CAS
 
 #include <pthread.h>
 #include <signal.h>
@@ -40,6 +44,10 @@
 # include <sys/select.h>
 #endif
 #include "atomic_ops.h"  /* Without cas emulation! */
+
+#ifndef AO_HAVE_double_t
+# include "atomic_ops/sysdeps/standard_ao_double_t.h"
+#endif
 
 /*
  * Lock for pthreads-based implementation.
@@ -63,7 +71,7 @@ pthread_mutex_t AO_pt_lock = PTHREAD_MUTEX_INITIALIZER;
 
 #define AO_HASH(x) (((unsigned long)(x) >> 12) & (AO_HASH_SIZE-1))
 
-AO_TS_T AO_locks[AO_HASH_SIZE] = {
+AO_TS_t AO_locks[AO_HASH_SIZE] = {
 	AO_TS_INITIALIZER, AO_TS_INITIALIZER,
 	AO_TS_INITIALIZER, AO_TS_INITIALIZER,
 	AO_TS_INITIALIZER, AO_TS_INITIALIZER,
@@ -77,7 +85,7 @@ AO_TS_T AO_locks[AO_HASH_SIZE] = {
 static AO_T dummy = 1;
 
 /* Spin for 2**n units. */
-static void spin(int n)
+void AO_spin(int n)
 {
   int i;
   AO_T j = AO_load(&dummy);
@@ -90,45 +98,50 @@ static void spin(int n)
   AO_store(&dummy, j);
 }
 
-static void lock_ool(volatile AO_TS_T *l)
+void AO_pause(int n)
 {
-  int i = 0;
-  struct timeval tv;
-
-  while (AO_test_and_set_acquire(l) == AO_TS_SET) {
-    if (++i < 12)
-      spin(i);
+    if (n < 12)
+      AO_spin(n);
     else
       {
+        struct timeval tv;
+
 	/* Short async-signal-safe sleep. */
 	tv.tv_sec = 0;
-	tv.tv_usec = (i > 28? 100000 : (1 << (i - 12)));
+	tv.tv_usec = (n > 28? 100000 : (1 << (n - 12)));
 	select(0, 0, 0, 0, &tv);
       }
-  }
 }
 
-AO_INLINE void lock(volatile AO_TS_T *l)
+static void lock_ool(volatile AO_TS_t *l)
+{
+  int i = 0;
+
+  while (AO_test_and_set_acquire(l) == AO_TS_SET)
+    AO_pause(++i);
+}
+
+AO_INLINE void lock(volatile AO_TS_t *l)
 {
   if (AO_test_and_set_acquire(l) == AO_TS_SET)
     lock_ool(l);
 }
 
-AO_INLINE void unlock(volatile AO_TS_T *l)
+AO_INLINE void unlock(volatile AO_TS_t *l)
 {
   AO_CLEAR(l);
 }
 
 static sigset_t all_sigs;
 
-static volatile AO_T initialized = 0;
+static volatile AO_t initialized = 0;
 
-static volatile AO_TS_T init_lock = AO_TS_INITIALIZER;
+static volatile AO_TS_t init_lock = AO_TS_INITIALIZER;
 
-int AO_compare_and_swap_emulation(volatile AO_T *addr, AO_T old,
-				   AO_T new_val)
+int AO_compare_and_swap_emulation(volatile AO_t *addr, AO_t old,
+				  AO_t new_val)
 {
-  AO_TS_T *my_lock = AO_locks + AO_HASH(addr);
+  AO_TS_t *my_lock = AO_locks + AO_HASH(addr);
   sigset_t old_sigs;
   int result;
 
@@ -160,9 +173,46 @@ int AO_compare_and_swap_emulation(volatile AO_T *addr, AO_T old,
   return result;
 }
 
-void AO_store_full_emulation(volatile AO_T *addr, AO_T val)
+int AO_compare_double_and_swap_double_emulation(volatile AO_double_t *addr,
+						AO_t old_val1, AO_t old_val2,
+				                AO_t new_val1, AO_t new_val2)
 {
-  AO_TS_T *my_lock = AO_locks + AO_HASH(addr);
+  AO_TS_t *my_lock = AO_locks + AO_HASH(addr);
+  sigset_t old_sigs;
+  int result;
+
+  if (!AO_load_acquire(&initialized))
+    {
+      lock(&init_lock);
+      if (!initialized) sigfillset(&all_sigs);
+      unlock(&init_lock);
+      AO_store_release(&initialized, 1);
+    }
+  sigprocmask(SIG_BLOCK, &all_sigs, &old_sigs);
+  	/* Neither sigprocmask nor pthread_sigmask is 100%	*/
+  	/* guaranteed to work here.  Sigprocmask is not 	*/
+  	/* guaranteed be thread safe, and pthread_sigmask	*/
+  	/* is not async-signal-safe.  Under linuxthreads,	*/
+  	/* sigprocmask may block some pthreads-internal		*/
+  	/* signals.  So long as we do that for short periods,	*/
+  	/* we should be OK.					*/
+  lock(my_lock);
+  if (addr -> AO_val1 == old_val1 && addr -> AO_val2 == old_val2)
+    {
+      addr -> AO_val1 = new_val1;
+      addr -> AO_val2 = new_val2;
+      result = 1;
+    }
+  else
+    result = 0;
+  unlock(my_lock);
+  sigprocmask(SIG_SETMASK, &old_sigs, NULL);
+  return result;
+}
+
+void AO_store_full_emulation(volatile AO_t *addr, AO_t val)
+{
+  AO_TS_t *my_lock = AO_locks + AO_HASH(addr);
   lock(my_lock);
   *addr = val;
   unlock(my_lock);

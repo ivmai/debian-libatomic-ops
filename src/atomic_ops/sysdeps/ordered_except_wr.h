@@ -27,6 +27,8 @@
  * except apparently for some IDT WinChips, which we ignore.
  */
 
+#include "read_ordered.h"
+
 AO_INLINE void
 AO_nop_write()
 {
@@ -36,30 +38,6 @@ AO_nop_write()
 }
 
 #define AO_HAVE_NOP_WRITE
-
-AO_INLINE void
-AO_nop_read()
-{
-  AO_compiler_barrier();
-}
-
-#define AO_HAVE_NOP_READ
-
-#ifdef AO_HAVE_load
-
-AO_INLINE AO_t
-AO_load_read(volatile AO_t *addr)
-{
-  AO_t result = AO_load(addr);
-  AO_compiler_barrier();
-  return result;
-}
-#define AO_HAVE_load_read
-
-#define AO_load_acquire(addr) AO_load_read(addr)
-#define AO_HAVE_load_acquire
-
-#endif /* AO_HAVE_load */
 
 #if defined(AO_HAVE_store)
 
@@ -75,3 +53,49 @@ AO_store_write(volatile AO_t *addr, AO_t val)
 # define AO_HAVE_store_release
 
 #endif /* AO_HAVE_store */
+
+#if defined(AO_HAVE_char_store)
+
+AO_INLINE void
+AO_char_store_write(volatile unsigned char *addr, unsigned char val)
+{
+  AO_compiler_barrier();
+  AO_char_store(addr, val);
+}
+# define AO_HAVE_char_store_write
+
+# define AO_char_store_release(addr, val) AO_char_store_write(addr, val)
+# define AO_HAVE_char_store_release
+
+#endif /* AO_HAVE_char_store */
+
+#if defined(AO_HAVE_short_store)
+
+AO_INLINE void
+AO_short_store_write(volatile unsigned short *addr, unsigned short val)
+{
+  AO_compiler_barrier();
+  AO_short_store(addr, val);
+}
+# define AO_HAVE_short_store_write
+
+# define AO_short_store_release(addr, val) AO_short_store_write(addr, val)
+# define AO_HAVE_short_store_release
+
+#endif /* AO_HAVE_short_store */
+
+#if defined(AO_HAVE_int_store)
+
+AO_INLINE void
+AO_int_store_write(volatile unsigned int *addr, unsigned int val)
+{
+  AO_compiler_barrier();
+  AO_int_store(addr, val);
+}
+# define AO_HAVE_int_store_write
+
+# define AO_int_store_release(addr, val) AO_int_store_write(addr, val)
+# define AO_HAVE_int_store_release
+
+#endif /* AO_HAVE_int_store */
+

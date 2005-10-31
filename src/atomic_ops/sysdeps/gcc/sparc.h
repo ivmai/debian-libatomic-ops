@@ -19,10 +19,13 @@
 /* Non-ancient SPARCs provide compare-and-swap (casa).	*/
 /* We should make that available.			*/
 
-#include "../atomic_load_store.h"
+#include "../all_atomic_load_store.h"
 
 /* Real SPARC code uses TSO:				*/
 #include "../ordered_except_wr.h"
+
+/* Test_and_set location is just a byte.                */
+#include "../test_and_set_t_is_char.h"
 
 AO_INLINE AO_TS_VAL_t
 AO_test_and_set_full(volatile AO_TS_t *addr) {
@@ -36,4 +39,8 @@ AO_test_and_set_full(volatile AO_TS_t *addr) {
 
 #define AO_HAVE_test_and_set_full
 
-
+/* FIXME: This needs to be extended for SPARC v8 and v9.	*/
+/* SPARC V8 also has swap.  V9 has CAS.				*/
+/* There are barriers like membar #LoadStore.			*/
+/* CASA (32-bit) and CASXA(64-bit) instructions were		*/
+/* added in V9.							*/

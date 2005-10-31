@@ -1,0 +1,13 @@
+Index: src/atomic_ops/sysdeps/gcc/x86.h
+===================================================================
+--- src/atomic_ops/sysdeps/gcc/x86.h	(revision 90)
++++ src/atomic_ops/sysdeps/gcc/x86.h	(working copy)
+@@ -112,7 +112,7 @@
+   unsigned char oldval;
+   /* Note: the "xchg" instruction does not need a "lock" prefix */
+   __asm__ __volatile__("xchgb %0, %1"
+-		: "=r"(oldval), "=m"(*addr)
++		: "=Q"(oldval), "=m"(*addr)
+ 		: "0"(0xff), "m"(*addr) : "memory");
+   return (AO_TS_VAL_t)oldval;
+ }

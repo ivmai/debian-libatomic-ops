@@ -2,27 +2,14 @@ Source: libatomic-ops
 Priority: optional
 Maintainer: Ian Wienand <ianw@gelato.unsw.edu.au>
 Uploaders: Al Stone <ahs3@debian.org>
-Build-Depends: debhelper (>= 4.0.0)
-Standards-Version: 3.6.1
-
-Package: libatomic-ops
-Section: libs
-Depends: ${shlibs:Depends}
-Architecture: any
-Description: A library for atomic operations (run-time)
- Libatomic-ops implements a large collection of operations, each one
- of which is a combination of an (optional) atomic memory operation,
- and a memory barrier.  It also implements associated feature-test
- macros that determine whether a particular operation is available
- on the current target hardware (either directly or by synthesis).
- Libatomic-ops attempts to replace various existing files with similar
- goals, since they usually do not handle differences in memory barrier
- styles with sufficient generality.
+Build-Depends: cdbs (>= 0.4.23-1.1), build-essential, autotools-dev, debhelper (>= 4.1.0), automake1.9, autoconf, patchutils (>= 0.2.25)
+Standards-Version: 3.6.2
 
 Package: libatomic-ops-dev
 Section: libdevel
 Depends: ${shlibs:Depends}
 Architecture: any
+Replaces: libatomic-ops
 Description: A library for atomic operations (development files)
  Libatomic-ops implements a large collection of operations, each one
  of which is a combination of an (optional) atomic memory operation,
@@ -33,6 +20,6 @@ Description: A library for atomic operations (development files)
  goals, since they usually do not handle differences in memory barrier
  styles with sufficient generality.
  .
- This package provides the statically linked archive and header files
- needed by developers.
+ This package provides the header files and documentation needed by
+ developers.
 

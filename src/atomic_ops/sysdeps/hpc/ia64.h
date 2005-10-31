@@ -30,6 +30,8 @@
 
 #include "../acquire_release_volatile.h"
 
+#include "../test_and_set_t_is_char.h"
+
 #include <machine/sys/inline.h>
 
 #ifdef __LP64__
@@ -109,4 +111,64 @@ AO_compare_and_swap_release(volatile AO_t *addr,
 }
 
 #define AO_HAVE_compare_and_swap_release
+
+AO_INLINE int
+AO_char_compare_and_swap_acquire(volatile unsigned char *addr,
+		                 unsigned char old, unsigned char new_val) 
+{
+  unsigned char oldval;
+
+  _Asm_mov_to_ar(_AREG_CCV, old, _DOWN_MEM_FENCE);
+  oldval = _Asm_cmpxchg(_SZ_B, _SEM_ACQ, addr,
+		  	new_val, _LDHINT_NONE, _DOWN_MEM_FENCE);
+  return (oldval == old);
+}
+
+#define AO_HAVE_char_compare_and_swap_acquire
+
+AO_INLINE int
+AO_char_compare_and_swap_release(volatile unsigned char *addr,
+		                 unsigned char old, unsigned char new_val) 
+{
+  insigned char oldval;
+  _Asm_mov_to_ar(_AREG_CCV, old, _UP_MEM_FENCE);
+  oldval = _Asm_cmpxchg(_SZ_B, _SEM_REL, addr,
+		  	new_val, _LDHINT_NONE, _UP_MEM_FENCE);
+  /* Hopefully the compiler knows not to reorder the above two? */
+  return (oldval == old);
+}
+
+#define AO_HAVE_char_compare_and_swap_release
+
+AO_INLINE int
+AO_short_compare_and_swap_acquire(volatile unsigned short *addr,
+		                 unsigned short old, unsigned short new_val) 
+{
+  unsigned short oldval;
+
+  _Asm_mov_to_ar(_AREG_CCV, old, _DOWN_MEM_FENCE);
+  oldval = _Asm_cmpxchg(_SZ_B, _SEM_ACQ, addr,
+		  	new_val, _LDHINT_NONE, _DOWN_MEM_FENCE);
+  return (oldval == old);
+}
+
+#define AO_HAVE_short_compare_and_swap_acquire
+
+AO_INLINE int
+AO_short_compare_and_swap_release(volatile unsigned short *addr,
+		                 unsigned short old, unsigned short new_val) 
+{
+  insigned short oldval;
+  _Asm_mov_to_ar(_AREG_CCV, old, _UP_MEM_FENCE);
+  oldval = _Asm_cmpxchg(_SZ_B, _SEM_REL, addr,
+		  	new_val, _LDHINT_NONE, _UP_MEM_FENCE);
+  /* Hopefully the compiler knows not to reorder the above two? */
+  return (oldval == old);
+}
+
+#define AO_HAVE_short_compare_and_swap_release
+
+#ifndef __LP64__
+# include "ao_t_is_int.h"
+#endif
 

@@ -21,7 +21,7 @@
 /* line options.							*/
 /* We should perhaps test dynamically.					*/
 
-#include "../aligned_atomic_load_store.h"
+#include "../all_aligned_atomic_load_store.h"
 
 /* Real X86 implementations, except for some old WinChips, appear	*/
 /* to enforce ordering between memory operations, EXCEPT that a later	*/
@@ -32,6 +32,8 @@
 
 #include "../ordered_except_wr.h"
 
+#include "../test_and_set_t_is_char.h"
+
 #if defined(AO_USE_PENTIUM4_INSTRS)
 AO_INLINE void
 AO_nop_full()
@@ -39,7 +41,7 @@ AO_nop_full()
   __asm__ __volatile__("mfence" : : : "memory");
 }
 
-#define AO_HAVE_NOP_FULL
+#define AO_HAVE_nop_full
 
 #else
 
@@ -54,36 +56,76 @@ AO_nop_full()
 
 /* Really only works for 486 and later */
 AO_INLINE AO_t
-AO_fetch_and_add_full (volatile AO_t *p, long incr)
+AO_fetch_and_add_full (volatile AO_t *p, AO_t incr)
 {
-  AO_t result = incr;
+  AO_t result;
 
   __asm__ __volatile__ ("lock; xaddq %0, %1" :
-			"+r" (result), "+m" (*p) : : "memory");
+			"=r" (result), "=m" (*p) : "0" (incr), "m" (*p)
+			: "memory");
   return result;
 }
 
 #define AO_HAVE_fetch_and_add_full
+
+AO_INLINE unsigned char
+AO_char_fetch_and_add_full (volatile unsigned char *p, unsigned char incr)
+{
+  unsigned char result;
+
+  __asm__ __volatile__ ("lock; xaddb %0, %1" :
+			"=r" (result), "=m" (*p) : "0" (incr), "m" (*p)
+			: "memory");
+  return result;
+}
+
+#define AO_HAVE_char_fetch_and_add_full
+
+AO_INLINE unsigned short
+AO_short_fetch_and_add_full (volatile unsigned short *p, unsigned short incr)
+{
+  unsigned short result;
+
+  __asm__ __volatile__ ("lock; xaddw %0, %1" :
+			"=r" (result), "=m" (*p) : "0" (incr), "m" (*p)
+			: "memory");
+  return result;
+}
+
+#define AO_HAVE_short_fetch_and_add_full
+
+AO_INLINE unsigned short
+AO_int_fetch_and_add_full (volatile unsigned int *p, unsigned int incr)
+{
+  unsigned int result;
+
+  __asm__ __volatile__ ("lock; xaddl %0, %1" :
+			"=r" (result), "=m" (*p) : "0" (incr), "m" (*p)
+			: "memory");
+  return result;
+}
+
+#define AO_HAVE_int_fetch_and_add_full
 
 /* Really only works for 486 and later */
 AO_INLINE void
 AO_or_full (volatile AO_t *p, AO_t incr)
 {
   __asm__ __volatile__ ("lock; orq %1, %0" :
-			"+m" (*p) : "r" (incr) : "memory");
+			"=m" (*p) : "r" (incr), "m" (*p) : "memory");
 }
 
 #define AO_HAVE_or_full
 
-AO_INLINE AO_TS_t
-AO_test_and_set_full(volatile AO_t *addr)
+AO_INLINE AO_TS_VAL_t
+AO_test_and_set_full(volatile AO_TS_t *addr)
 {
-  AO_t oldval;
+  unsigned char oldval;
   /* Note: the "xchg" instruction does not need a "lock" prefix */
-  __asm__ __volatile__("xchgq %0, %1"
-		: "=r"(oldval), "+m"(*(addr))
-		: "0"(1) : "memory");
-  return oldval;
+  __asm__ __volatile__("xchgb %0, %1"
+		: "=r"(oldval), "=m"(*addr)
+		: "0"(0xff), "m"(*addr) : "memory");
+  return (AO_TS_VAL_t)oldval;
 }
 
 #define AO_HAVE_test_and_set_full
@@ -94,10 +136,12 @@ AO_compare_and_swap_full(volatile AO_t *addr,
 		  	     AO_t old, AO_t new_val) 
 {
   char result;
-  __asm__ __volatile__("lock; cmpxchgq %2, %0; setz %1"
-	    	       : "+m"(*(addr)), "=q"(result)
-		       : "r" (new_val), "a"(old) : "memory");
+  __asm__ __volatile__("lock; cmpxchgq %3, %0; setz %1"
+	    	       : "=m"(*addr), "=q"(result)
+		       : "m"(*addr), "r" (new_val), "a"(old) : "memory");
   return (int) result;
 }
 
 #define AO_HAVE_compare_and_swap_full
+
+/* FIXME: The Intel version has a 16byte CAS instruction.	*/

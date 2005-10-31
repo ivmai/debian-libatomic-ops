@@ -34,6 +34,13 @@
 
 #include "../ordered_except_wr.h"
 
+#include "../test_and_set_t_is_ao_t.h"
+	/* We should use byte-sized test-and-set locations, as with	*/
+	/* gcc.  But I couldn't find the appropriate compiler		*/
+	/* intrinsic.	- HB						*/
+
+#include <windows.h>
+
 /* As far as we can tell, the lfence and sfence instructions are not	*/
 /* currently needed or useful for cached memory accesses.		*/
 
@@ -53,10 +60,11 @@ AO_fetch_and_sub1_full (volatile AO_t *p)
 
 #define AO_HAVE_fetch_and_sub1_full
 
-AO_INLINE AO_TS_t
-AO_test_and_set_full(volatile AO_t *addr)
+AO_INLINE AO_TS_VAL_t
+AO_test_and_set_full(volatile AO_TS_t *addr)
 {
-  return (AO_TS_t) InterlockedExchange((LONG volatile *)addr, (LONG)AO_TS_SET);
+  return (AO_TS_VAL_t) InterlockedExchange((LONG volatile *)addr,
+		   			   (LONG)AO_TS_SET);
 }
 
 #define AO_HAVE_test_and_set_full
@@ -76,6 +84,7 @@ AO_compare_and_swap_full(volatile AO_t *addr,
 	   == (PVOID)old;
 # endif
     /* FIXME - This is nearly useless on win64.			*/
+    /* Use InterlockedCompareExchange64 for win64?		*/
     return InterlockedCompareExchange((DWORD volatile *)addr,
 		    		      (DWORD)new_val, (DWORD) old)
 	   == (DWORD)old;
