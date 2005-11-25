@@ -1,6 +1,4 @@
-NEWS
-README
-INSTALL
-doc/*.txt
-doc/LICENSING.txt
+doc/README.txt
+doc/README_malloc.txt
+doc/README_stack.txt
 

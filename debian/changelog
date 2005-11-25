@@ -1,3 +1,13 @@
+libatomic-ops (1.1-2) unstable; urgency=low
+
+  * spell my name right in README.Debian
+  * patches/03_nodoc.patch : don't install documentation, the packagin
+    does this directly
+  * really install manpages
+  * clean up what docs get installed
+
+ -- Ian Wienand <ianw@gelato.unsw.edu.au>  Fri, 25 Nov 2005 16:28:16 +1100
+
 libatomic-ops (1.1-1) unstable; urgency=low
 
   * New upstream release
