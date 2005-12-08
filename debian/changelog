@@ -1,10 +1,19 @@
+libatomic-ops (1.1-3) unstable; urgency=low
+
+  * move the check target under the rules to make cdbs run inbuilt tests
+  * Closes: #307448 -- assuming the (newly re-enabled) test runs OK we
+    seem to be building on ARM
+
+ -- Ian Wienand <ianw@gelato.unsw.edu.au>  Thu,  8 Dec 2005 13:39:22 +1100
+
 libatomic-ops (1.1-2) unstable; urgency=low
 
   * spell my name right in README.Debian
-  * patches/03_nodoc.patch : don't install documentation, the packagin
+  * patches/03_nodoc.patch : don't install documentation, the packaging
     does this directly
   * really install manpages
   * clean up what docs get installed
+  * don't auto generate control file, do it in external scripts
 
  -- Ian Wienand <ianw@gelato.unsw.edu.au>  Fri, 25 Nov 2005 16:28:16 +1100
 
