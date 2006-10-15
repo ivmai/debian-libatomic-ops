@@ -1,6 +1,6 @@
 Source: libatomic-ops
 Priority: optional
-Maintainer: Ian Wienand <ianw@gelato.unsw.edu.au>
+Maintainer: Ian Wienand <ianw@debian.org>
 Uploaders: Al Stone <ahs3@debian.org>
 Build-Depends: @cdbs@
 Standards-Version: 3.6.2

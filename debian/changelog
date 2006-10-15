@@ -1,3 +1,12 @@
+libatomic-ops (1.1-4) unstable; urgency=low
+
+  * Closes: #322027, #338469 -- add 04_m68k.patch for M68K support, from
+    Roman Zippel <zippel@linux-m68k.org>.  Add note in README.Debian about
+    port.
+  * Change mainatiner address to my @debian.org
+
+ -- Ian Wienand <ianw@debian.org>  Mon, 16 Oct 2006 09:45:29 +1000
+
 libatomic-ops (1.1-3) unstable; urgency=low
 
   * move the check target under the rules to make cdbs run inbuilt tests
