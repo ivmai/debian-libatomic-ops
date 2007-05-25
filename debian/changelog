@@ -1,3 +1,10 @@
+libatomic-ops (1.2-1) unstable; urgency=low
+
+  * New upstream
+  * Remove 00_x86_intrin.patch, fixed upstream (with "=q")x
+
+ -- Ian Wienand <ianw@debian.org>  Fri, 25 May 2007 11:29:30 +1000
+
 libatomic-ops (1.1-4) unstable; urgency=low
 
   * Closes: #322027, #338469 -- add 04_m68k.patch for M68K support, from
