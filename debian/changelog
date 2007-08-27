@@ -1,3 +1,12 @@
+libatomic-ops (1.2-2) unstable; urgency=low
+
+  * Add patches/05_powerpc_asm.patch to fix invalid ASM in PowerPC, as per
+    http://gcc.gnu.org/bugzilla/show_bug.cgi?id=33171 (Closes: #432654).
+    Thanks to Sjoerd Simons <sjoerd@luon.net> for isolating the bug, and
+    Andrew Pinkski for solution.
+
+ -- Ian Wienand <ianw@debian.org>  Mon, 27 Aug 2007 11:13:13 +1000
+
 libatomic-ops (1.2-1) unstable; urgency=low
 
   * New upstream
