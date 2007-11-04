@@ -1,40 +1,81 @@
-From ths@networkno.de Thu Oct 27 15:44:14 2005
-Received: (at submit) by bugs.debian.org; 27 Oct 2005 22:44:14 +0000
-Return-path: <ths@networkno.de>
-Received: from mx02.qsc.de [213.148.130.14] 
-	by spohr.debian.org with esmtp (Exim 3.36 1 (Debian))
-	id 1EVGTm-0002nQ-00; Thu, 27 Oct 2005 15:44:14 -0700
-Received: from port-195-158-169-21.dynamic.qsc.de ([195.158.169.21] helo=hattusa.textio)
-	by mx02.qsc.de with esmtp (Exim 3.35 #1)
-	id 1EVGTH-00020N-00
-	for submit@bugs.debian.org; Fri, 28 Oct 2005 00:43:43 +0200
-Received: from ths by hattusa.textio with local (Exim 4.54)
-	id 1EVGTG-000263-9P
-	for submit@bugs.debian.org; Fri, 28 Oct 2005 00:43:42 +0200
-Date: Fri, 28 Oct 2005 00:43:42 +0200
+Return-path: <debbugs@bugs.debian.org>
+Envelope-to: ianw@localhost
+Delivery-date: Sun, 04 Nov 2007 02:10:06 +1100
+Received: from localhost
+	([127.0.0.1] helo=morrison.wienand.home ident=ianw)
+	by morrison.wienand.home with esmtp (Exim 4.67)
+	(envelope-from <debbugs@bugs.debian.org>)
+	id 1IoKdS-0006ic-N9
+	for ianw@localhost; Sun, 04 Nov 2007 02:10:06 +1100
+Delivered-To: ian.wienand@gmail.com
+Received: from gmail-pop.l.google.com [72.14.253.109]
+	by morrison.wienand.home with POP3 (fetchmail-6.3.8)
+	for <ianw@localhost> (single-drop); Sun, 04 Nov 2007 02:10:06 +1100 (EST)
+Received: by 10.65.220.15 with SMTP id x15cs362676qbq;
+        Sat, 3 Nov 2007 08:12:48 -0700 (PDT)
+Received: by 10.115.90.1 with SMTP id s1mr3112345wal.1194102767770;
+        Sat, 03 Nov 2007 08:12:47 -0700 (PDT)
+Received: from rietz.debian.org (rietz.debian.org [140.211.166.43])
+        by mx.google.com with ESMTP id n32si9086019wag.2007.11.03.08.12.44;
+        Sat, 03 Nov 2007 08:12:47 -0700 (PDT)
+Received-SPF: pass (google.com: domain of debbugs@bugs.debian.org designates 140.211.166.43 as permitted sender) client-ip=140.211.166.43;
+Authentication-Results: mx.google.com; spf=pass (google.com: domain of debbugs@bugs.debian.org designates 140.211.166.43 as permitted sender) smtp.mail=debbugs@bugs.debian.org
+Received: from debbugs by rietz.debian.org with local (Exim 4.50)
+	id 1IoKcR-0004US-DF; Sat, 03 Nov 2007 15:09:03 +0000
+X-Loop: owner@bugs.debian.org
+Subject: Bug#449152: Improved support for mips/mipsel
+Reply-To: Thiemo Seufer <ths@networkno.de>, 449152@bugs.debian.org
+Resent-From: Thiemo Seufer <ths@networkno.de>
+Resent-To: debian-bugs-dist@lists.debian.org
+Resent-CC: Ian Wienand <ianw@debian.org>
+Resent-Date: Sat, 03 Nov 2007 15:09:01 +0000
+Resent-Message-ID: <handler.449152.B.119410238116035@bugs.debian.org>
+X-Debian-PR-Message: report 449152
+X-Debian-PR-Package: libatomic-ops
+X-Debian-PR-Keywords: patch
+Received: via spool by submit@bugs.debian.org id=B.119410238116035
+          (code B ref -1); Sat, 03 Nov 2007 15:09:01 +0000
+Received: (at submit) by bugs.debian.org; 3 Nov 2007 15:06:21 +0000
+X-Spam-Checker-Version: SpamAssassin 3.1.4-bugs.debian.org_2005_01_02 
+	(2006-07-26) on rietz.debian.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-8.9 required=4.0 tests=BAYES_00,FOURLA,HAS_PACKAGE,
+	MURPHY_DRUGS_REL8 autolearn=no 
+	version=3.1.4-bugs.debian.org_2005_01_02
+Received: from relay01.mx.bawue.net ([193.7.176.67])
+	by rietz.debian.org with esmtp (Exim 4.50)
+	id 1IoKZp-0004AP-3y
+	for submit@bugs.debian.org; Sat, 03 Nov 2007 15:06:21 +0000
+Received: from lagash (88-106-176-50.dynamic.dsl.as9105.com [88.106.176.50])
+	(using TLSv1 with cipher AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by relay01.mx.bawue.net (Postfix) with ESMTP id 8A01248FB3
+	for <submit@bugs.debian.org>; Sat,  3 Nov 2007 15:23:50 +0100 (CET)
+Received: from ths by lagash with local (Exim 4.68)
+	(envelope-from <ths@networkno.de>)
+	id 1IoKZl-0007Mc-SB
+	for submit@bugs.debian.org; Sat, 03 Nov 2007 15:06:17 +0000
+Date: Sat, 3 Nov 2007 15:06:17 +0000
+From: Thiemo Seufer <ths@networkno.de>
 To: submit@bugs.debian.org
-Subject: [mips/mipsel] FTBFS due to missing arch-specific implementation
-Message-ID: <20051027224341.GX5721@hattusa.textio>
+Message-ID: <20071103150617.GB14756@networkno.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.5.11
-From: Thiemo Seufer <ths@networkno.de>
+User-Agent: Mutt/1.5.16 (2007-06-11)
 Delivered-To: submit@bugs.debian.org
-X-Spam-Checker-Version: SpamAssassin 2.60-bugs.debian.org_2005_01_02 
-	(1.212-2003-09-23-exp) on spohr.debian.org
-X-Spam-Level: 
-X-Spam-Status: No, hits=-8.0 required=4.0 tests=BAYES_00,HAS_PACKAGE 
-	autolearn=no version=2.60-bugs.debian.org_2005_01_02
+Resent-Sender: Debian BTS <debbugs@bugs.debian.org>
+Resent-Date: Sat, 03 Nov 2007 15:09:03 +0000
 
 Package: libatomic-ops
-Version: 1.0-3
+Version: 1.2-2
 Tags: patch
 
-Libatomic-ops currently FTBFS on mips/mipsel because there is no
-arch-specific implementation, and the generic pthread isn't configured.
+This is an update of the mips patch. It now covers weakly ordered
+systems as allowed by the architecture definition, and also fixes
+some minor omissions.
 
-The appended patch adds a basic implementation for linux.
+This update fixes the FTBFS of pulseaudio on mips/mipsel.
 
 
 Thiemo
@@ -52,10 +93,10 @@ Thiemo
  	\
  	  icc/ia64.h \
 --- libatomic-ops-1.0.away/src/atomic_ops/sysdeps/gcc/mips.h	1970-01-01 01:00:00.000000000 +0100
-+++ libatomic-ops-1.0/src/atomic_ops/sysdeps/gcc/mips.h	2005-10-28 00:11:19.000000000 +0200
-@@ -0,0 +1,65 @@
++++ libatomic-ops-1.0/src/atomic_ops/sysdeps/gcc/mips.h	2007-11-02 14:06:23.000000000 +0000
+@@ -0,0 +1,97 @@
 +/* 
-+ * Copyright (c) 2005  Thiemo Seufer <ths@networkno.de>
++ * Copyright (c) 2005,2007  Thiemo Seufer <ths@networkno.de>
 + *
 + * THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED
 + * OR IMPLIED.  ANY USE IS AT YOUR OWN RISK.
@@ -68,7 +109,9 @@ Thiemo
 + */
 +
 +#include "../all_aligned_atomic_load_store.h"
++#include "../acquire_release_volatile.h"
 +#include "../test_and_set_t_is_ao_t.h"
++#include "../standard_ao_double_t.h"
 +
 +/* Data dependence does not imply read ordering.  */
 +#define AO_NO_DD_ORDERING
@@ -105,7 +148,7 @@ Thiemo
 +      "       sc      %0, %1      \n"
 +      "       .set pop            \n"
 +      "       beqz    %0, 1b      \n"
-+      "       li     %2, 1        \n"
++      "       li      %2, 1       \n"
 +      "2:                           "
 +      : "=&r" (temp), "+R" (*addr), "+r" (was_equal)
 +      : "r" (new_val), "r" (old)
@@ -115,10 +158,40 @@ Thiemo
 +
 +#define AO_HAVE_compare_and_swap
 +
++AO_INLINE int
++AO_compare_and_swap_acquire(volatile AO_t *addr, AO_t old, AO_t new_val) {
++  int result = AO_compare_and_swap(addr, old, new_val);
++  AO_nop_full();
++  return result;
++}
++
++#define AO_HAVE_compare_and_swap_acquire
++
++AO_INLINE int
++AO_compare_and_swap_release(volatile AO_t *addr, AO_t old, AO_t new_val) {
++  AO_nop_full();
++  return AO_compare_and_swap(addr, old, new_val);
++}
++
++#define AO_HAVE_compare_and_swap_release
++
++AO_INLINE int
++AO_compare_and_swap_full(volatile AO_t *addr, AO_t old, AO_t new_val) {
++  AO_t result;
++  AO_nop_full();
++  result = AO_compare_and_swap(addr, old, new_val);
++  AO_nop_full();
++  return result;
++}
++
++#define AO_HAVE_compare_and_swap_full
++
 +/*
 + * FIXME: We should also implement fetch_and_add and or primitives
 + * directly.
 + */
++
++#include "../ao_t_is_int.h"
 --- libatomic-ops-1.0.away/src/atomic_ops.h	2005-08-03 02:05:18.000000000 +0200
 +++ libatomic-ops-1.0/src/atomic_ops.h	2005-10-27 21:01:29.000000000 +0200
 @@ -219,6 +219,9 @@
@@ -131,5 +204,8 @@ Thiemo
  #endif /* __GNUC__ && !AO_USE_PTHREAD_DEFS */
  
  #if defined(__INTEL_COMPILER) && !defined(AO_USE_PTHREAD_DEFS)
+
+
+
 
 
