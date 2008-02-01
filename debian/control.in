@@ -3,7 +3,7 @@ Priority: optional
 Maintainer: Ian Wienand <ianw@debian.org>
 Uploaders: Al Stone <ahs3@debian.org>
 Build-Depends: @cdbs@
-Standards-Version: 3.7.2
+Standards-Version: 3.7.3
 
 Package: libatomic-ops-dev
 Section: libdevel

@@ -1,3 +1,13 @@
+libatomic-ops (1.2-4) unstable; urgency=low
+
+  * Closes: #463390 -- Add 06_double.patch to fix some issues with double
+    CAS defs.  Patch by Jamey Sharp, thanks Jamey!
+  * This fixed up AO_compare_double_and_swap_double_full which then
+    revealed a PIC problem, which then revealed the arguments to cmpxchg8b
+    were around the wrong way, fixed in 07_pic_cmpxchng.patch
+
+ -- Ian Wienand <ianw@debian.org>  Fri, 01 Feb 2008 11:09:33 +1100
+
 libatomic-ops (1.2-3) unstable; urgency=low
 
   * Closes: #449152 -- updated MIPS patch from Thiemo Seufer

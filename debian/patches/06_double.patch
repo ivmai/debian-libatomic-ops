@@ -1,0 +1,40 @@
+I noticed what looked like two bugs related to compare-and-swap on
+AO_double_t. First, gcc/x86.h declares
+        AO_compare_double_and_swap_double_full
+but sets
+        AO_HAVE_double_compare_and_swap_full
+As I understand it, those should match.
+
+Second, the prototype for AO_compare_and_swap_double_acquire in
+generalize.h doesn't match the call it makes to
+AO_compare_and_swap_double, which seems like probably a bug.
+
+Patch attached for both issues.
+
+Jamey Sharp <sharpone@debian.org>
+
+diff --git a/src/atomic_ops/generalize.h b/src/atomic_ops/generalize.h
+index 0f42b32..35d1b42 100644
+--- a/src/atomic_ops/generalize.h
++++ b/src/atomic_ops/generalize.h
+@@ -1180,7 +1180,7 @@
+     && !defined(AO_HAVE_compare_and_swap_double_acquire)
+    AO_INLINE int
+    AO_compare_and_swap_double_acquire(volatile AO_double_t *addr,
+-		   		      	     AO_t o1, AO_t o2,
++		   		      	     AO_t o1,
+ 				             AO_t n1, AO_t n2)
+    {
+      int result = AO_compare_and_swap_double(addr, o1, n1, n2);
+diff --git a/src/atomic_ops/sysdeps/gcc/x86.h b/src/atomic_ops/sysdeps/gcc/x86.h
+index 27e047e..5c1805d 100644
+--- a/src/atomic_ops/sysdeps/gcc/x86.h
++++ b/src/atomic_ops/sysdeps/gcc/x86.h
+@@ -148,6 +148,6 @@ AO_compare_double_and_swap_double_full(volatile AO_double_t *addr,
+   return (int) result;
+ }
+ 
+-#define AO_HAVE_double_compare_and_swap_full
++#define AO_HAVE_compare_double_and_swap_double_full
+ 
+ #include "../ao_t_is_int.h"
