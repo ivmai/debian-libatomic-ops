@@ -198,7 +198,7 @@
 #if defined(AO_HAVE_load) && defined(AO_HAVE_nop_full) && \
     !defined(AO_HAVE_load_acquire)
    AO_INLINE AO_t
-   AO_load_acquire(volatile AO_t *addr)
+   AO_load_acquire(const volatile AO_t *addr)
    {
      AO_t result = AO_load(addr);
      /* Acquire barrier would be useless, since the load could be delayed  */
@@ -212,7 +212,7 @@
 #if defined(AO_HAVE_load) && defined(AO_HAVE_nop_read) && \
     !defined(AO_HAVE_load_read)
    AO_INLINE AO_t
-   AO_load_read(volatile AO_t *addr)
+   AO_load_read(const volatile AO_t *addr)
    {
      AO_t result = AO_load(addr);
      /* Acquire barrier would be useless, since the load could be delayed  */
@@ -300,6 +300,28 @@
     !defined(AO_HAVE_store_full)
 #  define AO_store_full(addr, val) (AO_store_release(addr, val), AO_nop_full())
 #  define AO_HAVE_store_full
+#endif
+
+/* NEC LE-IT: Test and set */
+#if defined(AO_HAVE_test_and_set) && \
+	defined(AO_HAVE_nop_full) && \
+    !defined(AO_HAVE_test_and_set_release)
+#	define AO_test_and_set_release(addr) \
+	(AO_nop_full(), AO_test_and_set(addr))
+#  define AO_HAVE_test_and_set_release
+#endif
+
+#if defined(AO_HAVE_test_and_set) && \
+	defined(AO_HAVE_nop_full) && \
+    !defined(AO_HAVE_test_and_set_acquire)
+AO_INLINE AO_TS_t
+AO_test_and_set_acquire(volatile AO_TS_t *addr)
+{
+	AO_TS_t res = AO_test_and_set(addr);
+	AO_nop_full();
+	return res; 
+}  
+#  define AO_HAVE_test_and_set_acquire
 #endif
 
   
@@ -1180,7 +1202,7 @@
     && !defined(AO_HAVE_compare_and_swap_double_acquire)
    AO_INLINE int
    AO_compare_and_swap_double_acquire(volatile AO_double_t *addr,
-		   		      	     AO_t o1, AO_t o2,
+		   		      	     AO_t o1,
 				             AO_t n1, AO_t n2)
    {
      int result = AO_compare_and_swap_double(addr, o1, n1, n2);
@@ -1289,4 +1311,45 @@
 	AO_compare_and_swap_double(addr, o1, n1, n2)
 #    define AO_HAVE_compare_and_swap_double_dd_acquire_read
 #  endif
+#endif
+
+/* NEC LE-IT: Convenience functions for AO_double compare and swap which */
+/* types and reads easier in code					 */
+#if defined(AO_HAVE_compare_double_and_swap_double_release) && \
+    !defined(AO_HAVE_double_compare_and_swap_release)
+AO_INLINE int
+AO_double_compare_and_swap_release(volatile AO_double_t *addr,
+		  	           AO_double_t old_val, AO_double_t new_val) 
+{
+	return AO_compare_double_and_swap_double_release(addr,
+							 old_val.AO_val1, old_val.AO_val2,
+				                         new_val.AO_val1, new_val.AO_val2);
+}
+#define AO_HAVE_double_compare_and_swap_release
+#endif
+
+#if defined(AO_HAVE_compare_double_and_swap_double_acquire) && \
+    !defined(AO_HAVE_double_compare_and_swap_acquire)
+AO_INLINE int
+AO_double_compare_and_swap_acquire(volatile AO_double_t *addr,
+		  	           AO_double_t old_val, AO_double_t new_val) 
+{
+	return AO_compare_double_and_swap_double_acquire(addr,
+							 old_val.AO_val1, old_val.AO_val2,
+				               		 new_val.AO_val1, new_val.AO_val2);
+}
+#define AO_HAVE_double_compare_and_swap_acquire
+#endif
+
+#if defined(AO_HAVE_compare_double_and_swap_double_full) && \
+    !defined(AO_HAVE_double_compare_and_swap_full)
+AO_INLINE int
+AO_double_compare_and_swap_full(volatile AO_double_t *addr,
+		  	                 AO_double_t old_val, AO_double_t new_val) 
+{
+	return AO_compare_double_and_swap_double_full(addr,
+						      old_val.AO_val1, old_val.AO_val2,
+				                      new_val.AO_val1, new_val.AO_val2);
+}
+#define AO_HAVE_double_compare_and_swap_full
 #endif

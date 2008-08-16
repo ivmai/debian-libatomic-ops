@@ -1,13 +1,12 @@
-libatomic-ops (1.2-4+lenny1) testing-proposed-updates; urgency=medium
+libatomic-ops (1.2+cvs20080815-1) unstable; urgency=low
 
-  * Non-maintainer upload.
-  * fixed debian/patches/05_powerpc_asm.patch to get it building on ppc again
-    (Closes: 495211)
-  * Uploading to testing-proposed-updates to fix the bug for lenny, becuase
-    the cvs version in unstable isn't a valid candidate for a freeze
-    exception.
+  * New upstream, taken from CVS repository at
+    bdwgc.cvs.sourceforge.net:/cvsroot/bdwgc
+    which upstream has told me is official home of the package.
+  * Patches now included upstream: 01_s390_include.patch, 02_mips.patch,
+    04_m68k.patch, 05_powerpc_asm.patch, 07_pic_cmpxchng.patch,
 
- -- Mike O'Connor <stew@debian.org>  Sun, 12 Oct 2008 16:26:06 -0400
+ -- Ian Wienand <ianw@debian.org>  Fri, 15 Aug 2008 21:26:06 -0700
 
 libatomic-ops (1.2-4) unstable; urgency=low
 
