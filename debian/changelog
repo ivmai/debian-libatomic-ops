@@ -1,3 +1,10 @@
+libatomic-ops (1.2+cvs20080819-1) unstable; urgency=low
+
+  * Update from upstream CVS
+  * Closes: #495211 -- patch taken upstream, thanks Thiemo!
+
+ -- Ian Wienand <ianw@debian.org>  Tue, 19 Aug 2008 14:25:24 -0700
+
 libatomic-ops (1.2+cvs20080815-1) unstable; urgency=low
 
   * New upstream, taken from CVS repository at
