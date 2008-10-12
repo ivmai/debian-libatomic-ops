@@ -5,7 +5,7 @@
    /* tried the "y" constraint.					*/
    __asm__ __volatile__ (
 -    "lwz %0,%1\n"
-+    "lwz%X1 %0,%1\n"
++    "lwz%U1%X1 %0,%1\n"
      "cmpw cr7,%0,%0\n"
      "bne- cr7,1f\n"
      "1: isync\n"

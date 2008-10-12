@@ -1,3 +1,14 @@
+libatomic-ops (1.2-4+lenny1) testing-proposed-updates; urgency=medium
+
+  * Non-maintainer upload.
+  * fixed debian/patches/05_powerpc_asm.patch to get it building on ppc again
+    (Closes: 495211)
+  * Uploading to testing-proposed-updates to fix the bug for lenny, becuase
+    the cvs version in unstable isn't a valid candidate for a freeze
+    exception.
+
+ -- Mike O'Connor <stew@debian.org>  Sun, 12 Oct 2008 16:26:06 -0400
+
 libatomic-ops (1.2-4) unstable; urgency=low
 
   * Closes: #463390 -- Add 06_double.patch to fix some issues with double
