@@ -1,8 +1,11 @@
-libatomic-ops (1.2+cvs20080819-1+sh4) unreleased; urgency=low
+libatomic-ops (1.2+cvs20091005-1) unstable; urgency=low
 
-  * Add support sh4.
+  * Update from upstream CVS
+  * Closes: #547136 -- patch accepted upstream
+  * Lintian updates : Update standards version, debhelper compat version,
+    add Section tag for source, misc depends for debhelper
 
- -- Nobuhiro Iwamatsu <iwamatsu@nigauri.org>  Thu, 17 Sep 2009 15:19:29 +0900
+ -- Ian Wienand <ianw@debian.org>  Mon, 5 Oct 2009 11:08:00 -0700
 
 libatomic-ops (1.2+cvs20080819-1) unstable; urgency=low
 

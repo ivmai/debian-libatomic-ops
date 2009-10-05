@@ -1,13 +1,14 @@
 Source: libatomic-ops
 Priority: optional
+Section: libdevel
 Maintainer: Ian Wienand <ianw@debian.org>
 Uploaders: Al Stone <ahs3@debian.org>
 Build-Depends: @cdbs@
-Standards-Version: 3.7.3
+Standards-Version: 3.8.3
 
 Package: libatomic-ops-dev
 Section: libdevel
-Depends: ${shlibs:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}
 Architecture: any
 Replaces: libatomic-ops
 Description: A library for atomic operations (development files)
