@@ -1,13 +1,10 @@
 #!/usr/bin/make -f
 
-#nasty, but our patches touch parts of the build system.
-DEB_AUTO_UPDATE_AUTOMAKE = 1.9
-DEB_AUTO_UPDATE_ACLOCAL = $(DEB_AUTO_UPDATE_AUTOMAKE)
-DEB_AUTO_UPDATE_AUTOCONF = 2.50
-
 include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/class/autotools.mk
-include /usr/share/cdbs/1/rules/simple-patchsys.mk
 
 #run tests
 DEB_MAKE_CHECK_TARGET := check
+
+# use .install to pick out relevant stuff
+DEB_DESTDIR = $(CURDIR)/debian/tmp

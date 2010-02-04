@@ -3,7 +3,7 @@ Priority: optional
 Section: libdevel
 Maintainer: Ian Wienand <ianw@debian.org>
 Uploaders: Al Stone <ahs3@debian.org>
-Build-Depends: cdbs, autotools-dev, cdbs (>= 0.4.53), debhelper (>= 7.0.1), automake1.9, autoconf, patchutils
+Build-Depends: cdbs, autotools-dev, cdbs (>= 0.4.53), debhelper (>= 7.0.1)
 Standards-Version: 3.8.3
 
 Package: libatomic-ops-dev

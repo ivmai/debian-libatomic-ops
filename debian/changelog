@@ -1,3 +1,15 @@
+libatomic-ops (7.2~alpha5+cvs20100204-1) unstable; urgency=low
+
+  * New upstream (with new version scheme based on the GC library)
+  * Packagaing overhaul - remove unneeded debian/libatomic-ops-dev.files,
+    debian/libatomic-ops-dev.install, debian/docs, debian/dirs
+  * Update rules to use DEB_DESTDIR to install into /tmp
+  * Pick only relevant files with debian/libatomic-ops-dev.install
+  * Remove patch to ignore upstream doc generation, not needed with above
+    changes
+
+ -- Ian Wienand <ianw@debian.org>  Thu, 04 Feb 2010 14:57:58 -0800
+
 libatomic-ops (1.2+cvs20091005-1) unstable; urgency=low
 
   * Update from upstream CVS

@@ -1,5 +1,5 @@
 # Process this file with autoconf to produce a configure script.
-AC_INIT([libatomic_ops],[1.2])
+AC_INIT([libatomic_ops],[7.2alpha5])
 AC_CANONICAL_TARGET([])
 AC_CONFIG_SRCDIR(src/atomic_ops.c)
 AM_INIT_AUTOMAKE
@@ -60,7 +60,9 @@ AC_SUBST(DEFS)
 AM_CONDITIONAL(NEED_ASM, test x$need_asm = xtrue)
 
 AC_CONFIG_FILES([Makefile src/Makefile src/atomic_ops/Makefile src/atomic_ops/sysdeps/Makefile doc/Makefile tests/Makefile])
-AC_CONFIG_COMMANDS([default],[[]],[[PICFLAG=${PICFLAG}
-CC=${CC}
-DEFS=${DEFS}]])
+AC_CONFIG_COMMANDS([default],[[]],[[
+PICFLAG="${PICFLAG}"
+CC="${CC}"
+DEFS="${DEFS}"
+]])
 AC_OUTPUT
