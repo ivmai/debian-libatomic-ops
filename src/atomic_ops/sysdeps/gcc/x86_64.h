@@ -31,22 +31,14 @@
 
 #include "../standard_ao_double_t.h"
 
-#if defined(AO_USE_PENTIUM4_INSTRS)
 AO_INLINE void
 AO_nop_full(void)
 {
+  /* Note: "mfence" (SSE2) is supported on all x86_64/amd64 chips.      */
   __asm__ __volatile__("mfence" : : : "memory");
 }
 
 #define AO_HAVE_nop_full
-
-#else
-
-/* We could use the cpuid instruction.  But that seems to be slower     */
-/* than the default implementation based on test_and_set_full.  Thus    */
-/* we omit that bit of misinformation here.                             */
-
-#endif
 
 /* As far as we can tell, the lfence and sfence instructions are not    */
 /* currently needed or useful for cached memory accesses.               */
@@ -127,14 +119,17 @@ AO_test_and_set_full(volatile AO_TS_t *addr)
 
 /* Returns nonzero if the comparison succeeded. */
 AO_INLINE int
-AO_compare_and_swap_full(volatile AO_t *addr,
-                         AO_t old, AO_t new_val)
+AO_compare_and_swap_full(volatile AO_t *addr, AO_t old, AO_t new_val)
 {
-  char result;
-  __asm__ __volatile__("lock; cmpxchgq %3, %0; setz %1"
-                       : "=m"(*addr), "=q"(result)
-                       : "m"(*addr), "r" (new_val), "a"(old) : "memory");
-  return (int) result;
+# ifdef AO_USE_SYNC_CAS_BUILTIN
+    return (int)__sync_bool_compare_and_swap(addr, old, new_val);
+# else
+    char result;
+    __asm__ __volatile__("lock; cmpxchgq %3, %0; setz %1"
+                         : "=m" (*addr), "=a" (result)
+                         : "m" (*addr), "r" (new_val), "a" (old) : "memory");
+    return (int) result;
+# endif
 }
 
 #define AO_HAVE_compare_and_swap_full
@@ -156,12 +151,9 @@ AO_compare_double_and_swap_double_full(volatile AO_double_t *addr,
 {
   char result;
   __asm__ __volatile__("lock; cmpxchg16b %0; setz %1"
-                                : "=m"(*addr), "=q"(result)
-                                        : "m"(*addr),
-                                          "d" (old_val2),
-                                          "a" (old_val1),
-                                          "c" (new_val2),
-                                          "b" (new_val1)  : "memory");
+                       : "=m"(*addr), "=a"(result)
+                       : "m"(*addr), "d" (old_val2), "a" (old_val1),
+                         "c" (new_val2), "b" (new_val1) : "memory");
   return (int) result;
 }
 #define AO_HAVE_compare_double_and_swap_double_full

@@ -1,3 +1,10 @@
+libatomic-ops (7.2~alpha5+cvs20100523-1) unstable; urgency=low
+
+  * Update from upstream CVS
+  * Closes: 580211 -- avr support integrated upstream (Thanks Stefano!)
+
+ -- Ian Wienand <ianw@debian.org>  Fri, 21 May 2010 15:47:12 -0700
+
 libatomic-ops (7.2~alpha5+cvs20100204-1) unstable; urgency=low
 
   * New upstream (with new version scheme based on the GC library)
