@@ -1,3 +1,10 @@
+libatomic-ops (7.2~alpha5+cvs20100601-1) unstable; urgency=low
+
+  * Update from upstream CVS, to fix AVR build issues with change from
+    Brad Smith
+
+ -- Ian Wienand <ianw@debian.org>  Tue, 01 Jun 2010 15:37:41 -0700
+
 libatomic-ops (7.2~alpha5+cvs20100523-1) unstable; urgency=low
 
   * Update from upstream CVS
