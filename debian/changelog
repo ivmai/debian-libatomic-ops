@@ -1,3 +1,10 @@
+libatomic-ops (7.2~alpha5+cvs20100919-1) unstable; urgency=low
+
+  * Closes: 597193 -- Update from upstream CVS to fix armel issues
+  * Update to standards 3.9.1
+
+ -- Ian Wienand <ianw@debian.org>  Sun, 19 Sep 2010 21:55:41 -0700
+
 libatomic-ops (7.2~alpha5+cvs20100601-1) unstable; urgency=low
 
   * Update from upstream CVS, to fix AVR build issues with change from
