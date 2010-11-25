@@ -5,7 +5,8 @@ Maintainer: Ian Wienand <ianw@debian.org>
 Uploaders: Al Stone <ahs3@debian.org>
 Build-Depends: autotools-dev,
  cdbs (>= 0.4.53),
- debhelper (>= 7.0.1)
+ debhelper (>= 7.0.1),
+ dh-buildinfo
 Standards-Version: 3.9.1
 
 Package: libatomic-ops-dev

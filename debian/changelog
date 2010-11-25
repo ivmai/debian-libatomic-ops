@@ -1,3 +1,10 @@
+libatomic-ops (7.2~alpha5+cvs20101124-1) unstable; urgency=low
+
+  * Closes: 604753 -- Update from upstream CVS, fixes ARM Thumb-2 mode
+    FTBFS
+
+ -- Ian Wienand <ianw@debian.org>  Wed, 24 Nov 2010 21:20:40 -0800
+
 libatomic-ops (7.2~alpha5+cvs20100919-1) unstable; urgency=low
 
   * Closes: 597193 -- Update from upstream CVS to fix armel issues
