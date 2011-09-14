@@ -4,7 +4,7 @@ Section: libdevel
 Maintainer: Ian Wienand <ianw@debian.org>
 Uploaders: Al Stone <ahs3@debian.org>
 Build-Depends: autotools-dev,
- cdbs (>= 0.4.53),
+ cdbs (>= 0.4.85~),
  debhelper (>= 7.0.1),
  dh-buildinfo
 Standards-Version: 3.9.1

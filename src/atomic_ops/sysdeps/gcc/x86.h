@@ -42,7 +42,6 @@ AO_nop_full(void)
 {
   __asm__ __volatile__("mfence" : : : "memory");
 }
-
 #define AO_HAVE_nop_full
 
 #else
@@ -67,7 +66,6 @@ AO_fetch_and_add_full (volatile AO_t *p, AO_t incr)
                         : "memory");
   return result;
 }
-
 #define AO_HAVE_fetch_and_add_full
 
 AO_INLINE unsigned char
@@ -80,7 +78,6 @@ AO_char_fetch_and_add_full (volatile unsigned char *p, unsigned char incr)
                         : "memory");
   return result;
 }
-
 #define AO_HAVE_char_fetch_and_add_full
 
 AO_INLINE unsigned short
@@ -93,18 +90,32 @@ AO_short_fetch_and_add_full (volatile unsigned short *p, unsigned short incr)
                         : "memory");
   return result;
 }
-
 #define AO_HAVE_short_fetch_and_add_full
 
 /* Really only works for 486 and later */
 AO_INLINE void
-AO_or_full (volatile AO_t *p, AO_t incr)
+AO_and_full (volatile AO_t *p, AO_t value)
+{
+  __asm__ __volatile__ ("lock; andl %1, %0" :
+                        "=m" (*p) : "r" (value), "m" (*p) : "memory");
+}
+#define AO_HAVE_and_full
+
+AO_INLINE void
+AO_or_full (volatile AO_t *p, AO_t value)
 {
   __asm__ __volatile__ ("lock; orl %1, %0" :
-                        "=m" (*p) : "r" (incr), "m" (*p) : "memory");
+                        "=m" (*p) : "r" (value), "m" (*p) : "memory");
 }
-
 #define AO_HAVE_or_full
+
+AO_INLINE void
+AO_xor_full (volatile AO_t *p, AO_t value)
+{
+  __asm__ __volatile__ ("lock; xorl %1, %0" :
+                        "=m" (*p) : "r" (value), "m" (*p) : "memory");
+}
+#define AO_HAVE_xor_full
 
 AO_INLINE AO_TS_VAL_t
 AO_test_and_set_full(volatile AO_TS_t *addr)
@@ -113,10 +124,9 @@ AO_test_and_set_full(volatile AO_TS_t *addr)
   /* Note: the "xchg" instruction does not need a "lock" prefix */
   __asm__ __volatile__("xchgb %0, %1"
                 : "=q"(oldval), "=m"(*addr)
-                : "0"(0xff), "m"(*addr) : "memory");
+                : "0"((unsigned char)0xff), "m"(*addr) : "memory");
   return (AO_TS_VAL_t)oldval;
 }
-
 #define AO_HAVE_test_and_set_full
 
 /* Returns nonzero if the comparison succeeded. */
@@ -133,7 +143,6 @@ AO_compare_and_swap_full(volatile AO_t *addr, AO_t old, AO_t new_val)
     return (int)result;
 # endif
 }
-
 #define AO_HAVE_compare_and_swap_full
 
 /* Returns nonzero if the comparison succeeded. */
@@ -148,16 +157,13 @@ AO_compare_double_and_swap_double_full(volatile AO_double_t *addr,
   /* If PIC is turned on, we can't use %ebx as it is reserved for the
      GOT pointer.  We can save and restore %ebx because GCC won't be
      using it for anything else (such as any of the m operands) */
-  /* We use %edi (for new_val1) instead of a memory operand and swap    */
-  /* instruction instead of push/pop because some GCC releases have     */
-  /* a bug in processing memory operands (if address base is %esp) in   */
-  /* the inline assembly after push.                                    */
-  __asm__ __volatile__("xchg %%ebx,%6;" /* swap GOT ptr and new_val1 */
+  __asm__ __volatile__("pushl %%ebx;"   /* save ebx used for PIC GOT ptr */
+                       "movl %6,%%ebx;" /* move new_val2 to %ebx */
                        "lock; cmpxchg8b %0; setz %1;"
-                       "xchg %%ebx,%6;" /* restore ebx and edi */
+                       "pop %%ebx;"     /* restore %ebx */
                        : "=m"(*addr), "=a"(result)
                        : "m"(*addr), "d" (old_val2), "a" (old_val1),
-                         "c" (new_val2), "D" (new_val1) : "memory");
+                         "c" (new_val2), "m" (new_val1) : "memory");
 #else
   /* We can't just do the same thing in non-PIC mode, because GCC
    * might be using %ebx as the memory operand.  We could have ifdef'd
@@ -170,7 +176,6 @@ AO_compare_double_and_swap_double_full(volatile AO_double_t *addr,
 #endif
   return (int) result;
 }
-
 #define AO_HAVE_compare_double_and_swap_double_full
 
 #include "../ao_t_is_int.h"

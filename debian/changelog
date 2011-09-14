@@ -1,22 +1,8 @@
-libatomic-ops (7.2~alpha5+cvs20101124-1+deb7u1) testing-proposed-updates; urgency=low
+libatomic-ops (7.3~alpha1+git20110913-1) unstable; urgency=low
 
-  * Non-maintainer upload with maintainer's approval.
-  * Fix "libatomic-ops/powerpc: FTBFS: eats all disk space in the known
-    universe (almost, anyway)": nackport patch from upstream git repo:
-    https://github.com/ivmai/libatomic_ops/commit/00d7cb8#diff-0
-    (Closes: #680100)
+  * New upstream release
 
- -- gregor herrmann <gregoa@debian.org>  Fri, 14 Dec 2012 15:00:16 +0100
-
-libatomic-ops (7.2~alpha5+cvs20101124-1+deb7u0) testing-proposed-updates; urgency=low
-
-  * Non-maintainer upload with maintainer's permission.
-  * Fix "FTBFS on i386": apply patch from upstream git repo:
-    https://github.com/ivmai/libatomic_ops/commit/30cea1b#diff-0
-    Thanks to Emanuele Aina for the pointer.
-    (Closes: #632604)
-
- -- gregor herrmann <gregoa@debian.org>  Wed, 03 Oct 2012 17:35:27 +0200
+ -- Ian Wienand <ianw@debian.org>  Tue, 13 Sep 2011 21:19:00 -0700
 
 libatomic-ops (7.2~alpha5+cvs20101124-1) unstable; urgency=low
 

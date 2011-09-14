@@ -9,7 +9,7 @@
  * It is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU General Public License in the
- * file doc/COPYING for more details.
+ * file COPYING for more details.
  */
 
 #if defined(HAVE_CONFIG_H)
@@ -184,7 +184,7 @@ AO_stack_pop_explicit_aux_acquire(volatile AO_t *list, AO_stack_aux * a)
           AO_pause(++j);
         }
     }
-  assert(i >= 0 && i < AO_BL_SIZE);
+  assert(i < AO_BL_SIZE);
   assert(a -> AO_stack_bl[i] == first);
   /* First is on the auxiliary black list.  It may be removed by        */
   /* another thread before we get to it, but a new insertion of x       */
@@ -193,25 +193,13 @@ AO_stack_pop_explicit_aux_acquire(volatile AO_t *list, AO_stack_aux * a)
   /* We need to make sure that first is still the first entry on the    */
   /* list.  Otherwise it's possible that a reinsertion of it was        */
   /* already started before we added the black list entry.              */
-# if defined(__alpha__) && (__GNUC__ == 4)
-    if (first != AO_load(list))
-                        /* Workaround __builtin_expect bug found in     */
-                        /* gcc-4.6.3/alpha causing test_stack failure.  */
-# else
-    if (AO_EXPECT_FALSE(first != AO_load(list)))
-# endif
-  {
+  if (first != AO_load(list)) {
     AO_store_release(a->AO_stack_bl+i, 0);
     goto retry;
   }
   first_ptr = AO_REAL_NEXT_PTR(first);
   next = AO_load(first_ptr);
-# if defined(__alpha__) && (__GNUC__ == 4)
-    if (!AO_compare_and_swap_release(list, first, next))
-# else
-    if (AO_EXPECT_FALSE(!AO_compare_and_swap_release(list, first, next)))
-# endif
-  {
+  if (!AO_compare_and_swap_release(list, first, next)) {
     AO_store_release(a->AO_stack_bl+i, 0);
     goto retry;
   }
