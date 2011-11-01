@@ -2,7 +2,9 @@ This package was debianized by Ian Wienand <ianw@gelato.unsw.edu.au>
 on Mon,  9 Feb 2004 10:26:54 +1100.
 
 It was downloaded from:
-	http://www.hpl.hp.com/research/linux/atomic_ops/download.php4
+        https://github.com/ivmai/libatomic_ops
+	(previously
+	http://www.hpl.hp.com/research/linux/atomic_ops/download.php4)
 
 Upstream Authors:
 	Hans Boehm <hans_boehm@hp.com>

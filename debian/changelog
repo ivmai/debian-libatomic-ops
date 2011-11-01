@@ -1,3 +1,10 @@
+libatomic-ops (7.3~alpha1+git20111031-1) unstable; urgency=low
+
+  * Update from upstream git
+  * Closes: 645302 -- Integrates patch from Thorsten Glaser
+
+ -- Ian Wienand <ianw@debian.org>  Mon, 31 Oct 2011 23:01:03 -0700
+
 libatomic-ops (7.3~alpha1+git20110913-1) unstable; urgency=low
 
   * New upstream release

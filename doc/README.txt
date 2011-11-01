@@ -90,8 +90,12 @@ AO_t fetch_and_add1(volatile AO_t *addr)
         Equivalent to AO_fetch_and_add(addr, 1).
 AO_t fetch_and_sub1(volatile AO_t *addr)
         Equivalent to AO_fetch_and_add(addr, (AO_t)(-1)).
-void or(volatile AO_t *addr, AO_t incr)
-        Atomically or incr into *addr.
+void and(volatile AO_t *addr, AO_t value)
+        Atomically 'and' value into *addr.
+void or(volatile AO_t *addr, AO_t value)
+        Atomically 'or' value into *addr.
+void xor(volatile AO_t *addr, AO_t value)
+        Atomically 'xor' value into *addr.
 int compare_and_swap(volatile AO_t * addr, AO_t old_val, AO_t new_val)
         Atomically compare *addr to old_val, and replace *addr by new_val
         if the first comparison succeeds.  Returns nonzero if the comparison
@@ -137,7 +141,7 @@ ORDERING CONSTRAINTS:
 
 Each operation name also includes a suffix that specifies the associated
 ordering semantics.  The ordering constraint limits reordering of this
-operation with repsect to other atomic operations and ordinary memory
+operation with respect to other atomic operations and ordinary memory
 references.  The current implementation assumes that all memory references
 are to ordinary cacheable memory; the ordering guarantee is with respect
 to other threads or processes, not I/O devices.  (Whether or not this
@@ -153,7 +157,7 @@ _read: Subsequent reads must become visible after reads included in
        the atomic operation or preceding it.  Rarely useful for clients?
 _write: Earlier writes become visible before writes during or after
         the atomic operation.  Rarely useful for clients?
-_full: Ordered with respect to both earlier and later memops.
+_full: Ordered with respect to both earlier and later memory ops.
        AO_store_full or AO_nop_full are the normal ways to force a store
        to be ordered with respect to a later load.
 _release_write: Ordered with respect to earlier writes.  This is
