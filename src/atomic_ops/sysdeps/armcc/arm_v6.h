@@ -96,6 +96,7 @@ __asm {
         more flexible, other instructions can be done between the LDREX and STREX accesses.
    "
 */
+#ifndef AO_PREFER_GENERALIZED
 AO_INLINE AO_TS_VAL_t
 AO_test_and_set(volatile AO_TS_t *addr) {
 
@@ -173,30 +174,53 @@ __asm {
         return result;
 }
 #define AO_HAVE_fetch_and_sub1
+#endif /* !AO_PREFER_GENERALIZED */
 
 /* NEC LE-IT: compare and swap */
-/* Returns nonzero if the comparison succeeded. */
-AO_INLINE int
-AO_compare_and_swap(volatile AO_t *addr, AO_t old_val, AO_t new_val)
-{
-         AO_t result,tmp;
+#ifndef AO_GENERALIZE_ASM_BOOL_CAS
+  /* Returns nonzero if the comparison succeeded.       */
+  AO_INLINE int
+  AO_compare_and_swap(volatile AO_t *addr, AO_t old_val, AO_t new_val)
+  {
+    AO_t result, tmp;
 
-retry:
-__asm__ {
-        mov     result, #2
-        ldrex   tmp, [addr]
-        teq     tmp, old_val
+  retry:
+    __asm__ {
+      mov     result, #2
+      ldrex   tmp, [addr]
+      teq     tmp, old_val
 #     ifdef __thumb__
         it      eq
 #     endif
-        strexeq result, new_val, [addr]
-        teq     result, #1
+      strexeq result, new_val, [addr]
+      teq     result, #1
+      beq     retry
+    }
+    return !(result&2);
+  }
+# define AO_HAVE_compare_and_swap
+#endif /* !AO_GENERALIZE_ASM_BOOL_CAS */
+
+AO_INLINE AO_t
+AO_fetch_compare_and_swap(volatile AO_t *addr, AO_t old_val, AO_t new_val)
+{
+         AO_t fetched_val, tmp;
+
+retry:
+__asm__ {
+        mov     tmp, #2
+        ldrex   fetched_val, [addr]
+        teq     fetched_val, old_val
+#     ifdef __thumb__
+        it      eq
+#     endif
+        strexeq tmp, new_val, [addr]
+        teq     tmp, #1
         beq     retry
         }
-
-        return !(result&2);
+        return fetched_val;
 }
-#define AO_HAVE_compare_and_swap
+#define AO_HAVE_fetch_compare_and_swap
 
 /* helper functions for the Realview compiler: LDREXD is not usable
  * with inline assembler, so use the "embedded" assembler as

@@ -42,6 +42,7 @@ AO_nop_full(void)
 /* As far as we can tell, the lfence and sfence instructions are not    */
 /* currently needed or useful for cached memory accesses.               */
 
+#ifndef AO_PREFER_GENERALIZED
 AO_INLINE AO_t
 AO_fetch_and_add_full (volatile AO_t *p, AO_t incr)
 {
@@ -53,6 +54,7 @@ AO_fetch_and_add_full (volatile AO_t *p, AO_t incr)
   return result;
 }
 #define AO_HAVE_fetch_and_add_full
+#endif /* !AO_PREFER_GENERALIZED */
 
 AO_INLINE unsigned char
 AO_char_fetch_and_add_full (volatile unsigned char *p, unsigned char incr)
@@ -90,6 +92,7 @@ AO_int_fetch_and_add_full (volatile unsigned int *p, unsigned int incr)
 }
 #define AO_HAVE_int_fetch_and_add_full
 
+#ifndef AO_PREFER_GENERALIZED
 AO_INLINE void
 AO_and_full (volatile AO_t *p, AO_t value)
 {
@@ -116,6 +119,7 @@ AO_xor_full (volatile AO_t *p, AO_t value)
                         : "memory");
 }
 #define AO_HAVE_xor_full
+#endif /* !AO_PREFER_GENERALIZED */
 
 AO_INLINE AO_TS_VAL_t
 AO_test_and_set_full (volatile AO_TS_t *addr)
@@ -130,17 +134,33 @@ AO_test_and_set_full (volatile AO_TS_t *addr)
 }
 #define AO_HAVE_test_and_set_full
 
-/* Returns nonzero if the comparison succeeded. */
-AO_INLINE int
-AO_compare_and_swap_full (volatile AO_t *addr, AO_t old, AO_t new_val)
+#ifndef AO_GENERALIZE_ASM_BOOL_CAS
+  /* Returns nonzero if the comparison succeeded.       */
+  AO_INLINE int
+  AO_compare_and_swap_full(volatile AO_t *addr, AO_t old, AO_t new_val)
+  {
+    char result;
+    __asm__ __volatile__ ("lock; cmpxchgq %2, %0; setz %1"
+                          : "=m"(*addr), "=a"(result)
+                          : "r" (new_val), "a"(old)
+                          : "memory");
+    return (int)result;
+  }
+# define AO_HAVE_compare_and_swap_full
+#endif /* !AO_GENERALIZE_ASM_BOOL_CAS */
+
+AO_INLINE AO_t
+AO_fetch_compare_and_swap_full(volatile AO_t *addr, AO_t old_val,
+                               AO_t new_val)
 {
-  char result;
-  __asm__ __volatile__ ("lock; cmpxchgq %2, %0; setz %1"
-                        : "=m"(*addr), "=a"(result)
-                        : "r" (new_val), "a"(old) : "memory");
-  return (int) result;
+    AO_t fetched_val;
+    __asm__ __volatile__("lock; cmpxchgq %1, %2"
+                         : "=a" (fetched_val)
+                         : "r" (new_val), "m" (*addr), "0" (old_val)
+                         : "memory");
+    return fetched_val;
 }
-#define AO_HAVE_compare_and_swap_full
+#define AO_HAVE_fetch_compare_and_swap_full
 
 #ifdef AO_CMPXCHG16B_AVAILABLE
 /* NEC LE-IT: older AMD Opterons are missing this instruction.

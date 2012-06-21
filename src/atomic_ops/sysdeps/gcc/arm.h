@@ -53,13 +53,34 @@
 #endif /* !__thumb__ */
 
 /* NEC LE-IT: gcc has no way to easily check the arm architecture       */
-/* but it defines only one of __ARM_ARCH_x__ to be true.                */
+/* but it defines only one (or several) of __ARM_ARCH_x__ to be true.   */
 #if !defined(__ARM_ARCH_2__) && !defined(__ARM_ARCH_3__) \
     && !defined(__ARM_ARCH_3M__) && !defined(__ARM_ARCH_4__) \
-    && !defined(__ARM_ARCH_4T__) && !defined(__ARM_ARCH_5__) \
-    && !defined(__ARM_ARCH_5E__) && !defined(__ARM_ARCH_5T__) \
-    && !defined(__ARM_ARCH_5TE__) && !defined(__ARM_ARCH_5TEJ__) \
-    && !defined(__ARM_ARCH_6M__)
+    && !defined(__ARM_ARCH_4T__) \
+    && ((!defined(__ARM_ARCH_5__) && !defined(__ARM_ARCH_5E__) \
+         && !defined(__ARM_ARCH_5T__) && !defined(__ARM_ARCH_5TE__) \
+         && !defined(__ARM_ARCH_5TEJ__) && !defined(__ARM_ARCH_6M__)) \
+        || defined(__ARM_ARCH_7__) || defined(__ARM_ARCH_7A__))
+# define AO_ARM_HAVE_LDREX
+# if !defined(__ARM_ARCH_6__) && !defined(__ARM_ARCH_6J__) \
+     && !defined(__ARM_ARCH_6T2__) && !defined(__ARM_ARCH_6Z__) \
+     && !defined(__ARM_ARCH_6ZT2__) && (!defined(__thumb__) \
+              || (defined(__thumb2__) && !defined(__ARM_ARCH_7__) \
+                  && !defined(__ARM_ARCH_7M__) && !defined(__ARM_ARCH_7EM__)))
+    /* LDREXD/STREXD present in ARMv6K/M+ (see gas/config/tc-arm.c)       */
+    /* In the Thumb mode, this works only starting from ARMv7 (except for */
+    /* the base and 'M' models).                                          */
+#   define AO_ARM_HAVE_LDREXD
+# endif /* ARMv7+ */
+#endif /* ARMv6+ */
+
+#if !defined(__ARM_ARCH_2__) && !defined(__ARM_ARCH_6M__) \
+    && !defined(__thumb2__)
+# define AO_ARM_HAVE_SWP
+                /* Note: ARMv6M is excluded due to no ARM mode support. */
+#endif /* !__thumb2__ */
+
+#ifdef AO_ARM_HAVE_LDREX
 
 #include "../standard_ao_double_t.h"
 
@@ -99,7 +120,7 @@ AO_load(const volatile AO_t *addr)
  * Support engineers response for behaviour of ARMv6:
  *
    Core1        Core2          SUCCESS
-   ===================================
+   == == == == == == == == == == == ==
    LDREX(x)
    STREX(x)                    Yes
    -----------------------------------
@@ -145,13 +166,14 @@ AO_INLINE void AO_store(volatile AO_t *addr, AO_t value)
       interrupt latencies. LDREX, STREX are more flexible, other instructions
       can be done between the LDREX and STREX accesses."
 */
-#if !defined(AO_FORCE_USE_SWP) || defined(__thumb2__)
+#ifndef AO_PREFER_GENERALIZED
+#if !defined(AO_FORCE_USE_SWP) || !defined(AO_ARM_HAVE_SWP)
   /* But, on the other hand, there could be a considerable performance  */
   /* degradation in case of a race.  Eg., test_atomic.c executing       */
   /* test_and_set test on a dual-core ARMv7 processor using LDREX/STREX */
   /* showed around 35 times lower performance than that using SWP.      */
   /* To force use of SWP instruction, use -D AO_FORCE_USE_SWP option    */
-  /* (this is ignored in the Thumb-2 mode as SWP is missing there).     */
+  /* (the latter is ignored if SWP instruction is unsupported).         */
   AO_INLINE AO_TS_VAL_t
   AO_test_and_set(volatile AO_TS_t *addr)
   {
@@ -238,15 +260,42 @@ AO_fetch_and_sub1(volatile AO_t *p)
   return result;
 }
 #define AO_HAVE_fetch_and_sub1
+#endif /* !AO_PREFER_GENERALIZED */
 
 /* NEC LE-IT: compare and swap */
-/* Returns nonzero if the comparison succeeded. */
-AO_INLINE int
-AO_compare_and_swap(volatile AO_t *addr, AO_t old_val, AO_t new_val)
-{
-  AO_t result, tmp;
+#ifndef AO_GENERALIZE_ASM_BOOL_CAS
+  /* Returns nonzero if the comparison succeeded.       */
+  AO_INLINE int
+  AO_compare_and_swap(volatile AO_t *addr, AO_t old_val, AO_t new_val)
+  {
+    AO_t result, tmp;
 
-  __asm__ __volatile__("@AO_compare_and_swap\n"
+    __asm__ __volatile__("@AO_compare_and_swap\n"
+      AO_THUMB_GO_ARM
+      "1:     mov     %0, #2\n"         /* store a flag */
+      "       ldrex   %1, [%3]\n"       /* get original */
+      "       teq     %1, %4\n"         /* see if match */
+#     ifdef __thumb2__
+        "       it      eq\n"
+#     endif
+      "       strexeq %0, %5, [%3]\n"   /* store new one if matched */
+      "       teq     %0, #1\n"
+      "       beq     1b\n"             /* if update failed, repeat */
+      AO_THUMB_RESTORE_MODE
+      : "=&r"(result), "=&r"(tmp), "+m"(*addr)
+      : "r"(addr), "r"(old_val), "r"(new_val)
+      : AO_THUMB_SWITCH_CLOBBERS "cc");
+    return !(result&2); /* if succeded, return 1, else 0 */
+  }
+# define AO_HAVE_compare_and_swap
+#endif /* !AO_GENERALIZE_ASM_BOOL_CAS */
+
+AO_INLINE AO_t
+AO_fetch_compare_and_swap(volatile AO_t *addr, AO_t old_val, AO_t new_val)
+{
+  AO_t fetched_val, flag;
+
+  __asm__ __volatile__("@AO_fetch_compare_and_swap\n"
     AO_THUMB_GO_ARM
     "1:     mov     %0, #2\n"           /* store a flag */
     "       ldrex   %1, [%3]\n"         /* get original */
@@ -258,21 +307,14 @@ AO_compare_and_swap(volatile AO_t *addr, AO_t old_val, AO_t new_val)
     "       teq     %0, #1\n"
     "       beq     1b\n"               /* if update failed, repeat */
     AO_THUMB_RESTORE_MODE
-    : "=&r"(result), "=&r"(tmp), "+m"(*addr)
+    : "=&r"(flag), "=&r"(fetched_val), "+m"(*addr)
     : "r"(addr), "r"(old_val), "r"(new_val)
     : AO_THUMB_SWITCH_CLOBBERS "cc");
-  return !(result&2);   /* if succeded, return 1, else 0 */
+  return fetched_val;
 }
-#define AO_HAVE_compare_and_swap
+#define AO_HAVE_fetch_compare_and_swap
 
-#if !defined(__ARM_ARCH_6__) && !defined(__ARM_ARCH_6J__) \
-    && !defined(__ARM_ARCH_6T2__) && !defined(__ARM_ARCH_6Z__) \
-    && !defined(__ARM_ARCH_6ZT2__) && (!defined(__thumb__) \
-              || (defined(__thumb2__) && !defined(__ARM_ARCH_7__) \
-                  && !defined(__ARM_ARCH_7M__) && !defined(__ARM_ARCH_7EM__)))
-  /* LDREXD/STREXD present in ARMv6K/M+ (see gas/config/tc-arm.c)       */
-  /* In the Thumb mode, this works only starting from ARMv7 (except for */
-  /* the base and 'M' models).                                          */
+#ifdef AO_ARM_HAVE_LDREXD
   AO_INLINE int
   AO_compare_double_and_swap_double(volatile AO_double_t *addr,
                                     AO_t old_val1, AO_t old_val2,
@@ -298,11 +340,11 @@ AO_compare_and_swap(volatile AO_t *addr, AO_t old_val, AO_t new_val)
         : "=&r"(result), "+m"(*addr)
         : "r"(new_val), "r"(addr)
         : "cc");
-    } while (result);
+    } while (AO_EXPECT_FALSE(result));
     return !result;   /* if succeded, return 1 else 0 */
   }
 # define AO_HAVE_compare_double_and_swap_double
-#endif
+#endif /* AO_ARM_HAVE_LDREXD */
 
 #else
 /* pre ARMv6 architectures ... */
@@ -321,11 +363,11 @@ AO_compare_and_swap(volatile AO_t *addr, AO_t old_val, AO_t new_val)
 /* cleared the reservation.  They should, but there is some doubt that  */
 /* this is currently always the case, e.g., for Linux.                  */
 
-/* ARMv6M does not support ARM mode.    */
-#endif /* __ARM_ARCH_x */
+#endif /* !AO_ARM_HAVE_LDREX */
 
 #if !defined(AO_HAVE_test_and_set_full) && !defined(AO_HAVE_test_and_set) \
-    && !defined(__ARM_ARCH_2__) && !defined(__ARM_ARCH_6M__)
+    && defined (AO_ARM_HAVE_SWP) && (!defined(AO_PREFER_GENERALIZED) \
+                                || !defined(AO_HAVE_fetch_compare_and_swap))
   AO_INLINE AO_TS_VAL_t
   AO_test_and_set_full(volatile AO_TS_t *addr)
   {
@@ -350,4 +392,4 @@ AO_compare_and_swap(volatile AO_t *addr, AO_t old_val, AO_t new_val)
     return oldval;
   }
 # define AO_HAVE_test_and_set_full
-#endif /* !AO_HAVE_test_and_set[_full] */
+#endif /* !AO_HAVE_test_and_set[_full] && AO_ARM_HAVE_SWP */

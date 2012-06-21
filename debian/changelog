@@ -1,3 +1,11 @@
+libatomic-ops (7.3~alpha1+git20120621-1) unstable; urgency=low
+
+  * Update from upstream git
+  * Closes: 632604 -- Fixed by upstream 30cea1b as identified by Emanuele
+    Aina and Gregor Herrmann <gregoa@debian.org>.  Thanks!
+
+ -- Ian Wienand <ianw@debian.org>  Thu, 21 Jun 2012 09:55:15 -0700
+
 libatomic-ops (7.3~alpha1+git20111031-1) unstable; urgency=low
 
   * Update from upstream git
