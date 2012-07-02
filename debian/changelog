@@ -1,3 +1,10 @@
+libatomic-ops (7.3~alpha1+git20120701-1) unstable; urgency=low
+
+  * Closes: 679680 -- Update from upstream git which contains fix for type
+    issue on ia64 (3e7162d789df366a57d3e4a59dde4046f91ed135)
+
+ -- Ian Wienand <ianw@debian.org>  Sun, 01 Jul 2012 22:20:34 -0700
+
 libatomic-ops (7.3~alpha1+git20120621-1) unstable; urgency=low
 
   * Update from upstream git
