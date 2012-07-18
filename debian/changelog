@@ -1,3 +1,11 @@
+libatomic-ops (7.3~alpha1+git20120718-1) unstable; urgency=low
+
+  * Closes: 655872 -- Update from upstream git which fixes issues with
+    older compilers as used on kfreebsd
+    (613f39d369045e8fc385a439f67a575cddcc6fa1).  Thanks Ivan!
+
+ -- Ian Wienand <ianw@debian.org>  Wed, 18 Jul 2012 07:08:36 -0700
+
 libatomic-ops (7.3~alpha1+git20120701-1) unstable; urgency=low
 
   * Closes: 679680 -- Update from upstream git which contains fix for type
