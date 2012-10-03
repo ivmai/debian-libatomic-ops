@@ -1,3 +1,13 @@
+libatomic-ops (7.2~alpha5+cvs20101124-1+deb7u0) testing-proposed-updates; urgency=low
+
+  * Non-maintainer upload with maintainer's permission.
+  * Fix "FTBFS on i386": apply patch from upstream git repo:
+    https://github.com/ivmai/libatomic_ops/commit/30cea1b#diff-0
+    Thanks to Emanuele Aina for the pointer.
+    (Closes: #632604)
+
+ -- gregor herrmann <gregoa@debian.org>  Wed, 03 Oct 2012 17:35:27 +0200
+
 libatomic-ops (7.2~alpha5+cvs20101124-1) unstable; urgency=low
 
   * Closes: 604753 -- Update from upstream CVS, fixes ARM Thumb-2 mode
