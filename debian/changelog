@@ -1,3 +1,10 @@
+libatomic-ops (7.3~alpha3+git20121114-1) unstable; urgency=low
+
+  * Closes: 680100 -- include workaround for alpha spin-outs; thanks to
+    Ivan Maidanski <ivmai@mail.ru> for diagnosing.
+
+ -- Ian Wienand <ianw@debian.org>  Wed, 14 Nov 2012 15:27:35 -0800
+
 libatomic-ops (7.3~alpha1+git20120718-1) unstable; urgency=low
 
   * Closes: 655872 -- Update from upstream git which fixes issues with

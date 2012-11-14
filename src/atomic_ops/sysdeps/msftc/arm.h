@@ -33,8 +33,6 @@
 #if _M_ARM >= 6
 /* ARMv6 is the first architecture providing support for simple LL/SC.  */
 
-#include "../standard_ao_double_t.h"
-
 /* If only a single processor is used, we can define AO_UNIPROCESSOR    */
 /* and do not need to access CP15 for ensuring a DMB at all.            */
 #ifdef AO_UNIPROCESSOR
@@ -75,7 +73,8 @@ AO_store_full(volatile AO_t *addr, AO_t value)
 }
 #define AO_HAVE_store_full
 
-/* FIXME: implement AO_compare_double_and_swap_double() */
+/* #include "../standard_ao_double_t.h" */
+/* TODO: implement AO_compare_double_and_swap_double (similar to x86).  */
 
 #else /* _M_ARM < 6 */
 
@@ -88,3 +87,5 @@ AO_store_full(volatile AO_t *addr, AO_t value)
 /* AO_test_and_set_full() is emulated using CAS.                        */
 
 #endif /* _M_ARM < 6 */
+
+#define AO_T_IS_INT
