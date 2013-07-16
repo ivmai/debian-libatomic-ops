@@ -25,7 +25,9 @@ void test_atomic(void)
 # if defined(AO_HAVE_test_and_set)
     AO_TS_t z = AO_TS_INITIALIZER;
 # endif
-# if defined(AO_HAVE_double_compare_and_swap)
+# if defined(AO_HAVE_double_compare_and_swap) \
+     || defined(AO_HAVE_double_load) \
+     || defined(AO_HAVE_double_store)
     AO_double_t old_w;
     AO_double_t new_w;
 # endif
@@ -240,6 +242,37 @@ void test_atomic(void)
     MISSING(AO_fetch_compare_and_swap);
     if (x == 25) x = 117;
 # endif
+# if defined(AO_HAVE_double_load)
+    old_w.AO_val1 = 3316;
+    old_w.AO_val2 = 2921;
+    new_w = AO_double_load(&old_w);
+    TA_assert(new_w.AO_val1 == 3316 && new_w.AO_val2 == 2921);
+# elif !defined(AO_HAVE_double_load) \
+       || !defined(AO_HAVE_double_load_acquire) \
+       || !defined(AO_HAVE_double_load_acquire_read) \
+       || !defined(AO_HAVE_double_load_dd_acquire_read) \
+       || !defined(AO_HAVE_double_load_full) \
+       || !defined(AO_HAVE_double_load_read)
+    MISSING(AO_double_load);
+# endif
+# if defined(AO_HAVE_double_store)
+    new_w.AO_val1 = 1375;
+    new_w.AO_val2 = 8243;
+    AO_double_store(&old_w, new_w);
+    TA_assert(old_w.AO_val1 == 1375 && old_w.AO_val2 == 8243);
+    AO_double_store(&old_w, new_w);
+    TA_assert(old_w.AO_val1 == 1375 && old_w.AO_val2 == 8243);
+    new_w.AO_val1 ^= old_w.AO_val1;
+    new_w.AO_val2 ^= old_w.AO_val2;
+    AO_double_store(&old_w, new_w);
+    TA_assert(old_w.AO_val1 == 0 && old_w.AO_val2 == 0);
+# elif !defined(AO_HAVE_double_store) \
+       || !defined(AO_HAVE_double_store_full) \
+       || !defined(AO_HAVE_double_store_release) \
+       || !defined(AO_HAVE_double_store_release_write) \
+       || !defined(AO_HAVE_double_store_write)
+    MISSING(AO_double_store);
+# endif
 # if defined(AO_HAVE_compare_double_and_swap_double)
     TA_assert(!AO_compare_double_and_swap_double(&w, 17, 42, 12, 13));
     TA_assert(w.AO_val1 == 0 && w.AO_val2 == 0);
@@ -343,7 +376,9 @@ void test_atomic_release(void)
 # if defined(AO_HAVE_test_and_set_release)
     AO_TS_t z = AO_TS_INITIALIZER;
 # endif
-# if defined(AO_HAVE_double_compare_and_swap_release)
+# if defined(AO_HAVE_double_compare_and_swap_release) \
+     || defined(AO_HAVE_double_load_release) \
+     || defined(AO_HAVE_double_store_release)
     AO_double_t old_w;
     AO_double_t new_w;
 # endif
@@ -558,6 +593,37 @@ void test_atomic_release(void)
     MISSING(AO_fetch_compare_and_swap);
     if (x == 25) x = 117;
 # endif
+# if defined(AO_HAVE_double_load_release)
+    old_w.AO_val1 = 3316;
+    old_w.AO_val2 = 2921;
+    new_w = AO_double_load_release(&old_w);
+    TA_assert(new_w.AO_val1 == 3316 && new_w.AO_val2 == 2921);
+# elif !defined(AO_HAVE_double_load) \
+       || !defined(AO_HAVE_double_load_acquire) \
+       || !defined(AO_HAVE_double_load_acquire_read) \
+       || !defined(AO_HAVE_double_load_dd_acquire_read) \
+       || !defined(AO_HAVE_double_load_full) \
+       || !defined(AO_HAVE_double_load_read)
+    MISSING(AO_double_load);
+# endif
+# if defined(AO_HAVE_double_store_release)
+    new_w.AO_val1 = 1375;
+    new_w.AO_val2 = 8243;
+    AO_double_store_release(&old_w, new_w);
+    TA_assert(old_w.AO_val1 == 1375 && old_w.AO_val2 == 8243);
+    AO_double_store_release(&old_w, new_w);
+    TA_assert(old_w.AO_val1 == 1375 && old_w.AO_val2 == 8243);
+    new_w.AO_val1 ^= old_w.AO_val1;
+    new_w.AO_val2 ^= old_w.AO_val2;
+    AO_double_store_release(&old_w, new_w);
+    TA_assert(old_w.AO_val1 == 0 && old_w.AO_val2 == 0);
+# elif !defined(AO_HAVE_double_store) \
+       || !defined(AO_HAVE_double_store_full) \
+       || !defined(AO_HAVE_double_store_release) \
+       || !defined(AO_HAVE_double_store_release_write) \
+       || !defined(AO_HAVE_double_store_write)
+    MISSING(AO_double_store);
+# endif
 # if defined(AO_HAVE_compare_double_and_swap_double_release)
     TA_assert(!AO_compare_double_and_swap_double_release(&w, 17, 42, 12, 13));
     TA_assert(w.AO_val1 == 0 && w.AO_val2 == 0);
@@ -661,7 +727,9 @@ void test_atomic_acquire(void)
 # if defined(AO_HAVE_test_and_set_acquire)
     AO_TS_t z = AO_TS_INITIALIZER;
 # endif
-# if defined(AO_HAVE_double_compare_and_swap_acquire)
+# if defined(AO_HAVE_double_compare_and_swap_acquire) \
+     || defined(AO_HAVE_double_load_acquire) \
+     || defined(AO_HAVE_double_store_acquire)
     AO_double_t old_w;
     AO_double_t new_w;
 # endif
@@ -876,6 +944,37 @@ void test_atomic_acquire(void)
     MISSING(AO_fetch_compare_and_swap);
     if (x == 25) x = 117;
 # endif
+# if defined(AO_HAVE_double_load_acquire)
+    old_w.AO_val1 = 3316;
+    old_w.AO_val2 = 2921;
+    new_w = AO_double_load_acquire(&old_w);
+    TA_assert(new_w.AO_val1 == 3316 && new_w.AO_val2 == 2921);
+# elif !defined(AO_HAVE_double_load) \
+       || !defined(AO_HAVE_double_load_acquire) \
+       || !defined(AO_HAVE_double_load_acquire_read) \
+       || !defined(AO_HAVE_double_load_dd_acquire_read) \
+       || !defined(AO_HAVE_double_load_full) \
+       || !defined(AO_HAVE_double_load_read)
+    MISSING(AO_double_load);
+# endif
+# if defined(AO_HAVE_double_store_acquire)
+    new_w.AO_val1 = 1375;
+    new_w.AO_val2 = 8243;
+    AO_double_store_acquire(&old_w, new_w);
+    TA_assert(old_w.AO_val1 == 1375 && old_w.AO_val2 == 8243);
+    AO_double_store_acquire(&old_w, new_w);
+    TA_assert(old_w.AO_val1 == 1375 && old_w.AO_val2 == 8243);
+    new_w.AO_val1 ^= old_w.AO_val1;
+    new_w.AO_val2 ^= old_w.AO_val2;
+    AO_double_store_acquire(&old_w, new_w);
+    TA_assert(old_w.AO_val1 == 0 && old_w.AO_val2 == 0);
+# elif !defined(AO_HAVE_double_store) \
+       || !defined(AO_HAVE_double_store_full) \
+       || !defined(AO_HAVE_double_store_release) \
+       || !defined(AO_HAVE_double_store_release_write) \
+       || !defined(AO_HAVE_double_store_write)
+    MISSING(AO_double_store);
+# endif
 # if defined(AO_HAVE_compare_double_and_swap_double_acquire)
     TA_assert(!AO_compare_double_and_swap_double_acquire(&w, 17, 42, 12, 13));
     TA_assert(w.AO_val1 == 0 && w.AO_val2 == 0);
@@ -979,7 +1078,9 @@ void test_atomic_read(void)
 # if defined(AO_HAVE_test_and_set_read)
     AO_TS_t z = AO_TS_INITIALIZER;
 # endif
-# if defined(AO_HAVE_double_compare_and_swap_read)
+# if defined(AO_HAVE_double_compare_and_swap_read) \
+     || defined(AO_HAVE_double_load_read) \
+     || defined(AO_HAVE_double_store_read)
     AO_double_t old_w;
     AO_double_t new_w;
 # endif
@@ -1194,6 +1295,37 @@ void test_atomic_read(void)
     MISSING(AO_fetch_compare_and_swap);
     if (x == 25) x = 117;
 # endif
+# if defined(AO_HAVE_double_load_read)
+    old_w.AO_val1 = 3316;
+    old_w.AO_val2 = 2921;
+    new_w = AO_double_load_read(&old_w);
+    TA_assert(new_w.AO_val1 == 3316 && new_w.AO_val2 == 2921);
+# elif !defined(AO_HAVE_double_load) \
+       || !defined(AO_HAVE_double_load_acquire) \
+       || !defined(AO_HAVE_double_load_acquire_read) \
+       || !defined(AO_HAVE_double_load_dd_acquire_read) \
+       || !defined(AO_HAVE_double_load_full) \
+       || !defined(AO_HAVE_double_load_read)
+    MISSING(AO_double_load);
+# endif
+# if defined(AO_HAVE_double_store_read)
+    new_w.AO_val1 = 1375;
+    new_w.AO_val2 = 8243;
+    AO_double_store_read(&old_w, new_w);
+    TA_assert(old_w.AO_val1 == 1375 && old_w.AO_val2 == 8243);
+    AO_double_store_read(&old_w, new_w);
+    TA_assert(old_w.AO_val1 == 1375 && old_w.AO_val2 == 8243);
+    new_w.AO_val1 ^= old_w.AO_val1;
+    new_w.AO_val2 ^= old_w.AO_val2;
+    AO_double_store_read(&old_w, new_w);
+    TA_assert(old_w.AO_val1 == 0 && old_w.AO_val2 == 0);
+# elif !defined(AO_HAVE_double_store) \
+       || !defined(AO_HAVE_double_store_full) \
+       || !defined(AO_HAVE_double_store_release) \
+       || !defined(AO_HAVE_double_store_release_write) \
+       || !defined(AO_HAVE_double_store_write)
+    MISSING(AO_double_store);
+# endif
 # if defined(AO_HAVE_compare_double_and_swap_double_read)
     TA_assert(!AO_compare_double_and_swap_double_read(&w, 17, 42, 12, 13));
     TA_assert(w.AO_val1 == 0 && w.AO_val2 == 0);
@@ -1297,7 +1429,9 @@ void test_atomic_write(void)
 # if defined(AO_HAVE_test_and_set_write)
     AO_TS_t z = AO_TS_INITIALIZER;
 # endif
-# if defined(AO_HAVE_double_compare_and_swap_write)
+# if defined(AO_HAVE_double_compare_and_swap_write) \
+     || defined(AO_HAVE_double_load_write) \
+     || defined(AO_HAVE_double_store_write)
     AO_double_t old_w;
     AO_double_t new_w;
 # endif
@@ -1512,6 +1646,37 @@ void test_atomic_write(void)
     MISSING(AO_fetch_compare_and_swap);
     if (x == 25) x = 117;
 # endif
+# if defined(AO_HAVE_double_load_write)
+    old_w.AO_val1 = 3316;
+    old_w.AO_val2 = 2921;
+    new_w = AO_double_load_write(&old_w);
+    TA_assert(new_w.AO_val1 == 3316 && new_w.AO_val2 == 2921);
+# elif !defined(AO_HAVE_double_load) \
+       || !defined(AO_HAVE_double_load_acquire) \
+       || !defined(AO_HAVE_double_load_acquire_read) \
+       || !defined(AO_HAVE_double_load_dd_acquire_read) \
+       || !defined(AO_HAVE_double_load_full) \
+       || !defined(AO_HAVE_double_load_read)
+    MISSING(AO_double_load);
+# endif
+# if defined(AO_HAVE_double_store_write)
+    new_w.AO_val1 = 1375;
+    new_w.AO_val2 = 8243;
+    AO_double_store_write(&old_w, new_w);
+    TA_assert(old_w.AO_val1 == 1375 && old_w.AO_val2 == 8243);
+    AO_double_store_write(&old_w, new_w);
+    TA_assert(old_w.AO_val1 == 1375 && old_w.AO_val2 == 8243);
+    new_w.AO_val1 ^= old_w.AO_val1;
+    new_w.AO_val2 ^= old_w.AO_val2;
+    AO_double_store_write(&old_w, new_w);
+    TA_assert(old_w.AO_val1 == 0 && old_w.AO_val2 == 0);
+# elif !defined(AO_HAVE_double_store) \
+       || !defined(AO_HAVE_double_store_full) \
+       || !defined(AO_HAVE_double_store_release) \
+       || !defined(AO_HAVE_double_store_release_write) \
+       || !defined(AO_HAVE_double_store_write)
+    MISSING(AO_double_store);
+# endif
 # if defined(AO_HAVE_compare_double_and_swap_double_write)
     TA_assert(!AO_compare_double_and_swap_double_write(&w, 17, 42, 12, 13));
     TA_assert(w.AO_val1 == 0 && w.AO_val2 == 0);
@@ -1615,7 +1780,9 @@ void test_atomic_full(void)
 # if defined(AO_HAVE_test_and_set_full)
     AO_TS_t z = AO_TS_INITIALIZER;
 # endif
-# if defined(AO_HAVE_double_compare_and_swap_full)
+# if defined(AO_HAVE_double_compare_and_swap_full) \
+     || defined(AO_HAVE_double_load_full) \
+     || defined(AO_HAVE_double_store_full)
     AO_double_t old_w;
     AO_double_t new_w;
 # endif
@@ -1830,6 +1997,37 @@ void test_atomic_full(void)
     MISSING(AO_fetch_compare_and_swap);
     if (x == 25) x = 117;
 # endif
+# if defined(AO_HAVE_double_load_full)
+    old_w.AO_val1 = 3316;
+    old_w.AO_val2 = 2921;
+    new_w = AO_double_load_full(&old_w);
+    TA_assert(new_w.AO_val1 == 3316 && new_w.AO_val2 == 2921);
+# elif !defined(AO_HAVE_double_load) \
+       || !defined(AO_HAVE_double_load_acquire) \
+       || !defined(AO_HAVE_double_load_acquire_read) \
+       || !defined(AO_HAVE_double_load_dd_acquire_read) \
+       || !defined(AO_HAVE_double_load_full) \
+       || !defined(AO_HAVE_double_load_read)
+    MISSING(AO_double_load);
+# endif
+# if defined(AO_HAVE_double_store_full)
+    new_w.AO_val1 = 1375;
+    new_w.AO_val2 = 8243;
+    AO_double_store_full(&old_w, new_w);
+    TA_assert(old_w.AO_val1 == 1375 && old_w.AO_val2 == 8243);
+    AO_double_store_full(&old_w, new_w);
+    TA_assert(old_w.AO_val1 == 1375 && old_w.AO_val2 == 8243);
+    new_w.AO_val1 ^= old_w.AO_val1;
+    new_w.AO_val2 ^= old_w.AO_val2;
+    AO_double_store_full(&old_w, new_w);
+    TA_assert(old_w.AO_val1 == 0 && old_w.AO_val2 == 0);
+# elif !defined(AO_HAVE_double_store) \
+       || !defined(AO_HAVE_double_store_full) \
+       || !defined(AO_HAVE_double_store_release) \
+       || !defined(AO_HAVE_double_store_release_write) \
+       || !defined(AO_HAVE_double_store_write)
+    MISSING(AO_double_store);
+# endif
 # if defined(AO_HAVE_compare_double_and_swap_double_full)
     TA_assert(!AO_compare_double_and_swap_double_full(&w, 17, 42, 12, 13));
     TA_assert(w.AO_val1 == 0 && w.AO_val2 == 0);
@@ -1933,7 +2131,9 @@ void test_atomic_release_write(void)
 # if defined(AO_HAVE_test_and_set_release_write)
     AO_TS_t z = AO_TS_INITIALIZER;
 # endif
-# if defined(AO_HAVE_double_compare_and_swap_release_write)
+# if defined(AO_HAVE_double_compare_and_swap_release_write) \
+     || defined(AO_HAVE_double_load_release_write) \
+     || defined(AO_HAVE_double_store_release_write)
     AO_double_t old_w;
     AO_double_t new_w;
 # endif
@@ -2148,6 +2348,37 @@ void test_atomic_release_write(void)
     MISSING(AO_fetch_compare_and_swap);
     if (x == 25) x = 117;
 # endif
+# if defined(AO_HAVE_double_load_release_write)
+    old_w.AO_val1 = 3316;
+    old_w.AO_val2 = 2921;
+    new_w = AO_double_load_release_write(&old_w);
+    TA_assert(new_w.AO_val1 == 3316 && new_w.AO_val2 == 2921);
+# elif !defined(AO_HAVE_double_load) \
+       || !defined(AO_HAVE_double_load_acquire) \
+       || !defined(AO_HAVE_double_load_acquire_read) \
+       || !defined(AO_HAVE_double_load_dd_acquire_read) \
+       || !defined(AO_HAVE_double_load_full) \
+       || !defined(AO_HAVE_double_load_read)
+    MISSING(AO_double_load);
+# endif
+# if defined(AO_HAVE_double_store_release_write)
+    new_w.AO_val1 = 1375;
+    new_w.AO_val2 = 8243;
+    AO_double_store_release_write(&old_w, new_w);
+    TA_assert(old_w.AO_val1 == 1375 && old_w.AO_val2 == 8243);
+    AO_double_store_release_write(&old_w, new_w);
+    TA_assert(old_w.AO_val1 == 1375 && old_w.AO_val2 == 8243);
+    new_w.AO_val1 ^= old_w.AO_val1;
+    new_w.AO_val2 ^= old_w.AO_val2;
+    AO_double_store_release_write(&old_w, new_w);
+    TA_assert(old_w.AO_val1 == 0 && old_w.AO_val2 == 0);
+# elif !defined(AO_HAVE_double_store) \
+       || !defined(AO_HAVE_double_store_full) \
+       || !defined(AO_HAVE_double_store_release) \
+       || !defined(AO_HAVE_double_store_release_write) \
+       || !defined(AO_HAVE_double_store_write)
+    MISSING(AO_double_store);
+# endif
 # if defined(AO_HAVE_compare_double_and_swap_double_release_write)
     TA_assert(!AO_compare_double_and_swap_double_release_write(&w, 17, 42, 12, 13));
     TA_assert(w.AO_val1 == 0 && w.AO_val2 == 0);
@@ -2251,7 +2482,9 @@ void test_atomic_acquire_read(void)
 # if defined(AO_HAVE_test_and_set_acquire_read)
     AO_TS_t z = AO_TS_INITIALIZER;
 # endif
-# if defined(AO_HAVE_double_compare_and_swap_acquire_read)
+# if defined(AO_HAVE_double_compare_and_swap_acquire_read) \
+     || defined(AO_HAVE_double_load_acquire_read) \
+     || defined(AO_HAVE_double_store_acquire_read)
     AO_double_t old_w;
     AO_double_t new_w;
 # endif
@@ -2465,6 +2698,37 @@ void test_atomic_acquire_read(void)
 # else
     MISSING(AO_fetch_compare_and_swap);
     if (x == 25) x = 117;
+# endif
+# if defined(AO_HAVE_double_load_acquire_read)
+    old_w.AO_val1 = 3316;
+    old_w.AO_val2 = 2921;
+    new_w = AO_double_load_acquire_read(&old_w);
+    TA_assert(new_w.AO_val1 == 3316 && new_w.AO_val2 == 2921);
+# elif !defined(AO_HAVE_double_load) \
+       || !defined(AO_HAVE_double_load_acquire) \
+       || !defined(AO_HAVE_double_load_acquire_read) \
+       || !defined(AO_HAVE_double_load_dd_acquire_read) \
+       || !defined(AO_HAVE_double_load_full) \
+       || !defined(AO_HAVE_double_load_read)
+    MISSING(AO_double_load);
+# endif
+# if defined(AO_HAVE_double_store_acquire_read)
+    new_w.AO_val1 = 1375;
+    new_w.AO_val2 = 8243;
+    AO_double_store_acquire_read(&old_w, new_w);
+    TA_assert(old_w.AO_val1 == 1375 && old_w.AO_val2 == 8243);
+    AO_double_store_acquire_read(&old_w, new_w);
+    TA_assert(old_w.AO_val1 == 1375 && old_w.AO_val2 == 8243);
+    new_w.AO_val1 ^= old_w.AO_val1;
+    new_w.AO_val2 ^= old_w.AO_val2;
+    AO_double_store_acquire_read(&old_w, new_w);
+    TA_assert(old_w.AO_val1 == 0 && old_w.AO_val2 == 0);
+# elif !defined(AO_HAVE_double_store) \
+       || !defined(AO_HAVE_double_store_full) \
+       || !defined(AO_HAVE_double_store_release) \
+       || !defined(AO_HAVE_double_store_release_write) \
+       || !defined(AO_HAVE_double_store_write)
+    MISSING(AO_double_store);
 # endif
 # if defined(AO_HAVE_compare_double_and_swap_double_acquire_read)
     TA_assert(!AO_compare_double_and_swap_double_acquire_read(&w, 17, 42, 12, 13));

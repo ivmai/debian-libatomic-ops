@@ -1,3 +1,10 @@
+libatomic-ops (7.3~alpha3+git20130717-1) unstable; urgency=low
+
+  * Closes: 717095 -- update to current upstream for arm64
+  * Update standards version (no change)
+
+ -- Ian Wienand <ianw@debian.org>  Wed, 17 Jul 2013 09:06:32 +1000
+
 libatomic-ops (7.3~alpha3+git20121114-1) unstable; urgency=low
 
   * Closes: 680100 -- include workaround for alpha spin-outs; thanks to

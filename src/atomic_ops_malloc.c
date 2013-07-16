@@ -27,6 +27,10 @@
 # include <pthread.h>
 #endif
 
+#if (defined(_WIN32_WCE) || defined(__MINGW32CE__)) && !defined(abort)
+# define abort() _exit(-1) /* there is no abort() in WinCE */
+#endif
+
 /*
  * We round up each allocation request to the next power of two
  * minus one word.
@@ -73,7 +77,7 @@ static volatile AO_t initial_heap_ptr = (AO_t)AO_initial_heap;
 #endif
 
 #ifdef USE_MMAP_FIXED
-# define GC_MMAP_FLAGS MAP_FIXED | MAP_PRIVATE
+# define GC_MMAP_FLAGS (MAP_FIXED | MAP_PRIVATE)
         /* Seems to yield better performance on Solaris 2, but can      */
         /* be unreliable if something is already mapped at the address. */
 #else

@@ -7,7 +7,7 @@ Build-Depends: cdbs,
  autotools-dev,
  debhelper,
  dh-buildinfo
-Standards-Version: 3.9.1
+Standards-Version: 3.9.4
 
 Package: libatomic-ops-dev
 Section: libdevel

@@ -20,6 +20,9 @@
 /* Force compare_and_swap definition via fetch_compare_and_swap */
 #undef AO_GENERALIZE_ASM_BOOL_CAS
 
+/* No pthreads library available */
+#undef AO_NO_PTHREADS
+
 /* Assume target is not sparc v9+ (only sparc) */
 #undef AO_NO_SPARC_V9
 
