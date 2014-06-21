@@ -1,3 +1,10 @@
+libatomic-ops (7.4.2-1) unstable; urgency=medium
+
+  * New upstream release
+  * Update standards version 3.9.5 (no change)
+
+ -- Ian Wienand <ianw@debian.org>  Sat, 21 Jun 2014 11:21:55 +1000
+
 libatomic-ops (7.3~alpha3+git20130717-1) unstable; urgency=low
 
   * Closes: 717095 -- update to current upstream for arm64

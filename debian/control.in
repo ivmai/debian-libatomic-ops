@@ -4,7 +4,7 @@ Section: libdevel
 Maintainer: Ian Wienand <ianw@debian.org>
 Uploaders: Al Stone <ahs3@debian.org>
 Build-Depends: @cdbs@
-Standards-Version: 3.9.4
+Standards-Version: 3.9.5
 
 Package: libatomic-ops-dev
 Section: libdevel

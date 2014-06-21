@@ -47,7 +47,8 @@
     && ((!defined(__ARM_ARCH_5__) && !defined(__ARM_ARCH_5E__) \
          && !defined(__ARM_ARCH_5T__) && !defined(__ARM_ARCH_5TE__) \
          && !defined(__ARM_ARCH_5TEJ__) && !defined(__ARM_ARCH_6M__)) \
-        || defined(__ARM_ARCH_7__) || defined(__ARM_ARCH_7A__))
+        || defined(__ARM_ARCH_7__) || defined(__ARM_ARCH_7A__) \
+        || defined(__ARM_ARCH_8A__))
 # define AO_ARM_HAVE_LDREX
 # if !defined(__ARM_ARCH_6__) && !defined(__ARM_ARCH_6J__) \
      && !defined(__ARM_ARCH_6T2__)
@@ -61,21 +62,26 @@
       /* DMB is present in ARMv6M and ARMv7+.   */
 #     define AO_ARM_HAVE_DMB
 #   endif
-#   if !defined(__thumb__) \
-       || (defined(__thumb2__) && !defined(__ARM_ARCH_7__) \
-           && !defined(__ARM_ARCH_7M__) && !defined(__ARM_ARCH_7EM__))
+#   if (!defined(__thumb__) \
+        || (defined(__thumb2__) && !defined(__ARM_ARCH_7__) \
+            && !defined(__ARM_ARCH_7M__) && !defined(__ARM_ARCH_7EM__))) \
+       && (!defined(__clang__) || (__clang_major__ > 3) \
+            || (__clang_major__ == 3 && __clang_minor__ >= 3))
       /* LDREXD/STREXD present in ARMv6K/M+ (see gas/config/tc-arm.c).  */
       /* In the Thumb mode, this works only starting from ARMv7 (except */
-      /* for the base and 'M' models).                                  */
+      /* for the base and 'M' models).  Clang3.2 (and earlier) does not */
+      /* allocate register pairs for LDREXD/STREXD properly (besides,   */
+      /* Clang3.1 does not support "%H<r>" operand specification).      */
 #     define AO_ARM_HAVE_LDREXD
 #   endif /* !thumb || ARMv7A || ARMv7R+ */
 # endif /* ARMv7+ */
 #endif /* ARMv6+ */
 
 #if !defined(__ARM_ARCH_2__) && !defined(__ARM_ARCH_6M__) \
-    && !defined(__thumb2__)
+    && !defined(__ARM_ARCH_8A__) && !defined(__thumb2__)
 # define AO_ARM_HAVE_SWP
                 /* Note: ARMv6M is excluded due to no ARM mode support. */
+                /* Also, SWP is obsoleted for ARMv8+.                   */
 #endif /* !__thumb2__ */
 
 #ifdef AO_UNIPROCESSOR
@@ -387,7 +393,7 @@ AO_xor(volatile AO_t *p, AO_t value)
   AO_INLINE unsigned char
   AO_char_fetch_and_add(volatile unsigned char *p, unsigned char incr)
   {
-    unsigned char result, tmp;
+    unsigned result, tmp;
     int flag;
 
     __asm__ __volatile__("@AO_char_fetch_and_add\n"
@@ -399,16 +405,16 @@ AO_xor(volatile AO_t *p, AO_t value)
       "       bne     1b\n"
       AO_THUMB_RESTORE_MODE
       : "=&r" (result), "=&r" (flag), "=&r" (tmp), "+m" (*p)
-      : "r" (incr), "r" (p)
+      : "r" ((unsigned)incr), "r" (p)
       : AO_THUMB_SWITCH_CLOBBERS "cc");
-    return result;
+    return (unsigned char)result;
   }
 # define AO_HAVE_char_fetch_and_add
 
   AO_INLINE unsigned short
   AO_short_fetch_and_add(volatile unsigned short *p, unsigned short incr)
   {
-    unsigned short result, tmp;
+    unsigned result, tmp;
     int flag;
 
     __asm__ __volatile__("@AO_short_fetch_and_add\n"
@@ -420,9 +426,9 @@ AO_xor(volatile AO_t *p, AO_t value)
       "       bne     1b\n"
       AO_THUMB_RESTORE_MODE
       : "=&r" (result), "=&r" (flag), "=&r" (tmp), "+m" (*p)
-      : "r" (incr), "r" (p)
+      : "r" ((unsigned)incr), "r" (p)
       : AO_THUMB_SWITCH_CLOBBERS "cc");
-    return result;
+    return (unsigned short)result;
   }
 # define AO_HAVE_short_fetch_and_add
 #endif /* AO_ARM_HAVE_LDREXBH */
@@ -440,6 +446,8 @@ AO_xor(volatile AO_t *p, AO_t value)
       "       ldrex   %1, [%3]\n"       /* get original */
       "       teq     %1, %4\n"         /* see if match */
 #     ifdef __thumb2__
+        /* TODO: Eliminate warning: it blocks containing wide Thumb */
+        /* instructions are deprecated in ARMv8.                    */
         "       it      eq\n"
 #     endif
       "       strexeq %0, %5, [%3]\n"   /* store new one if matched */
@@ -495,7 +503,7 @@ AO_fetch_compare_and_swap(volatile AO_t *addr, AO_t old_val, AO_t new_val)
 
     /* AO_THUMB_GO_ARM is empty. */
     __asm__ __volatile__("@AO_double_load\n"
-      "       ldrexd  %0, [%1]"
+      "       ldrexd  %0, %H0, [%1]"
       : "=&r" (result.AO_whole)
       : "r" (addr)
       /* : no clobber */);
@@ -512,8 +520,8 @@ AO_fetch_compare_and_swap(volatile AO_t *addr, AO_t old_val, AO_t new_val)
     do {
       /* AO_THUMB_GO_ARM is empty. */
       __asm__ __volatile__("@AO_double_store\n"
-        "       ldrexd  %0, [%3]\n"
-        "       strexd  %1, %4, [%3]"
+        "       ldrexd  %0, %H0, [%3]\n"
+        "       strexd  %1, %4, %H4, [%3]"
         : "=&r" (old_val.AO_whole), "=&r" (status), "+m" (*addr)
         : "r" (addr), "r" (new_val.AO_whole)
         : "cc");
@@ -531,16 +539,16 @@ AO_fetch_compare_and_swap(volatile AO_t *addr, AO_t old_val, AO_t new_val)
     do {
       /* AO_THUMB_GO_ARM is empty. */
       __asm__ __volatile__("@AO_double_compare_and_swap\n"
-        "       ldrexd  %0, [%1]\n"     /* get original to r1 & r2 */
+        "       ldrexd  %0, %H0, [%1]\n" /* get original to r1 & r2 */
         : "=&r"(tmp)
         : "r"(addr)
         /* : no clobber */);
       if (tmp != old_val.AO_whole)
         break;
       __asm__ __volatile__(
-        "       strexd  %0, %2, [%3]\n" /* store new one if matched */
+        "       strexd  %0, %3, %H3, [%2]\n" /* store new one if matched */
         : "=&r"(result), "+m"(*addr)
-        : "r"(new_val.AO_whole), "r"(addr)
+        : "r" (addr), "r" (new_val.AO_whole)
         : "cc");
     } while (AO_EXPECT_FALSE(result));
     return !result;   /* if succeded, return 1 else 0 */
