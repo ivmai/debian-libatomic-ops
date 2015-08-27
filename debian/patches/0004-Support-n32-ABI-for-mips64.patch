@@ -1,0 +1,32 @@
+From 2c5f848c87f06fb645c427cd00090b3a383ee38a Mon Sep 17 00:00:00 2001
+From: Frank Schaefer <kelledin@gmail.com>
+Date: Sat, 9 May 2015 05:26:43 +0000
+Subject: [PATCH 4/5] Support n32 ABI for mips64
+
+Without the proposed change, the existing preprocessor checks for
+mips64 support do not account for the n32 ABI (when building with
+"gcc -mabi=n32", test_atomic and test_stack both fail, and
+test_malloc appears to hang indefinitely while spinning at 100%).
+
+* src/atomic_ops/sysdeps/gcc/mips.h (AO_MIPS_SET_ISA, AO_MIPS_LL_1,
+AO_MIPS_SC): Define depending on _MIPS_SIM value.
+---
+ src/atomic_ops/sysdeps/gcc/mips.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/atomic_ops/sysdeps/gcc/mips.h b/src/atomic_ops/sysdeps/gcc/mips.h
+index 1ad47f2..73ca551 100644
+--- a/src/atomic_ops/sysdeps/gcc/mips.h
++++ b/src/atomic_ops/sysdeps/gcc/mips.h
+@@ -24,7 +24,7 @@
+ /* Data dependence does not imply read ordering.  */
+ #define AO_NO_DD_ORDERING
+ 
+-#ifdef __mips64
++#if defined(_ABI64) && (_MIPS_SIM == _ABI64)
+ # define AO_MIPS_SET_ISA    "       .set mips3\n"
+ # define AO_MIPS_LL_1(args) "       lld " args "\n"
+ # define AO_MIPS_SC(args)   "       scd " args "\n"
+-- 
+2.5.0
+

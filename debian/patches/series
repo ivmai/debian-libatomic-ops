@@ -1,0 +1,5 @@
+0001-Use-LLD-and-SCD-instructions-on-mips64.patch
+0002-Remove-inclusion-of-acquire_release_volatile.h-on-mi.patch
+0003-Minor-fix-of-code-alignment-in-mips-AO_compare_and_s.patch
+0004-Support-n32-ABI-for-mips64.patch
+0005-Fix-GCC-5.x-compatibility-for-AArch64-double-wide-pr.patch

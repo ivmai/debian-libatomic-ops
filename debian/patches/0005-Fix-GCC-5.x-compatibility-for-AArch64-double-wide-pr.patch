@@ -1,0 +1,42 @@
+From a7ddab076bfc4b967693f15c3367f53d62aace9e Mon Sep 17 00:00:00 2001
+From: Frank Schaefer <frank.schaefer@tekcomms.com>
+Date: Tue, 9 Jun 2015 17:10:00 -0500
+Subject: [PATCH 5/5] Fix GCC 5.x compatibility for AArch64 double-wide
+ primitives
+
+Small change to make aarch64 support work with gcc 5.x. Otherwise it
+demands gcc -latomic and still fails test_stack.
+
+* src/atomic_ops/sysdeps/gcc/aarch64.h (AO_double_load,
+AO_double_load_acquire, AO_double_store, AO_double_store_release,
+AO_double_compare_and_swap, AO_double_compare_and_swap_acquire,
+AO_double_compare_and_swap_release, AO_double_compare_and_swap_full):
+Use assembly implementation even for GCC v5+ (not just GCC 4.x).
+---
+ src/atomic_ops/sysdeps/gcc/aarch64.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/atomic_ops/sysdeps/gcc/aarch64.h b/src/atomic_ops/sysdeps/gcc/aarch64.h
+index f969f13..b7f2ef0 100644
+--- a/src/atomic_ops/sysdeps/gcc/aarch64.h
++++ b/src/atomic_ops/sysdeps/gcc/aarch64.h
+@@ -30,7 +30,7 @@
+ #endif
+ 
+ /* TODO: Adjust version check on fixing double-wide AO support in GCC. */
+-#if __GNUC__ == 4
++#if __GNUC__ >= 4
+ 
+   AO_INLINE AO_double_t
+   AO_double_load(const volatile AO_double_t *addr)
+@@ -195,6 +195,6 @@
+     return !result;
+   }
+ # define AO_HAVE_double_compare_and_swap_full
+-#endif /* __GNUC__ == 4 */
++#endif /* __GNUC__ >= 4 */
+ 
+ #include "generic.h"
+-- 
+2.5.0
+
