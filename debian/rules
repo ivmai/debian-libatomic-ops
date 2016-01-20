@@ -2,9 +2,13 @@
 
 include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/class/autotools.mk
+include /usr/share/dpkg/architecture.mk
 
 #run tests
 DEB_MAKE_CHECK_TARGET := check
 
 # use .install to pick out relevant stuff
 DEB_DESTDIR = $(CURDIR)/debian/tmp
+
+# multiarch
+DEB_CONFIGURE_EXTRA_FLAGS += --libdir=\$${prefix}/lib/$(DEB_HOST_MULTIARCH)

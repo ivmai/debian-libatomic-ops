@@ -1,14 +1,9 @@
-libatomic-ops (7.4.2-1.1) unstable; urgency=medium
+libatomic-ops (7.4.2-2) unstable; urgency=medium
 
-  * Non-maintainer upload.
-  * Backport patches for mips64(el) and arm64. (Closes: #773205)
-   0001-Use-LLD-and-SCD-instructions-on-mips64.patch
-   0002-Remove-inclusion-of-acquire_release_volatile.h-on-mi.patch
-   0003-Minor-fix-of-code-alignment-in-mips-AO_compare_and_s.patch
-   0004-Support-n32-ABI-for-mips64.patch
-   0005-Fix-GCC-5.x-compatibility-for-AArch64-double-wide-pr.patch
+  * Closes: 811550 -- implement multi-arch
+  * Update standards version 3.9.6 (no change)
 
- -- YunQiang Su <syq@debian.org>  Fri, 28 Aug 2015 04:48:14 +0800
+ -- Ian Wienand <ianw@debian.org>  Wed, 20 Jan 2016 11:14:12 +1100
 
 libatomic-ops (7.4.2-1) unstable; urgency=medium
 
