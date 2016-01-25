@@ -3,10 +3,12 @@ Priority: optional
 Section: libdevel
 Maintainer: Ian Wienand <ianw@debian.org>
 Uploaders: Al Stone <ahs3@debian.org>
-Build-Depends: cdbs,
+Build-Depends: cdbs (>= 0.4.27),
  autotools-dev,
  debhelper,
- dh-buildinfo
+ dh-buildinfo,
+ quilt,
+ patchutils (>= 0.2.25), quilt
 Standards-Version: 3.9.6
 
 Package: libatomic-ops-dev

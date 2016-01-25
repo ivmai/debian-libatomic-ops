@@ -1,3 +1,9 @@
+libatomic-ops (7.4.2-3) unstable; urgency=medium
+
+  * Restore backported patches from 7.4.2-1.1 for mips64/arm64
+
+ -- Ian Wienand <ianw@debian.org>  Mon, 25 Jan 2016 21:22:14 +1100
+
 libatomic-ops (7.4.2-2) unstable; urgency=medium
 
   * Closes: 811550 -- implement multi-arch
