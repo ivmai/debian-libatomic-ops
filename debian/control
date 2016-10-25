@@ -8,8 +8,9 @@ Build-Depends: cdbs (>= 0.4.27),
  debhelper,
  dh-buildinfo,
  quilt,
- patchutils (>= 0.2.25), quilt
-Standards-Version: 3.9.6
+ patchutils (>= 0.2.25),
+ dh-autoreconf, quilt
+Standards-Version: 3.9.8
 
 Package: libatomic-ops-dev
 Section: libdevel
