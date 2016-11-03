@@ -1,3 +1,13 @@
+libatomic-ops (7.4.4-2) unstable; urgency=medium
+
+  * Restore missing MIPS patches from 7.4 branch (Closes: #773205)
+  * Re-add from 7.4 branch 0002-Use-LLD-and-SCD-instructions-on-mips64.patch
+    (0ff076ab581d83fba6a6f14c3c550c789699678c)
+  * Re-add from 7.4 branch 0003-Support-n32-ABI-for-mips64.patch
+    (9c92c7b0d7f6c41199583497c5b5cf4eb1105a30)
+
+ -- Ian Wienand <ianw@debian.org>  Thu, 03 Nov 2016 20:25:29 +1100
+
 libatomic-ops (7.4.4-1) unstable; urgency=medium
 
   * New upstream release
