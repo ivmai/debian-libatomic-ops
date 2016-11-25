@@ -1,3 +1,11 @@
+libatomic-ops (7.4.4-3) unstable; urgency=medium
+
+  * Skip check tests on ppc and armel platforms to allow testing
+    migration.  Not a great solution, but nothing upstream and is done in
+    Fedora packages too.
+
+ -- Ian Wienand <ianw@debian.org>  Sat, 26 Nov 2016 09:56:33 +1100
+
 libatomic-ops (7.4.4-2) unstable; urgency=medium
 
   * Restore missing MIPS patches from 7.4 branch (Closes: #773205)
