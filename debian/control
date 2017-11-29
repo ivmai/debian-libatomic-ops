@@ -10,7 +10,7 @@ Build-Depends: cdbs (>= 0.4.27),
  quilt,
  patchutils (>= 0.2.25),
  dh-autoreconf, quilt
-Standards-Version: 3.9.8
+Standards-Version: 4.1.1
 
 Package: libatomic-ops-dev
 Section: libdevel

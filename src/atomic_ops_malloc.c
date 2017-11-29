@@ -91,6 +91,7 @@ static volatile AO_t initial_heap_ptr = (AO_t)AO_initial_heap;
 #   define OPT_MAP_ANON MAP_ANON
 # endif
 #else
+# include <unistd.h> /* for close() */
 # define OPT_MAP_ANON 0
 #endif
 
@@ -135,6 +136,21 @@ static char *get_mmaped(size_t sz)
   return result;
 }
 
+#ifndef SIZE_MAX
+# include <limits.h>
+#endif
+#ifdef SIZE_MAX
+# define AO_SIZE_MAX ((size_t)SIZE_MAX)
+            /* Extra cast to workaround some buggy SIZE_MAX definitions. */
+#else
+# define AO_SIZE_MAX (~(size_t)0)
+#endif
+
+/* Saturated addition of size_t values.  Used to avoid value wrap       */
+/* around on overflow.  The arguments should have no side effects.      */
+#define SIZET_SAT_ADD(a, b) \
+                ((a) < AO_SIZE_MAX - (b) ? (a) + (b) : AO_SIZE_MAX)
+
 /* Allocate an object of size (incl. header) of size > CHUNK_SIZE.      */
 /* sz includes space for an AO_t-sized header.                          */
 static char *
@@ -142,9 +158,8 @@ AO_malloc_large(size_t sz)
 {
  char * result;
  /* The header will force us to waste ALIGNMENT bytes, incl. header.    */
-   sz += ALIGNMENT;
- /* Round to multiple of CHUNK_SIZE.    */
-   sz = (sz + CHUNK_SIZE - 1) & ~(CHUNK_SIZE - 1);
+ /* Round to multiple of CHUNK_SIZE.                                    */
+ sz = SIZET_SAT_ADD(sz, ALIGNMENT + CHUNK_SIZE - 1) & ~(CHUNK_SIZE - 1);
  result = get_mmaped(sz);
  if (result == 0) return 0;
  result += ALIGNMENT;
@@ -282,8 +297,8 @@ AO_malloc(size_t sz)
   }
   *result = log_sz;
 # ifdef AO_TRACE_MALLOC
-    fprintf(stderr, "%x: AO_malloc(%lu) = %p\n",
-                    (int)pthread_self(), (unsigned long)sz, result+1);
+    fprintf(stderr, "%p: AO_malloc(%lu) = %p\n",
+            (void *)pthread_self(), (unsigned long)sz, (void *)(result + 1));
 # endif
   return result + 1;
 }
@@ -297,8 +312,8 @@ AO_free(void *p)
   if (0 == p) return;
   log_sz = (int)(*(AO_t *)base);
 # ifdef AO_TRACE_MALLOC
-    fprintf(stderr, "%x: AO_free(%p sz:%lu)\n", (int)pthread_self(), p,
-            (unsigned long)(log_sz > LOG_MAX_SIZE? log_sz : (1 << log_sz)));
+    fprintf(stderr, "%p: AO_free(%p sz:%lu)\n", (void *)pthread_self(), p,
+            log_sz > LOG_MAX_SIZE ? (unsigned)log_sz : 1UL << log_sz);
 # endif
   if (log_sz > LOG_MAX_SIZE)
     AO_free_large(p);

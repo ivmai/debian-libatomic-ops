@@ -157,7 +157,7 @@
 /* The test_and_set primitive returns an AO_TS_VAL_t value.     */
 /* AO_TS_t is the type of an in-memory test-and-set location.   */
 
-#define AO_TS_INITIALIZER (AO_t)AO_TS_CLEAR
+#define AO_TS_INITIALIZER ((AO_TS_t)AO_TS_CLEAR)
 
 /* Platform-dependent stuff:                                    */
 #if (defined(__GNUC__) || defined(_MSC_VER) || defined(__INTEL_COMPILER) \
@@ -203,7 +203,7 @@
 #   include <machine/sys/inline.h>
 #   define AO_compiler_barrier() _Asm_sched_fence()
 # else
-    /* FIXME - We dont know how to do this.  This is a guess.   */
+    /* FIXME - We do not know how to do this.  This is a guess. */
     /* And probably a bad one.                                  */
     static volatile int AO_barrier_dummy;
 #   define AO_compiler_barrier() (void)(AO_barrier_dummy = AO_barrier_dummy)
@@ -263,7 +263,8 @@
 #   include "atomic_ops/sysdeps/gcc/m68k.h"
 # endif /* __m68k__ */
 # if defined(__powerpc__) || defined(__ppc__) || defined(__PPC__) \
-     || defined(__powerpc64__) || defined(__ppc64__)
+     || defined(__powerpc64__) || defined(__ppc64__) \
+     || defined(_ARCH_PPC)
 #   include "atomic_ops/sysdeps/gcc/powerpc.h"
 # endif /* __powerpc__ */
 # if defined(__aarch64__)
@@ -276,6 +277,7 @@
 # endif /* __arm__ */
 # if defined(__cris__) || defined(CRIS)
 #   include "atomic_ops/sysdeps/gcc/cris.h"
+#   define AO_CAN_EMUL_CAS
 #   define AO_GENERALIZE_TWICE
 # endif
 # if defined(__mips__)

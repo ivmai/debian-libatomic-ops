@@ -1,3 +1,14 @@
+libatomic-ops (7.4.8-1) unstable; urgency=medium
+
+  * New upstream release
+  * Remove 0002-Use-LLD-and-SCD-instructions-on-mips64.patch
+    (upstream 0ff076ab581d83fba6a6f14c3c550c789699678c)
+  * Remove 0003-Support-n32-ABI-for-mips64.patch (upstream
+    9c92c7b0d7f6c41199583497c5b5cf4eb1105a30)
+  * Update to standards 4.1.1 (no changes)
+
+ -- Ian Wienand <ianw@debian.org>  Wed, 29 Nov 2017 20:45:24 +1100
+
 libatomic-ops (7.4.4-3) unstable; urgency=medium
 
   * Skip check tests on ppc and armel platforms to allow testing
