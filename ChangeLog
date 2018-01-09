@@ -1,4 +1,121 @@
 
+== [7.6.2] 2017-12-24 ==
+
+* Allow to alter DEFAULT/MAX_NTHREADS values in test_malloc/stack
+* Allow to select almost-non-blocking stack implementation explicitly
+* Annotate AO_malloc with 'alloc_size' and 'malloc' attributes
+* Avoid misleading 'AO_t undefined' error if wrong atomic_ops.h included
+* Define AO_TS_SET to 1 (true) if GCC atomic_test_and_set is used
+* Disable workaround in stack_pop_acquire that was needed for ancient Clang
+* Do not define AO_GCC_FORCE_HAVE_CAS for Clang 3.8+ (Aarch64)
+* Do not disallow to define double_load using built-in atomics (Aarch64)
+* Do not expose AO_GCC_FORCE_HAVE_CAS macro to client code (GCC)
+* Do not install documentation if configure --disable-docs (new option)
+* Do not produce .tar.bz2 distribution file (configure)
+* Eliminate '-pedantic is not an option that controls warnings' GCC message
+* Eliminate data race in cons() of test_malloc
+* Eliminate GCC-5 ASan global-buffer-overflow false positive for AO_stack_bl
+* Fill in allocated memory with values depending on thread id (test_malloc)
+* Fix 'bad register name %sil' assembler error (GCC-4.4/x86)
+* Fix 'unknown attribute no_sanitize' compiler warning for GCC
+* Fix AO_malloc for sizes near CHUNK_SIZE
+* Fix memory leak in test_malloc
+* Fix test failures for Clang-3.8 and older (Aarch64)
+* Fix test_stack failure if AO_PREFER_BUILTIN_ATOMICS (GCC/Aarch64)
+* Fix typo in AO_REAL_NEXT_PTR comment
+* Increase the default number of threads to 16 in test_malloc/stack
+* Mark unallocated/freed memory as inaccessible using ASan functionality
+* New macro (DONT_USE_MMAP) to support testing as if mmap() is unavailable
+* New macro to select stack implementation based on CAS-double
+* Place no_sanitize attributes in a GCC-compliant way
+* Prevent too long run of test_atomic_generalized (especially with TSan)
+* Simplify '#if' expressions in gcc/x86.h (code refactoring)
+* Test smallest allocation of large type (test_malloc)
+* Use __builtin_expect in atomic_ops_malloc
+* Use built-in atomics for load/store/CAS for Clang by default (Aarch64)
+* Use double-word atomic intrinsics for recent Clang versions (gcc/x86.h)
+* Use GCC atomic intrinsics for Hexagon (clang 3.9+)
+* Use generalized double-wide load/store if AO_PREFER_GENERALIZED (Aarch64)
+* Workaround 'unused result' code defects in atomic_ops.c, list_atomic
+* Workaround Thread Sanitizer (TSan) false positive warnings
+Also, includes 7.4.8 changes
+
+
+== [7.6.0] 2017-05-19 ==
+
+* Add *_and/or/xor* and *_[fetch_]compare_and_swap* tests to test_atomic
+* Add asm-based and/or/xor implementation for char/short/int (gcc/x86)
+* Add asm-based char/short/int CAS implementation for gcc/x86[_64]
+* Add configure '--disable-atomic-intrinsics' option
+* Add dd_acquire_read case to test_atomic
+* Add initial nios2 architecture support
+* Add Makefile target (check-nolink) to compile all source without linking
+* Add Makefile target to run all tests without test-driver
+* Add test_atomic_generalized to Makefile and Makefile.msft
+* Allow alternate CC (CROSS_CC) for AC_TRY_COMPILE (configure)
+* Always define word-wide CAS for x86 (MS VC++ 8+)
+* Avoid atomic_compare_exchange_n if no __GCC_HAVE_SYNC_COMPARE_AND_SWAP_n
+* Avoid extra nop_full in stack_pop_acquire if atomic intrinsics used (x86)
+* Basic support of TILE-Gx and TILEPro CPUs
+* Code refactoring of int-wide primitives in gcc/x86.h
+* Define AO_TS_SET as __GCC_ATOMIC_TEST_AND_SET_TRUEVAL if applicable
+* Define CLANG/GNUC_PREREQ macros to check gcc/clang minimum version
+* Do not define print_list() unless used (tests)
+* Eliminate 'condition sizeof(long)>4 is always true' cppcheck style warning
+* Eliminate 'ISO C90 does not support long long' compiler pedantic warning
+* Eliminate 'scope of variable can be reduced' cppcheck warnings
+* Eliminate redundant lwsync 2nd call in CAS_full on fail (gcc/PowerPC)
+* Fix 'unknown attribute no_sanitize' compiler warning (clang prior to v3.8)
+* Fix 'variable new value is never used' cppcheck style warning
+* Fix missing double_compare_and_swap_dd_acquire_read
+* Fix reporting about missing and/or/xor_dd_acquire_read (test_atomic)
+* Hide AO_locks symbol
+* Implement AO_CLEAR using C11 atomic intrinsic (GCC)
+* Implement CAS_acquire/release/full using __atomic_compare_exchange_n (gcc)
+* Implement char and/or/xor and short CAS for msftc ARM and X86[_64]
+* Implement char CAS and char/short add for msftc X86[_64] (VS 2013+)
+* Implement compiler_barrier using C11 __atomic_signal_fence (GCC)
+* Implement int CAS/inc/dec for msftc/x86_64
+* Implement short inc/dec directly for msftc ARM and X86[_64]
+* Initial ibmc/powerpc (xlc) support
+* New configure option (--enable-werror) to treat warnings as compiler errors
+* New macro AO_PREFER_BUILTIN_ATOMICS to rely on C11 atomics fully (AArch64)
+* Refine AO_nop_write comment for ARM big.LITTLE architecture
+* Refine configure messages when checking for compiler options
+* Refine documentation about _full memory ordering suffix
+* Refine README how to build the library source from the repository
+* Relax shareability domain for dmb st in AO_nop_write (ARM/AArch64)
+* Remove redundant include windows.h from headers (msftc/x86[_64])
+* Remove spaces at EOLn in asm code
+* Report gcc/clang pedantic warnings (configure)
+* Support NaCl/arm
+* Suppress 'ISO C does not support __int128 type' GCC/Clang pedantic warning
+* Test store/CAS emulation explicitly
+* Update shared libraries version info to 2:0:1
+* Use GCC atomic intrinsics for PowerPC 32/64 (GCC 4.8+ and clang 3.8+)
+* Use GCC atomic intrinsics for x86, x64, ARM, MIPS (gcc 4.9+, clang 3.5+)
+* Use generalized double-wide load/store if AO_PREFER_GENERALIZED (gcc/x86)
+* Workaround '#error' cppcheck error messages
+* Workaround 'condition always true', 'unused stored value' cppcheck warnings
+* Workaround 'function is never used' cppcheck style warnings
+* Workaround 'obsolescent ftime called' cppcheck style warning (POSIX)
+* Workaround 'overflow in pointer subtraction' cppcheck warning
+* Workaround 'shifting 32-bit value by 32 bits undefined' cppcheck warning
+* Workaround 'uninitialized memory use' code analyzer false warning (tests)
+* Workaround 'uninitialized variable' cppcheck error in hpc/hppa.h
+* Workaround 'value of macro is unknown' cppcheck information messages
+* Workaround a bug in double-wide intrinsics of Clang/x64 with ASan enabled
+* Workaround MSan warning about uninitialized data read by generalized store
+Also, includes 7.4.6 changes
+
+
+== [7.4.10] 2017-12-22 ==
+
+* Fix AO_malloc for sizes near CHUNK_SIZE
+* Fix memory leak in test_malloc
+* Fix typo in AO_REAL_NEXT_PTR comment
+
+
 == [7.4.8] 2017-10-18 ==
 
 * Fix 'missing select.h', 'undefined sigprocmask' compiler errors (Hexagon)
@@ -193,6 +310,13 @@ Also, includes 7.2e changes
 * Turn off AO primitives inlining if AO_NO_INLINE defined
 * Use __builtin_expect in CAS failure loop condition checks (GCC only)
 Also, includes 7.2 changes
+
+
+== [7.2i] 2017-12-21 ==
+
+* Fix 'missing select.h', 'undefined sigprocmask' compiler errors (Hexagon)
+* Fix AO_malloc for sizes near CHUNK_SIZE
+* Fix typo in AO_REAL_NEXT_PTR comment
 
 
 == [7.2h] 2017-05-17 ==

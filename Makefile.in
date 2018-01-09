@@ -98,7 +98,8 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(top_srcdir)/configure \
-	$(am__configure_deps) $(dist_doc_DATA) $(am__DIST_COMMON)
+	$(am__configure_deps) $(am__dist_doc_DATA_DIST) \
+	$(am__DIST_COMMON)
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
@@ -133,6 +134,7 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
+am__dist_doc_DATA_DIST = COPYING README.md
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -231,9 +233,9 @@ am__relativize = \
     dir1=`echo "$$dir1" | sed -e "$$sed_rest"`; \
   done; \
   reldir="$$dir2"
-DIST_ARCHIVES = $(distdir).tar.gz $(distdir).tar.bz2
+DIST_ARCHIVES = $(distdir).tar.gz
 GZIP_ENV = --best
-DIST_TARGETS = dist-bzip2 dist-gzip
+DIST_TARGETS = dist-gzip
 distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
@@ -369,7 +371,7 @@ ACLOCAL_AMFLAGS = -I m4
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = pkgconfig/atomic_ops.pc
 noinst_DATA = pkgconfig/atomic_ops-uninstalled.pc
-dist_doc_DATA = COPYING README.md
+@ENABLE_DOCS_TRUE@dist_doc_DATA = COPYING README.md
 EXTRA_DIST = autogen.sh
 all: all-recursive
 
@@ -636,6 +638,7 @@ distdir: $(DISTFILES)
 dist-gzip: distdir
 	tardir=$(distdir) && $(am__tar) | GZIP=$(GZIP_ENV) gzip -c >$(distdir).tar.gz
 	$(am__post_remove_distdir)
+
 dist-bzip2: distdir
 	tardir=$(distdir) && $(am__tar) | BZIP2=$${BZIP2--9} bzip2 -c >$(distdir).tar.bz2
 	$(am__post_remove_distdir)
@@ -886,6 +889,15 @@ uninstall-am: uninstall-dist_docDATA uninstall-pkgconfigDATA
 
 .PRECIOUS: Makefile
 
+
+# TODO: After migration to autoconf-1.13+, remove check-nolink definition
+# from this Makefile.am and add AM_EXTRA_RECURSIVE_TARGETS([check-nolink])
+# back to configure.ac file.
+.PHONY: check-nolink check-nolink-local
+check-nolink: check-nolink-local
+	$(MAKE) --directory tests $(AM_MAKEFLAGS) check-nolink-local
+
+check-nolink-local: all
 
 #distclean-local:
 

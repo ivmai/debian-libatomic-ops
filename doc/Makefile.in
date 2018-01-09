@@ -14,6 +14,9 @@
 
 @SET_MAKE@
 
+# installed documentation
+#
+
 VPATH = @srcdir@
 am__is_gnu_make = { \
   if test -z '$(MAKELEVEL)'; then \
@@ -97,7 +100,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
 	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
-DIST_COMMON = $(srcdir)/Makefile.am $(dist_doc_DATA) \
+DIST_COMMON = $(srcdir)/Makefile.am $(am__dist_doc_DATA_DIST) \
 	$(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/src/config.h
@@ -122,6 +125,8 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
+am__dist_doc_DATA_DIST = LICENSING.txt README_details.txt \
+	README_stack.txt README_malloc.txt README_win32.txt
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -280,11 +285,8 @@ target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-
-# installed documentation
-#
-dist_doc_DATA = LICENSING.txt README_details.txt README_stack.txt \
-    README_malloc.txt README_win32.txt
+@ENABLE_DOCS_TRUE@dist_doc_DATA = LICENSING.txt README_details.txt README_stack.txt \
+@ENABLE_DOCS_TRUE@    README_malloc.txt README_win32.txt
 
 all: all-am
 
