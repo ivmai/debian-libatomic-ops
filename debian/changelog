@@ -1,8 +1,9 @@
-libatomic-ops (7.6.2-1+riscv64) unreleased; urgency=medium
+libatomic-ops (7.6.4-1) unstable; urgency=medium
 
-  * Backport RISC-V support from upstream.
+  * New upstream release
+  * New release includes RSIC-V patches (Closes: #891341)
 
- -- Aurelien Jarno <aurel32@debian.org>  Tue, 27 Mar 2018 07:31:43 +0200
+ -- Ian Wienand <ianw@debian.org>  Wed, 28 Mar 2018 06:14:00 +1100
 
 libatomic-ops (7.6.2-1) unstable; urgency=medium
 
