@@ -1,3 +1,9 @@
+libatomic-ops (7.6.2-1+riscv64) unreleased; urgency=medium
+
+  * Backport RISC-V support from upstream.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Tue, 27 Mar 2018 07:31:43 +0200
+
 libatomic-ops (7.6.2-1) unstable; urgency=medium
 
   * Update to stable 7.6 branch
