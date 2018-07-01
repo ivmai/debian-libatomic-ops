@@ -1,3 +1,9 @@
+libatomic-ops (7.6.4-2) unstable; urgency=medium
+
+  * Fix links to various README files which have changed (Closes: #902802)
+
+ -- Ian Wienand <ianw@debian.org>  Mon, 02 Jul 2018 09:40:00 +1000
+
 libatomic-ops (7.6.4-1) unstable; urgency=medium
 
   * New upstream release
