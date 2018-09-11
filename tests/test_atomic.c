@@ -1,158 +1,35 @@
-/*
- * Copyright (c) 2003 by Hewlett-Packard Company.  All rights reserved.
+/*  
+ * Copyright (c) 2003-2005 Hewlett-Packard Development Company, L.P.
+ * Original Author: Hans Boehm
  *
- * This file is covered by the GNU general public license, version 2.
- * see doc/COPYING for details.
+ * This file may be redistributed and/or modified under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2, or (at your option) any later version.
+ * 
+ * It is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License in the
+ * file doc/COPYING for more details.
  */
 
-#if defined(_MSC_VER) || \
-    defined(_WIN32) && !defined(__CYGWIN32__) && !defined(__CYGWIN__) || \
-    defined(_WIN32_WINCE)
-#  define USE_WINTHREADS
-#else
-#  define USE_PTHREADS
+#if defined(HAVE_CONFIG_H)
+# include "config.h"
 #endif
 
-#include <stdlib.h>
-#include <stdio.h>
 
-#ifdef USE_PTHREADS
-# include <pthread.h>
-#endif
-
-#ifdef USE_WINTHREADS
-# include <windows.h>
-#endif
-
-#include "atomic_ops.h"
+#include "run_parallel.inc"
 
 #include "test_atomic_include.h"
-
-typedef void * (* thr_func)(void *);
-
-typedef int (* test_func)(void);	/* Returns != 0 on success */
-
-#ifdef USE_PTHREADS
-void * run_parallel(int nthreads, thr_func f1, test_func t, char *name)
-{
-  pthread_attr_t attr;
-  pthread_t thr[100];
-  int i;
-  int code;
-
-  fprintf(stderr, "Testing %s\n", name);
-  if (nthreads > 100) 
-    {
-      fprintf(stderr, "run_parallel: requested too many threads\n");
-      abort();
-    }
-
-  pthread_attr_init(&attr);
-
-  for (i = 0; i < nthreads; ++i)
-    {
-      if ((code = pthread_create(thr + i, &attr, f1, (void *)(long)i)) != 0)
-	{
-	  perror("Thread creation failed");
-	  fprintf(stderr, "Pthread_create returned %d, thread %d\n", code, i);
-	  abort();
-        }
-    }
-  for (i = 0; i < nthreads; ++i)
-    {
-      if ((code = pthread_join(thr[i], NULL)) != 0)
-	{
-	  perror("Thread join failed");
-	  fprintf(stderr, "Pthread_join returned %d, thread %d\n", code, i);
-	  abort();
-        }
-    }
-  if (t())
-    {
-      fprintf(stderr, "Succeeded\n");
-    }
-  else
-    {
-      fprintf(stderr, "Failed\n");
-      abort();
-    }
-  return 0;
-}
-#endif /* USE_PTHREADS */
-
-#ifdef USE_WINTHREADS
-
-struct tramp_args {
-  thr_func fn;
-  long arg;
-};
-
-DWORD WINAPI tramp(LPVOID param)
-{
-  struct tramp_args *args = (struct tramp_args *)param;
-
-  return (DWORD)(args -> fn)((LPVOID)(args -> arg));
-}
-
-void * run_parallel(int nthreads, thr_func f1, test_func t, char *name)
-{
-  HANDLE thr[100];
-  struct tramp_args args[100];
-  int i;
-  DWORD code;
-
-  fprintf(stderr, "Testing %s\n", name);
-  if (nthreads > 100) 
-    {
-      fprintf(stderr, "run_parallel: requested too many threads\n");
-      abort();
-    }
-
-  for (i = 0; i < nthreads; ++i)
-    {
-      args[i].fn = f1;
-      args[i].arg = i;
-      if ((thr[i] = CreateThread(NULL, 0, tramp, (LPVOID)(args+i), 0, NULL))
-	  == NULL)
-	{
-	  perror("Thread creation failed");
-	  fprintf(stderr, "CreateThread failed with %d, thread %d\n",
-			  GetLastError(), i);
-	  abort();
-        }
-    }
-  for (i = 0; i < nthreads; ++i)
-    {
-      if ((code = WaitForSingleObject(thr[i], INFINITE)) != WAIT_OBJECT_0)
-	{
-	  perror("Thread join failed");
-	  fprintf(stderr, "WaitForSingleObject returned %d, thread %d\n",
-			  code, i);
-	  abort();
-        }
-    }
-  if (t())
-    {
-      fprintf(stderr, "Succeeded\n");
-    }
-  else
-    {
-      fprintf(stderr, "Failed\n");
-      abort();
-    }
-  return 0;
-}
-#endif /* USE_WINTHREADS */
 
 #ifdef AO_USE_PTHREAD_DEFS
 # define NITERS 100000
 #else
-# define NITERS 1000000
+# define NITERS 10000000
 #endif
 
 #if defined(AO_HAVE_fetch_and_add1) && defined(AO_HAVE_fetch_and_sub1)
 
-AO_T counter = 0;
+AO_t counter = 0;
 
 void * add1sub1_thr(void * id)
 {
@@ -179,8 +56,8 @@ int add1sub1_test(void)
 #if defined(AO_HAVE_store_release_write) && defined(AO_HAVE_load_acquire_read)
 
 /* Invariant: counter1 >= counter2 */
-AO_T counter1 = 0;
-AO_T counter2 = 0;
+AO_t counter1 = 0;
+AO_t counter2 = 0;
 
 void * acqrel_thr(void *id)
 {
@@ -191,7 +68,7 @@ void * acqrel_thr(void *id)
   for (i = 0; i < NITERS; ++i)
     if (me & 1)
       {
-        AO_T my_counter1;
+        AO_t my_counter1;
 	if (me != 1)
 	  fprintf(stderr, "acqrel test: too many threads\n");
 	my_counter1 = AO_load(&counter1);
@@ -200,14 +77,26 @@ void * acqrel_thr(void *id)
       }
     else
       {
-	AO_T my_counter2;
-	AO_T my_counter1;
-	my_counter2 = AO_load_acquire_read(&counter2);
-	my_counter1 = AO_load(&counter1);
-	if (my_counter1 < my_counter2)
+	AO_t my_counter1a, my_counter2a;
+	AO_t my_counter1b, my_counter2b;
+
+	my_counter2a = AO_load_acquire_read(&counter2);
+	my_counter1a = AO_load(&counter1);
+	/* Redo this, to make sure that the second load of counter1	*/
+	/* is not viewed as a common subexpression.			*/
+	my_counter2b = AO_load_acquire_read(&counter2);
+	my_counter1b = AO_load(&counter1);
+	if (my_counter1a < my_counter2a)
 	  {
 	    fprintf(stderr, "Saw release store out of order: %lu < %lu\n",
-		    (unsigned long)my_counter1, (unsigned long)my_counter2);
+		    (unsigned long)my_counter1a, (unsigned long)my_counter2a);
+	    abort();
+	  }
+	if (my_counter1b < my_counter2b)
+	  {
+	    fprintf(stderr,
+		    "Saw release store out of order (bad CSE?): %lu < %lu\n",
+		    (unsigned long)my_counter1b, (unsigned long)my_counter2b);
 	    abort();
 	  }
       }

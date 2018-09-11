@@ -29,6 +29,10 @@
 /* operations.  As far as we can tell, no existing processors actually	*/
 /* require those.  Nor does it appear likely that future processors 	*/
 /* will.								*/
+/* FIXME:								*/
+/* The PA emulator on Itanium may obey weaker restrictions.		*/
+/* There should be a mode in which we don't assume sequential		*/
+/* consistency here.							*/
 #include "../ordered.h"
 
 #include <machine/inline.h>
@@ -40,15 +44,11 @@ struct AO_pa_clearable_loc {
   int data[4];
 };
 
-#undef AO_TS_t
 #undef AO_TS_INITIALIZER
 #define AO_TS_t struct AO_pa_clearable_loc
 #define AO_TS_INITIALIZER {1,1,1,1}
 /* Switch meaning of set and clear, since we only have an atomic clear	*/
 /* instruction.								*/
-#undef AO_TS_VAL_t
-#undef AO_TS_CLEAR
-#undef AO_TS_SET
 typedef enum {AO_PA_TS_set = 0, AO_PA_TS_clear = 1} AO_PA_TS_val;
 #define AO_TS_VAL_t AO_PA_TS_val
 #define AO_TS_CLEAR AO_PA_TS_clear
@@ -96,7 +96,6 @@ AO_pa_clear(volatile AO_TS_t * addr)
   AO_compiler_barrier();
   *(volatile unsigned int *)a = 1;
 }
-#undef AO_CLEAR
 #define AO_CLEAR(addr) AO_pa_clear(addr)
 
 #define AO_HAVE_test_and_set_full

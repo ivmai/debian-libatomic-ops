@@ -142,19 +142,10 @@
 	/* Could conceivably be redefined below if/when we add	*/
 	/* win64 support.					*/
 
-/* The test_and_set primitive returns an AO_TS_VAL_t value:	*/
-typedef enum {AO_TS_clear = 0, AO_TS_set = 1} AO_TS_val; 
-#define AO_TS_VAL_t AO_TS_val
-#define AO_TS_CLEAR AO_TS_clear
-#define AO_TS_SET AO_TS_set
-
+/* The test_and_set primitive returns an AO_TS_VAL_t value.	*/
 /* AO_TS_t is the type of an in-memory test-and-set location.	*/
-#define AO_TS_t AO_t	/* Make sure this has the right size */
-#define AO_TS_INITIALIZER (AO_t)AO_TS_CLEAR
 
-/* The most common way to clear a test-and-set location		*/
-/* at the end of a critical section.				*/
-#define AO_CLEAR(addr) AO_store_release((AO_t *)addr, AO_TS_CLEAR)
+#define AO_TS_INITIALIZER (AO_t)AO_TS_CLEAR
 
 /* Platform-dependent stuff:					*/
 #if defined(__GNUC__) || defined(_MSC_VER) || defined(__INTEL_COMPILER)
@@ -189,9 +180,13 @@ typedef enum {AO_TS_clear = 0, AO_TS_set = 1} AO_TS_val;
 # include "atomic_ops/sysdeps/generic_pthread.h"
 #endif /* AO_USE_PTHREAD_DEFS */
 
-#if defined(__GNUC__) && !defined(AO_USE_PTHREAD_DEFS)
+#if defined(__GNUC__) && !defined(AO_USE_PTHREAD_DEFS) \
+    && !defined(__INTEL_COMPILER)
 # if defined(__i386__)
 #   include "atomic_ops/sysdeps/gcc/x86.h"
+# endif /* __i386__ */
+# if defined(__x86_64__)
+#   include "atomic_ops/sysdeps/gcc/x86_64.h"
 # endif /* __i386__ */
 # if defined(__ia64__)
 #   include "atomic_ops/sysdeps/gcc/ia64.h"
@@ -210,21 +205,25 @@ typedef enum {AO_TS_clear = 0, AO_TS_set = 1} AO_TS_val;
 # endif /* __s390__ */
 # if defined(__sparc__)
 #   include "atomic_ops/sysdeps/gcc/sparc.h"
+#   define AO_CAN_EMUL_CAS
 # endif /* __sparc__ */
 # if defined(__m68k__)
 #   include "atomic_ops/sysdeps/gcc/m68k.h"
 # endif /* __m68k__ */
-# if defined(__powerpc__)
+# if defined(__powerpc__) || defined(__ppc__)
 #   include "atomic_ops/sysdeps/gcc/powerpc.h"
 # endif /* __powerpc__ */
 # if defined(__arm__) && !defined(AO_USE_PTHREAD_DEFS)
 #   include "atomic_ops/sysdeps/gcc/arm.h"
 # endif /* __arm__ */
+# if defined(__cris__) || defined(CRIS)
+#   include "atomic_ops/sysdeps/gcc/cris.h"
+# endif
 #endif /* __GNUC__ && !AO_USE_PTHREAD_DEFS */
 
 #if defined(__INTEL_COMPILER) && !defined(AO_USE_PTHREAD_DEFS)
 # if defined(__ia64__)
-#   include "atomic_ops/sysdeps/ecc/ia64.h"
+#   include "atomic_ops/sysdeps/icc/ia64.h"
 #   define AO_GENERALIZE_TWICE
 # endif
 #endif
@@ -235,7 +234,14 @@ typedef enum {AO_TS_clear = 0, AO_TS_set = 1} AO_TS_val;
 #   define AO_GENERALIZE_TWICE
 # else
 #   include "atomic_ops/sysdeps/hpc/hppa.h"
+#   define AO_CAN_EMUL_CAS
 # endif
+#endif
+
+#if !defined(__GNUC__) && (defined(sparc) || defined(__sparc)) \
+    && !defined(AO_USE_PTHREAD_DEFS)
+#   include "atomic_ops/sysdeps/sunc/sparc.h"
+#   define AO_CAN_EMUL_CAS
 #endif
 
 #if defined(_MSC_VER)
@@ -253,6 +259,15 @@ typedef enum {AO_TS_clear = 0, AO_TS_set = 1} AO_TS_val;
 #  error Cannot implement AO_compare_and_swap_full on this architecture.
 # endif
 #endif 	/* AO_REQUIRE_CAS && !AO_HAVE_compare_and_swap ... */
+
+/* The most common way to clear a test-and-set location		*/
+/* at the end of a critical section.				*/
+#if AO_AO_TS_T && !defined(AO_CLEAR)
+# define AO_CLEAR(addr) AO_store_release((AO_TS_t *)addr, AO_TS_CLEAR)
+#endif
+#if AO_CHAR_TS_T && !defined(AO_CLEAR)
+# define AO_CLEAR(addr) AO_char_store_release((AO_TS_t *)addr, AO_TS_CLEAR)
+#endif
 
 /*
  * The generalization section.

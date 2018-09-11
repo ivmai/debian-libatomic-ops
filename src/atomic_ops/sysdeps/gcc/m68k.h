@@ -16,11 +16,13 @@
  */
 
 /* FIXME.  Very incomplete.  */
-#include "../aligned_atomic_load_store.h"
+#include "../all_aligned_atomic_load_store.h"
 
 /* Are there any m68k multiprocessors still around?  	*/
 /* AFAIK, Alliants were sequentially consistent.	*/
 #include "../ordered.h"
+
+#include "../test_and_set_t_is_ao_t.h"
 
 /* Contributed by Tony Mantler or new.  Should be changed to MIT license? */
 AO_INLINE AO_TS_VAL_t

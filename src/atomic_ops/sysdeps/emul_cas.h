@@ -39,14 +39,30 @@
 #  error This file should not be included directly.
 #endif
 
-AO_t AO_compare_and_swap_emulation(volatile AO_t *addr, AO_t old,
-				   AO_t new_val);
+#ifndef AO_HAVE_double_t
+# include "standard_ao_double_t.h"
+#endif
+
+int AO_compare_and_swap_emulation(volatile AO_t *addr, AO_t old,
+				  AO_t new_val);
+
+int AO_compare_double_and_swap_double_emulation(volatile AO_double_t *addr,
+						AO_t old_val1, AO_t old_val2,
+				                AO_t new_val1, AO_t new_val2);
 
 void AO_store_full_emulation(volatile AO_t *addr, AO_t val);
 
 #define AO_compare_and_swap_full(addr, old, newval) \
 	AO_compare_and_swap_emulation(addr, old, newval)
 #define AO_HAVE_compare_and_swap_full
+
+#ifndef AO_HAVE_compare_double_and_swap_double
+# define AO_compare_double_and_swap_double_full(addr, old1, old2, \
+						newval1, newval2) \
+	 AO_compare_double_and_swap_double_emulation(addr, old1, old2, \
+			 			     newval1, newval2)
+# define AO_HAVE_compare_double_and_swap_double_full
+#endif
 
 #undef AO_store
 #undef AO_HAVE_store

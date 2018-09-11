@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003 by Hewlett-Packard Company.  All rights reserved.
+ * Copyright (c) 2003 Hewlett-Packard Development Company, L.P.
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,25 +21,41 @@
  */
 
 /*
- * This file adds definitions appropriate for environments in which a
- * volatile load has acquire semantics, and a volatile store has release
- * semantics.  This is true with the standard Itanium ABI.
+ * This file adds definitions appropriate for environments in which an AO_t
+ * volatile load has acquire semantics, and an AO_t volatile store has release
+ * semantics.  This is arguably supposed to be true with the standard Itanium
+ * software conventions.
  */
+
+/*
+ * Empirically gcc/ia64 does some reordering of ordinary operations around volatiles
+ * even when we think it shouldn't.  Gcc 3.3 and earlier could reorder a volatile store
+ * with another store.  As of March 2005, gcc pre-4 reused previously computed
+ * common subexpressions across a volatile load.
+ * Hence we now add compiler barriers for gcc.
+ */
+#if !defined(AO_GCC_BARRIER)
+#  if defined(__GNUC__)
+#    define AO_GCC_BARRIER() AO_compiler_barrier()
+#  else
+#    define AO_GCC_BARRIER()
+#  endif
+#endif
+
 AO_INLINE AO_t
 AO_load_acquire(volatile AO_t *p)
 {
+  AO_t result = *p;
   /* A normal volatile load generates an ld.acq		*/
-  return *p;
+  AO_GCC_BARRIER();
+  return result;
 }
 #define AO_HAVE_load_acquire
 
 AO_INLINE void
 AO_store_release(volatile AO_t *p, AO_t val)
 {
-# if defined(__GNUC_MINOR__) && \
-     (__GNUC__ < 3 || __GNUC__ == 3 && __GNUC_MINOR__ < 4)
-    AO_compiler_barrier();	/* Empirically necessary for older gcc versions */
-# endif
+  AO_GCC_BARRIER();
   /* A normal volatile store generates an st.rel	*/
   *p = val;
 }

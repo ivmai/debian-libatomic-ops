@@ -17,7 +17,16 @@
 
 /* FIXME.  Very incomplete.  No support for 64 bits.	*/
 
-#include "../atomic_load_store.h"
+/* 
+ * FIXME.  The first use of 'oldval' in the asm statement for
+ * AO_test_and_set_full() is highly suspect.  It used to be
+ * 'ret' which did not compile at all with gcc 3.4.  Clearly,
+ * more time and help is needed on ARM machines.
+ */
+
+#include "../all_atomic_load_store.h"
+
+#include "../test_and_set_t_is_ao_t.h" /* Probably suboptimal */
 
 AO_INLINE AO_TS_VAL_t
 AO_test_and_set_full(volatile AO_TS_t *addr) {
@@ -28,7 +37,7 @@ AO_test_and_set_full(volatile AO_TS_t *addr) {
           "     l     %0,0(%2)\n"
           "0:   cs    %0,%1,0(%2)\n"
           "     jl    0b"
-          : "=&d" (ret)
+          : "=&d" (oldval)
           : "d" (1), "a" (addr)
           : "cc", "memory");
   return oldval;

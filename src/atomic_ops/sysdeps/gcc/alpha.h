@@ -17,6 +17,11 @@
 
 #include "../atomic_load_store.h"
 
+#include "../test_and_set_t_is_ao_t.h"
+
+#define AO_NO_DD_ORDERING
+	/* Data dependence does not imply read ordering.	*/
+
 AO_INLINE void
 AO_nop_full()
 {
