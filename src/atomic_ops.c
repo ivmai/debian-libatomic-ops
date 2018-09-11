@@ -1,23 +1,23 @@
 /*
  * Copyright (c) 2003 Hewlett-Packard Development Company, L.P.
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE. 
+ * SOFTWARE.
  */
 
 /*
@@ -32,17 +32,24 @@
 # include "config.h"
 #endif
 
-#if !defined(_MSC_VER) && !defined(__MINGW32__) && !defined(__BORLANDC__)
+#if !defined(_MSC_VER) && !defined(__MINGW32__) && !defined(__BORLANDC__) \
+    || defined(AO_USE_WIN32_PTHREADS)
 
 #undef AO_REQUIRE_CAS
 
 #include <pthread.h>
-#include <signal.h>
-#ifdef _HPUX_SOURCE
-# include <sys/time.h>
+
+#ifdef AO_USE_WIN32_PTHREADS
+# include <windows.h> /* for Sleep() */
 #else
-# include <sys/select.h>
+# include <signal.h>
+# ifdef _HPUX_SOURCE
+#   include <sys/time.h>
+# else
+#   include <sys/select.h>
+# endif
 #endif
+
 #include "atomic_ops.h"  /* Without cas emulation! */
 
 #ifndef AO_HAVE_double_t
@@ -57,14 +64,14 @@ pthread_mutex_t AO_pt_lock = PTHREAD_MUTEX_INITIALIZER;
 
 /*
  * Out of line compare-and-swap emulation based on test and set.
- * 
+ *
  * We use a small table of locks for different compare_and_swap locations.
- * Before we update perform a compare-and-swap, we grap the corresponding
+ * Before we update perform a compare-and-swap, we grab the corresponding
  * lock.  Different locations may hash to the same lock, but since we
  * never acquire more than one lock at a time, this can't deadlock.
  * We explicitly disable signals while we perform this operation.
  *
- * FIXME: We should probably also suppport emulation based on Lamport
+ * FIXME: We should probably also support emulation based on Lamport
  * locks, since we may not have test_and_set either.
  */
 #define AO_HASH_SIZE 16
@@ -72,14 +79,14 @@ pthread_mutex_t AO_pt_lock = PTHREAD_MUTEX_INITIALIZER;
 #define AO_HASH(x) (((unsigned long)(x) >> 12) & (AO_HASH_SIZE-1))
 
 AO_TS_t AO_locks[AO_HASH_SIZE] = {
-	AO_TS_INITIALIZER, AO_TS_INITIALIZER,
-	AO_TS_INITIALIZER, AO_TS_INITIALIZER,
-	AO_TS_INITIALIZER, AO_TS_INITIALIZER,
-	AO_TS_INITIALIZER, AO_TS_INITIALIZER,
-	AO_TS_INITIALIZER, AO_TS_INITIALIZER,
-	AO_TS_INITIALIZER, AO_TS_INITIALIZER,
-	AO_TS_INITIALIZER, AO_TS_INITIALIZER,
-	AO_TS_INITIALIZER, AO_TS_INITIALIZER,
+        AO_TS_INITIALIZER, AO_TS_INITIALIZER,
+        AO_TS_INITIALIZER, AO_TS_INITIALIZER,
+        AO_TS_INITIALIZER, AO_TS_INITIALIZER,
+        AO_TS_INITIALIZER, AO_TS_INITIALIZER,
+        AO_TS_INITIALIZER, AO_TS_INITIALIZER,
+        AO_TS_INITIALIZER, AO_TS_INITIALIZER,
+        AO_TS_INITIALIZER, AO_TS_INITIALIZER,
+        AO_TS_INITIALIZER, AO_TS_INITIALIZER,
 };
 
 static AO_T dummy = 1;
@@ -104,12 +111,16 @@ void AO_pause(int n)
       AO_spin(n);
     else
       {
+#     ifdef AO_USE_WIN32_PTHREADS
+        Sleep(n > 28 ? 100 : 1 << (n - 22)); /* in millis */
+#     else
         struct timeval tv;
 
-	/* Short async-signal-safe sleep. */
-	tv.tv_sec = 0;
-	tv.tv_usec = (n > 28? 100000 : (1 << (n - 12)));
-	select(0, 0, 0, 0, &tv);
+        /* Short async-signal-safe sleep. */
+        tv.tv_sec = 0;
+        tv.tv_usec = (n > 28? 100000 : (1 << (n - 12)));
+        select(0, 0, 0, 0, &tv);
+#     endif
       }
 }
 
@@ -132,34 +143,37 @@ AO_INLINE void unlock(volatile AO_TS_t *l)
   AO_CLEAR(l);
 }
 
-static sigset_t all_sigs;
-
-static volatile AO_t initialized = 0;
+#ifndef AO_USE_WIN32_PTHREADS
+  static sigset_t all_sigs;
+  static volatile AO_t initialized = 0;
+#endif
 
 static volatile AO_TS_t init_lock = AO_TS_INITIALIZER;
 
 int AO_compare_and_swap_emulation(volatile AO_t *addr, AO_t old,
-				  AO_t new_val)
+                                  AO_t new_val)
 {
   AO_TS_t *my_lock = AO_locks + AO_HASH(addr);
-  sigset_t old_sigs;
   int result;
 
-  if (!AO_load_acquire(&initialized))
+# ifndef AO_USE_WIN32_PTHREADS
+    sigset_t old_sigs;
+    if (!AO_load_acquire(&initialized))
     {
       lock(&init_lock);
       if (!initialized) sigfillset(&all_sigs);
       unlock(&init_lock);
       AO_store_release(&initialized, 1);
     }
-  sigprocmask(SIG_BLOCK, &all_sigs, &old_sigs);
-  	/* Neither sigprocmask nor pthread_sigmask is 100%	*/
-  	/* guaranteed to work here.  Sigprocmask is not 	*/
-  	/* guaranteed be thread safe, and pthread_sigmask	*/
-  	/* is not async-signal-safe.  Under linuxthreads,	*/
-  	/* sigprocmask may block some pthreads-internal		*/
-  	/* signals.  So long as we do that for short periods,	*/
-  	/* we should be OK.					*/
+    sigprocmask(SIG_BLOCK, &all_sigs, &old_sigs);
+        /* Neither sigprocmask nor pthread_sigmask is 100%      */
+        /* guaranteed to work here.  Sigprocmask is not         */
+        /* guaranteed be thread safe, and pthread_sigmask       */
+        /* is not async-signal-safe.  Under linuxthreads,       */
+        /* sigprocmask may block some pthreads-internal         */
+        /* signals.  So long as we do that for short periods,   */
+        /* we should be OK.                                     */
+# endif
   lock(my_lock);
   if (*addr == old)
     {
@@ -169,33 +183,37 @@ int AO_compare_and_swap_emulation(volatile AO_t *addr, AO_t old,
   else
     result = 0;
   unlock(my_lock);
-  sigprocmask(SIG_SETMASK, &old_sigs, NULL);
+# ifndef AO_USE_WIN32_PTHREADS
+    sigprocmask(SIG_SETMASK, &old_sigs, NULL);
+# endif
   return result;
 }
 
 int AO_compare_double_and_swap_double_emulation(volatile AO_double_t *addr,
-						AO_t old_val1, AO_t old_val2,
-				                AO_t new_val1, AO_t new_val2)
+                                                AO_t old_val1, AO_t old_val2,
+                                                AO_t new_val1, AO_t new_val2)
 {
   AO_TS_t *my_lock = AO_locks + AO_HASH(addr);
-  sigset_t old_sigs;
   int result;
 
-  if (!AO_load_acquire(&initialized))
+# ifndef AO_USE_WIN32_PTHREADS
+    sigset_t old_sigs;
+    if (!AO_load_acquire(&initialized))
     {
       lock(&init_lock);
       if (!initialized) sigfillset(&all_sigs);
       unlock(&init_lock);
       AO_store_release(&initialized, 1);
     }
-  sigprocmask(SIG_BLOCK, &all_sigs, &old_sigs);
-  	/* Neither sigprocmask nor pthread_sigmask is 100%	*/
-  	/* guaranteed to work here.  Sigprocmask is not 	*/
-  	/* guaranteed be thread safe, and pthread_sigmask	*/
-  	/* is not async-signal-safe.  Under linuxthreads,	*/
-  	/* sigprocmask may block some pthreads-internal		*/
-  	/* signals.  So long as we do that for short periods,	*/
-  	/* we should be OK.					*/
+    sigprocmask(SIG_BLOCK, &all_sigs, &old_sigs);
+        /* Neither sigprocmask nor pthread_sigmask is 100%      */
+        /* guaranteed to work here.  Sigprocmask is not         */
+        /* guaranteed be thread safe, and pthread_sigmask       */
+        /* is not async-signal-safe.  Under linuxthreads,       */
+        /* sigprocmask may block some pthreads-internal         */
+        /* signals.  So long as we do that for short periods,   */
+        /* we should be OK.                                     */
+# endif
   lock(my_lock);
   if (addr -> AO_val1 == old_val1 && addr -> AO_val2 == old_val2)
     {
@@ -206,7 +224,9 @@ int AO_compare_double_and_swap_double_emulation(volatile AO_double_t *addr,
   else
     result = 0;
   unlock(my_lock);
-  sigprocmask(SIG_SETMASK, &old_sigs, NULL);
+# ifndef AO_USE_WIN32_PTHREADS
+    sigprocmask(SIG_SETMASK, &old_sigs, NULL);
+# endif
   return result;
 }
 
