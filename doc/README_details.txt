@@ -170,7 +170,9 @@ _read: Subsequent reads must become visible after reads included in
        the atomic operation or preceding it.  Rarely useful for clients?
 _write: Earlier writes become visible before writes during or after
         the atomic operation.  Rarely useful for clients?
-_full: Ordered with respect to both earlier and later memory ops.
+_full: The associated operation is ordered with respect to both earlier and
+       later memory ops.  If the associated operation is nop, then this orders
+       all earlier memory operations with respect to subsequent ones.
        AO_store_full or AO_nop_full are the normal ways to force a store
        to be ordered with respect to a later load.
 _release_write: Ordered with respect to earlier writes.  This is
@@ -237,12 +239,6 @@ retrieve it in other threads with AO_acquire_read(p).
 Platform notes:
 
 All X86: We quietly assume 486 or better.
-
-Microsoft compilers:
-Define AO_ASSUME_WINDOWS98 to get access to hardware compare-and-swap
-functionality.  This relies on the InterlockedCompareExchange() function
-which was apparently not supported in Windows95.  (There may be a better
-way to get access to this.)
 
 Gcc on x86:
 Define AO_USE_PENTIUM4_INSTRS to use the Pentium 4 mfence instruction.

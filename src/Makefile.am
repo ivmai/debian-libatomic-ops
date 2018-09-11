@@ -2,8 +2,8 @@
 # Info (current:revision:age) for the Libtool versioning system.
 # These numbers should be updated at most once just before the release,
 # and, optionally, at most once during the development (after the release).
-LIBATOMIC_OPS_VER_INFO = 1:4:0
-LIBATOMIC_OPS_GPL_VER_INFO = 1:4:0
+LIBATOMIC_OPS_VER_INFO = 2:1:1
+LIBATOMIC_OPS_GPL_VER_INFO = 2:2:1
 
 AM_CFLAGS=@PICFLAG@
 AM_CPPFLAGS = -I$(top_builddir)/src -I$(top_srcdir)/src
@@ -90,10 +90,12 @@ nobase_private_HEADERS = atomic_ops/ao_version.h \
           atomic_ops/sysdeps/gcc/ia64.h \
           atomic_ops/sysdeps/gcc/m68k.h \
           atomic_ops/sysdeps/gcc/mips.h \
+          atomic_ops/sysdeps/gcc/nios2.h \
           atomic_ops/sysdeps/gcc/powerpc.h \
           atomic_ops/sysdeps/gcc/s390.h \
           atomic_ops/sysdeps/gcc/sh.h \
           atomic_ops/sysdeps/gcc/sparc.h \
+          atomic_ops/sysdeps/gcc/tile.h \
           atomic_ops/sysdeps/gcc/x86.h \
         \
           atomic_ops/sysdeps/hpc/hppa.h \
