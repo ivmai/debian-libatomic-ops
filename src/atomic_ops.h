@@ -118,7 +118,7 @@
 /*      data.x = ...; data.y = ...; ...                         */
 /*      AO_store_release_write(&data_is_initialized, 1)         */
 /* then data is guaranteed to be initialized after the test     */
-/*      if (AO_load_release_read(&data_is_initialized)) ...     */
+/*      if (AO_load_acquire_read(&data_is_initialized)) ...     */
 /* succeeds.  Furthermore, this should generate near-optimal    */
 /* code on all common platforms.                                */
 /*                                                              */
@@ -149,7 +149,7 @@
 /* added as a higher layer.  But that would sacrifice           */
 /* usability from signal handlers.                              */
 /* The synthesis section is implemented almost entirely in      */
-/* atomic_ops_generalize.h.                                     */
+/* atomic_ops/generalize.h.                                     */
 
 /* Some common defaults.  Overridden for some architectures.    */
 #define AO_t size_t
@@ -206,7 +206,7 @@
     /* FIXME - We dont know how to do this.  This is a guess.   */
     /* And probably a bad one.                                  */
     static volatile int AO_barrier_dummy;
-#   define AO_compiler_barrier() AO_barrier_dummy = AO_barrier_dummy
+#   define AO_compiler_barrier() (void)(AO_barrier_dummy = AO_barrier_dummy)
 # endif
 #else
   /* We conjecture that the following usually gives us the right        */
@@ -238,7 +238,7 @@
       /* It is safe to use __sync CAS built-in on this architecture.    */
 #     define AO_USE_SYNC_CAS_BUILTIN
 #   endif
-#   include "atomic_ops/sysdeps/gcc/x86_64.h"
+#   include "atomic_ops/sysdeps/gcc/x86.h"
 # endif /* __x86_64__ */
 # if defined(__ia64__)
 #   include "atomic_ops/sysdeps/gcc/ia64.h"
@@ -266,7 +266,7 @@
      || defined(__powerpc64__) || defined(__ppc64__)
 #   include "atomic_ops/sysdeps/gcc/powerpc.h"
 # endif /* __powerpc__ */
-# if defined(__arm__) && !defined(AO_USE_PTHREAD_DEFS)
+# if defined(__arm__)
 #   include "atomic_ops/sysdeps/gcc/arm.h"
 #   define AO_CAN_EMUL_CAS
 # endif /* __arm__ */
@@ -313,7 +313,7 @@
 #     if (__INTEL_COMPILER > 1110) && !defined(AO_USE_SYNC_CAS_BUILTIN)
 #       define AO_USE_SYNC_CAS_BUILTIN
 #     endif
-#     include "atomic_ops/sysdeps/gcc/x86_64.h"
+#     include "atomic_ops/sysdeps/gcc/x86.h"
 #   endif /* __x86_64__ */
 # endif
 #endif
@@ -342,12 +342,9 @@
 
 #if defined(__sun) && !defined(__GNUC__) && !defined(AO_USE_PTHREAD_DEFS)
   /* Note: use -DAO_USE_PTHREAD_DEFS if Sun CC does not handle inline asm. */
-# if defined(__i386)
+# if defined(__i386) || defined(__x86_64) || defined(__amd64)
 #   include "atomic_ops/sysdeps/sunc/x86.h"
-# endif /* __i386 */
-# if defined(__x86_64) || defined(__amd64)
-#   include "atomic_ops/sysdeps/sunc/x86_64.h"
-# endif /* __x86_64 */
+# endif
 #endif
 
 #if !defined(__GNUC__) && (defined(sparc) || defined(__sparc)) \
@@ -385,7 +382,7 @@
 # define AO_GENERALIZE_TWICE
 #endif
 
-/* Theoretically we should repeatedly include atomic_ops_generalize.h.  */
+/* Theoretically we should repeatedly include atomic_ops/generalize.h.  */
 /* In fact, we observe that this converges after a small fixed number   */
 /* of iterations, usually one.                                          */
 #include "atomic_ops/generalize.h"

@@ -16,9 +16,12 @@
 #endif
 
 #define AO_REQUIRE_CAS
-#include "atomic_ops_stack.h"
+#include "atomic_ops_malloc.h"
+
 #include <string.h>     /* for ffs, which is assumed reentrant. */
 #include <stdlib.h>
+#include <assert.h>
+
 #ifdef AO_TRACE_MALLOC
 # include <stdio.h>
 # include <pthread.h>
@@ -208,7 +211,7 @@ AO_stack_t AO_free_list[LOG_MAX_SIZE+1];
 static void add_chunk_as(void * chunk, unsigned log_sz)
 {
   size_t ofs, limit;
-  size_t sz = 1 << log_sz;
+  size_t sz = (size_t)1 << log_sz;
 
   assert (CHUNK_SIZE >= sz);
   limit = (size_t)CHUNK_SIZE - sz;
@@ -286,7 +289,7 @@ AO_free(void *p)
   int log_sz;
 
   if (0 == p) return;
-  log_sz = *(AO_t *)base;
+  log_sz = (int)(*(AO_t *)base);
 # ifdef AO_TRACE_MALLOC
     fprintf(stderr, "%x: AO_free(%p sz:%lu)\n", (int)pthread_self(), p,
             (unsigned long)(log_sz > LOG_MAX_SIZE? log_sz : (1 << log_sz)));

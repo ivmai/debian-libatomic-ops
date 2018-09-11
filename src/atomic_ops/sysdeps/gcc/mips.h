@@ -21,7 +21,6 @@
 #include "../all_aligned_atomic_load_store.h"
 #include "../acquire_release_volatile.h"
 #include "../test_and_set_t_is_ao_t.h"
-#include "../standard_ao_double_t.h"
 
 /* Data dependence does not imply read ordering.  */
 #define AO_NO_DD_ORDERING
@@ -102,7 +101,7 @@ AO_test_and_set(volatile AO_TS_t *addr)
 }
 #define AO_HAVE_test_and_set
 
-  /* FIXME: Implement AO_and/or/xor primitives directly.        */
+  /* TODO: Implement AO_and/or/xor primitives directly. */
 #endif /* !AO_PREFER_GENERALIZED */
 
 #ifndef AO_GENERALIZE_ASM_BOOL_CAS
@@ -161,8 +160,12 @@ AO_fetch_compare_and_swap(volatile AO_t *addr, AO_t old, AO_t new_val)
 }
 #define AO_HAVE_fetch_compare_and_swap
 
+/* #include "../standard_ao_double_t.h" */
+/* TODO: implement AO_compare_double_and_swap_double if available.      */
+
 /* CAS primitives with acquire, release and full semantics are  */
 /* generated automatically (and AO_int_... primitives are       */
 /* defined properly after the first generalization pass).       */
 
+/* FIXME: 32-bit ABI is assumed.    */
 #define AO_T_IS_INT

@@ -37,6 +37,10 @@
 
 #include "../test_and_set_t_is_char.h"
 
+#if defined(AO_ASSUME_VISTA) && !defined(AO_ASSUME_WINDOWS98)
+# define AO_ASSUME_WINDOWS98
+#endif
+
 #ifndef AO_USE_INTERLOCKED_INTRINSICS
   /* _Interlocked primitives (Inc, Dec, Xchg, Add) are always available */
 # define AO_USE_INTERLOCKED_INTRINSICS
@@ -67,6 +71,34 @@ AO_nop_full(void)
 
 #endif
 
+#ifndef AO_NO_ASM_XADD
+  AO_INLINE unsigned char
+  AO_char_fetch_and_add_full(volatile unsigned char *p, unsigned char incr)
+  {
+    __asm
+    {
+      mov al, incr
+      mov ebx, p
+      lock xadd byte ptr [ebx], al
+    }
+    /* Ignore possible "missing return value" warning here.     */
+  }
+# define AO_HAVE_char_fetch_and_add_full
+
+  AO_INLINE unsigned short
+  AO_short_fetch_and_add_full(volatile unsigned short *p, unsigned short incr)
+  {
+    __asm
+    {
+      mov ax, incr
+      mov ebx, p
+      lock xadd word ptr [ebx], ax
+    }
+    /* Ignore possible "missing return value" warning here.     */
+  }
+# define AO_HAVE_short_fetch_and_add_full
+#endif /* !AO_NO_ASM_XADD */
+
 AO_INLINE AO_TS_VAL_t
 AO_test_and_set_full(volatile AO_TS_t *addr)
 {
@@ -85,36 +117,23 @@ AO_test_and_set_full(volatile AO_TS_t *addr)
 #endif
 
 #ifdef AO_ASSUME_VISTA
+# include "../standard_ao_double_t.h"
 
-/* NEC LE-IT: whenever we run on a pentium class machine we have that
- * certain function */
+  /* Whenever we run on a Pentium class machine, we have that certain   */
+  /* function.                                                          */
+# pragma intrinsic (_InterlockedCompareExchange64)
 
-#include "../standard_ao_double_t.h"
-#pragma intrinsic (_InterlockedCompareExchange64)
-/* Returns nonzero if the comparison succeeded. */
-AO_INLINE int
-AO_compare_double_and_swap_double_full(volatile AO_double_t *addr,
-                                       AO_t old_val1, AO_t old_val2,
-                                       AO_t new_val1, AO_t new_val2)
-{
-    __int64 oldv = (__int64)old_val1 | ((__int64)old_val2 << 32);
-    __int64 newv = (__int64)new_val1 | ((__int64)new_val2 << 32);
-    return _InterlockedCompareExchange64((__int64 volatile *)addr,
-                                       newv, oldv) == oldv;
-}
-#define AO_HAVE_compare_double_and_swap_double_full
-
-#ifdef __cplusplus
-AO_INLINE int
-AO_double_compare_and_swap_full(volatile AO_double_t *addr,
-                                AO_double_t old_val, AO_double_t new_val)
-{
-    return _InterlockedCompareExchange64((__int64 volatile *)addr,
-                new_val.AO_whole, old_val.AO_whole) == old_val.AO_whole;
-}
-#define AO_HAVE_double_compare_and_swap_full
-#endif /* __cplusplus */
-
+  /* Returns nonzero if the comparison succeeded.       */
+  AO_INLINE int
+  AO_double_compare_and_swap_full(volatile AO_double_t *addr,
+                                  AO_double_t old_val, AO_double_t new_val)
+  {
+    return (double_ptr_storage)_InterlockedCompareExchange64(
+                                        (__int64 volatile *)addr,
+                                        new_val.AO_whole /* exchange */,
+                                        old_val.AO_whole) == old_val.AO_whole;
+  }
+# define AO_HAVE_double_compare_and_swap_full
 #endif /* AO_ASSUME_VISTA */
 
 #define AO_T_IS_INT

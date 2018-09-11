@@ -62,7 +62,6 @@ nobase_private_HEADERS = atomic_ops/ao_version.h \
           atomic_ops/sysdeps/gcc/sh.h \
           atomic_ops/sysdeps/gcc/sparc.h \
           atomic_ops/sysdeps/gcc/x86.h \
-          atomic_ops/sysdeps/gcc/x86_64.h \
         \
           atomic_ops/sysdeps/hpc/hppa.h \
           atomic_ops/sysdeps/hpc/ia64.h \
@@ -77,8 +76,7 @@ nobase_private_HEADERS = atomic_ops/ao_version.h \
           atomic_ops/sysdeps/msftc/x86_64.h \
         \
           atomic_ops/sysdeps/sunc/sparc.h \
-          atomic_ops/sysdeps/sunc/x86.h \
-          atomic_ops/sysdeps/sunc/x86_64.h
+          atomic_ops/sysdeps/sunc/x86.h
 
 atomic_ops/generalize-small.h: atomic_ops/generalize-small.template
 	sed -e s:XSIZE:char:g -e s:XCTYPE:char:g $? > $@
