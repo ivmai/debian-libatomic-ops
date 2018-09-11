@@ -168,6 +168,7 @@ void test_atomic(void)
     TA_assert(x == 42);
 # else
     MISSING(AO_compare_and_swap);
+    if (x == 13) x = 42;
 # endif
 # if defined(AO_HAVE_or)
     AO_or(&x, 66);
@@ -382,6 +383,7 @@ void test_atomic_release(void)
     TA_assert(x == 42);
 # else
     MISSING(AO_compare_and_swap);
+    if (x == 13) x = 42;
 # endif
 # if defined(AO_HAVE_or_release)
     AO_or_release(&x, 66);
@@ -596,6 +598,7 @@ void test_atomic_acquire(void)
     TA_assert(x == 42);
 # else
     MISSING(AO_compare_and_swap);
+    if (x == 13) x = 42;
 # endif
 # if defined(AO_HAVE_or_acquire)
     AO_or_acquire(&x, 66);
@@ -810,6 +813,7 @@ void test_atomic_read(void)
     TA_assert(x == 42);
 # else
     MISSING(AO_compare_and_swap);
+    if (x == 13) x = 42;
 # endif
 # if defined(AO_HAVE_or_read)
     AO_or_read(&x, 66);
@@ -1024,6 +1028,7 @@ void test_atomic_write(void)
     TA_assert(x == 42);
 # else
     MISSING(AO_compare_and_swap);
+    if (x == 13) x = 42;
 # endif
 # if defined(AO_HAVE_or_write)
     AO_or_write(&x, 66);
@@ -1238,6 +1243,7 @@ void test_atomic_full(void)
     TA_assert(x == 42);
 # else
     MISSING(AO_compare_and_swap);
+    if (x == 13) x = 42;
 # endif
 # if defined(AO_HAVE_or_full)
     AO_or_full(&x, 66);
@@ -1452,6 +1458,7 @@ void test_atomic_release_write(void)
     TA_assert(x == 42);
 # else
     MISSING(AO_compare_and_swap);
+    if (x == 13) x = 42;
 # endif
 # if defined(AO_HAVE_or_release_write)
     AO_or_release_write(&x, 66);
@@ -1666,6 +1673,7 @@ void test_atomic_acquire_read(void)
     TA_assert(x == 42);
 # else
     MISSING(AO_compare_and_swap);
+    if (x == 13) x = 42;
 # endif
 # if defined(AO_HAVE_or_acquire_read)
     AO_or_acquire_read(&x, 66);
