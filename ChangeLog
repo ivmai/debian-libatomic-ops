@@ -1,0 +1,23 @@
+2004-09-07  Al Stone <ahs3@debian.org>
+
+	* My bad.  I was not paying attention.  All of Ian's changes
+	  from the non-native-branch are indeed useful -- if you use
+	  them properly (which I did not in the entry below).  Merged
+	  in the non-native branch properly, this time.
+
+2004-08-30  Al Stone <ahs3@debian.org>
+
+	* Makefile.am: deb target not needed (put invocation of
+	  autogen.sh in debian/rules instead)
+
+2004-08-27  Ian Wienand  <ianw@gelato.unsw.edu.au>
+
+	* Makefile.am : add deb target, remove debian directory
+	* configure.in : don't include /debian in make dist
+	* debian/Makefile.am : remove
+	* debian/rules : simplify for non-native package changes
+
+2004-02-05  Ian Wienand  <ianw@gelato.unsw.edu.au>
+
+	* everything: put into autoconf
+
