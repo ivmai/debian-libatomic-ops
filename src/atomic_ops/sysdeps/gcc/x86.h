@@ -121,14 +121,17 @@ AO_test_and_set_full(volatile AO_TS_t *addr)
 
 /* Returns nonzero if the comparison succeeded. */
 AO_INLINE int
-AO_compare_and_swap_full(volatile AO_t *addr,
-                             AO_t old, AO_t new_val)
+AO_compare_and_swap_full(volatile AO_t *addr, AO_t old, AO_t new_val)
 {
-  char result;
-  __asm__ __volatile__("lock; cmpxchgl %3, %0; setz %1"
-                       : "=m"(*addr), "=q"(result)
-                       : "m"(*addr), "r" (new_val), "a"(old) : "memory");
-  return (int) result;
+# ifdef AO_USE_SYNC_CAS_BUILTIN
+    return (int)__sync_bool_compare_and_swap(addr, old, new_val);
+# else
+    char result;
+    __asm__ __volatile__("lock; cmpxchgl %3, %0; setz %1"
+                         : "=m" (*addr), "=a" (result)
+                         : "m" (*addr), "r" (new_val), "a" (old) : "memory");
+    return (int)result;
+# endif
 }
 
 #define AO_HAVE_compare_and_swap_full
@@ -149,7 +152,7 @@ AO_compare_double_and_swap_double_full(volatile AO_double_t *addr,
                        "movl %6,%%ebx;" /* move new_val2 to %ebx */
                        "lock; cmpxchg8b %0; setz %1;"
                        "pop %%ebx;"     /* restore %ebx */
-                       : "=m"(*addr), "=q"(result)
+                       : "=m"(*addr), "=a"(result)
                        : "m"(*addr), "d" (old_val2), "a" (old_val1),
                          "c" (new_val2), "m" (new_val1) : "memory");
 #else
@@ -158,7 +161,7 @@ AO_compare_double_and_swap_double_full(volatile AO_double_t *addr,
    * in a clobber, but there's no point doing the push/pop if we don't
    * have to. */
   __asm__ __volatile__("lock; cmpxchg8b %0; setz %1;"
-                       : "=m"(*addr), "=q"(result)
+                       : "=m"(*addr), "=a"(result)
                        : "m"(*addr), "d" (old_val2), "a" (old_val1),
                          "c" (new_val2), "b" (new_val1) : "memory");
 #endif
