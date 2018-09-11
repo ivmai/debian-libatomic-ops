@@ -3,7 +3,6 @@
 include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/class/autotools.mk
 include /usr/share/dpkg/architecture.mk
-include /usr/share/cdbs/1/rules/patchsys-quilt.mk
 include /usr/share/cdbs/1/rules/autoreconf.mk
 
 ifeq (,$(findstring $(DEB_BUILD_ARCH), powerpc ppc64 ppc64el armel))

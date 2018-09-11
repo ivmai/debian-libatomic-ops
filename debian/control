@@ -3,18 +3,18 @@ Priority: optional
 Section: libdevel
 Maintainer: Ian Wienand <ianw@debian.org>
 Uploaders: Al Stone <ahs3@debian.org>
-Build-Depends: cdbs (>= 0.4.27),
+Build-Depends: cdbs,
  autotools-dev,
  debhelper,
  dh-buildinfo,
- quilt,
- patchutils (>= 0.2.25),
  dh-autoreconf, quilt
 Standards-Version: 4.1.1
+Vcs-Browser: https://salsa.debian.org/debian/libatomic-ops
+Vcs-Git: https://salsa.debian.org/debian/libatomic-ops.git
 
 Package: libatomic-ops-dev
 Section: libdevel
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${misc:Depends}
 Architecture: any
 Replaces: libatomic-ops
 Description: A library for atomic operations (development files)
