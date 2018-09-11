@@ -2,24 +2,15 @@
  * Copyright (c) 2003 by Hewlett-Packard Company.  All rights reserved.
  *
  * This file is covered by the GNU general public license, version 2.
- * see doc/COPYING for details.
+ * see COPYING for details.
  */
-
-void test_atomic(void);
-void test_atomic_release(void);
-void test_atomic_acquire(void);
-void test_atomic_read(void);
-void test_atomic_write(void);
-void test_atomic_full(void);
-void test_atomic_release_write(void);
-void test_atomic_acquire_read(void);
 
 /* Some basic sanity tests.  These do not test the barrier semantics. */
 
 #undef TA_assert
 #define TA_assert(e) \
   if (!(e)) { fprintf(stderr, "Assertion failed %s:%d (barrier: )\n", \
-		    __FILE__, __LINE__), exit(1); }
+                    __FILE__, __LINE__), exit(1); }
 
 #undef MISSING
 #define MISSING(name) \
@@ -183,7 +174,21 @@ void test_atomic(void)
     TA_assert(x == 106);
 # else
     MISSING(AO_or);
-    x |= 34;
+    x |= 66;
+# endif
+# if defined(AO_HAVE_xor)
+    AO_xor(&x, 181);
+    TA_assert(x == 223);
+# else
+    MISSING(AO_xor);
+    x ^= 181;
+# endif
+# if defined(AO_HAVE_and)
+    AO_and(&x, 57);
+    TA_assert(x == 25);
+# else
+    MISSING(AO_and);
+    x &= 57;
 # endif
 # if defined(AO_HAVE_compare_double_and_swap_double)
     TA_assert(!AO_compare_double_and_swap_double(&w, 17, 42, 12, 13));
@@ -207,14 +212,11 @@ void test_atomic(void)
     MISSING(AO_compare_and_swap_double);
 # endif
 }
-
-
-    
 /*
  * Copyright (c) 2003 by Hewlett-Packard Company.  All rights reserved.
  *
  * This file is covered by the GNU general public license, version 2.
- * see doc/COPYING for details.
+ * see COPYING for details.
  */
 
 /* Some basic sanity tests.  These do not test the barrier semantics. */
@@ -222,7 +224,7 @@ void test_atomic(void)
 #undef TA_assert
 #define TA_assert(e) \
   if (!(e)) { fprintf(stderr, "Assertion failed %s:%d (barrier: _release)\n", \
-		    __FILE__, __LINE__), exit(1); }
+                    __FILE__, __LINE__), exit(1); }
 
 #undef MISSING
 #define MISSING(name) \
@@ -386,7 +388,21 @@ void test_atomic_release(void)
     TA_assert(x == 106);
 # else
     MISSING(AO_or);
-    x |= 34;
+    x |= 66;
+# endif
+# if defined(AO_HAVE_xor_release)
+    AO_xor_release(&x, 181);
+    TA_assert(x == 223);
+# else
+    MISSING(AO_xor);
+    x ^= 181;
+# endif
+# if defined(AO_HAVE_and_release)
+    AO_and_release(&x, 57);
+    TA_assert(x == 25);
+# else
+    MISSING(AO_and);
+    x &= 57;
 # endif
 # if defined(AO_HAVE_compare_double_and_swap_double_release)
     TA_assert(!AO_compare_double_and_swap_double_release(&w, 17, 42, 12, 13));
@@ -410,14 +426,11 @@ void test_atomic_release(void)
     MISSING(AO_compare_and_swap_double);
 # endif
 }
-
-
-    
 /*
  * Copyright (c) 2003 by Hewlett-Packard Company.  All rights reserved.
  *
  * This file is covered by the GNU general public license, version 2.
- * see doc/COPYING for details.
+ * see COPYING for details.
  */
 
 /* Some basic sanity tests.  These do not test the barrier semantics. */
@@ -425,7 +438,7 @@ void test_atomic_release(void)
 #undef TA_assert
 #define TA_assert(e) \
   if (!(e)) { fprintf(stderr, "Assertion failed %s:%d (barrier: _acquire)\n", \
-		    __FILE__, __LINE__), exit(1); }
+                    __FILE__, __LINE__), exit(1); }
 
 #undef MISSING
 #define MISSING(name) \
@@ -589,7 +602,21 @@ void test_atomic_acquire(void)
     TA_assert(x == 106);
 # else
     MISSING(AO_or);
-    x |= 34;
+    x |= 66;
+# endif
+# if defined(AO_HAVE_xor_acquire)
+    AO_xor_acquire(&x, 181);
+    TA_assert(x == 223);
+# else
+    MISSING(AO_xor);
+    x ^= 181;
+# endif
+# if defined(AO_HAVE_and_acquire)
+    AO_and_acquire(&x, 57);
+    TA_assert(x == 25);
+# else
+    MISSING(AO_and);
+    x &= 57;
 # endif
 # if defined(AO_HAVE_compare_double_and_swap_double_acquire)
     TA_assert(!AO_compare_double_and_swap_double_acquire(&w, 17, 42, 12, 13));
@@ -613,14 +640,11 @@ void test_atomic_acquire(void)
     MISSING(AO_compare_and_swap_double);
 # endif
 }
-
-
-    
 /*
  * Copyright (c) 2003 by Hewlett-Packard Company.  All rights reserved.
  *
  * This file is covered by the GNU general public license, version 2.
- * see doc/COPYING for details.
+ * see COPYING for details.
  */
 
 /* Some basic sanity tests.  These do not test the barrier semantics. */
@@ -628,7 +652,7 @@ void test_atomic_acquire(void)
 #undef TA_assert
 #define TA_assert(e) \
   if (!(e)) { fprintf(stderr, "Assertion failed %s:%d (barrier: _read)\n", \
-		    __FILE__, __LINE__), exit(1); }
+                    __FILE__, __LINE__), exit(1); }
 
 #undef MISSING
 #define MISSING(name) \
@@ -792,7 +816,21 @@ void test_atomic_read(void)
     TA_assert(x == 106);
 # else
     MISSING(AO_or);
-    x |= 34;
+    x |= 66;
+# endif
+# if defined(AO_HAVE_xor_read)
+    AO_xor_read(&x, 181);
+    TA_assert(x == 223);
+# else
+    MISSING(AO_xor);
+    x ^= 181;
+# endif
+# if defined(AO_HAVE_and_read)
+    AO_and_read(&x, 57);
+    TA_assert(x == 25);
+# else
+    MISSING(AO_and);
+    x &= 57;
 # endif
 # if defined(AO_HAVE_compare_double_and_swap_double_read)
     TA_assert(!AO_compare_double_and_swap_double_read(&w, 17, 42, 12, 13));
@@ -816,14 +854,11 @@ void test_atomic_read(void)
     MISSING(AO_compare_and_swap_double);
 # endif
 }
-
-
-    
 /*
  * Copyright (c) 2003 by Hewlett-Packard Company.  All rights reserved.
  *
  * This file is covered by the GNU general public license, version 2.
- * see doc/COPYING for details.
+ * see COPYING for details.
  */
 
 /* Some basic sanity tests.  These do not test the barrier semantics. */
@@ -831,7 +866,7 @@ void test_atomic_read(void)
 #undef TA_assert
 #define TA_assert(e) \
   if (!(e)) { fprintf(stderr, "Assertion failed %s:%d (barrier: _write)\n", \
-		    __FILE__, __LINE__), exit(1); }
+                    __FILE__, __LINE__), exit(1); }
 
 #undef MISSING
 #define MISSING(name) \
@@ -995,7 +1030,21 @@ void test_atomic_write(void)
     TA_assert(x == 106);
 # else
     MISSING(AO_or);
-    x |= 34;
+    x |= 66;
+# endif
+# if defined(AO_HAVE_xor_write)
+    AO_xor_write(&x, 181);
+    TA_assert(x == 223);
+# else
+    MISSING(AO_xor);
+    x ^= 181;
+# endif
+# if defined(AO_HAVE_and_write)
+    AO_and_write(&x, 57);
+    TA_assert(x == 25);
+# else
+    MISSING(AO_and);
+    x &= 57;
 # endif
 # if defined(AO_HAVE_compare_double_and_swap_double_write)
     TA_assert(!AO_compare_double_and_swap_double_write(&w, 17, 42, 12, 13));
@@ -1019,14 +1068,11 @@ void test_atomic_write(void)
     MISSING(AO_compare_and_swap_double);
 # endif
 }
-
-
-    
 /*
  * Copyright (c) 2003 by Hewlett-Packard Company.  All rights reserved.
  *
  * This file is covered by the GNU general public license, version 2.
- * see doc/COPYING for details.
+ * see COPYING for details.
  */
 
 /* Some basic sanity tests.  These do not test the barrier semantics. */
@@ -1034,7 +1080,7 @@ void test_atomic_write(void)
 #undef TA_assert
 #define TA_assert(e) \
   if (!(e)) { fprintf(stderr, "Assertion failed %s:%d (barrier: _full)\n", \
-		    __FILE__, __LINE__), exit(1); }
+                    __FILE__, __LINE__), exit(1); }
 
 #undef MISSING
 #define MISSING(name) \
@@ -1198,7 +1244,21 @@ void test_atomic_full(void)
     TA_assert(x == 106);
 # else
     MISSING(AO_or);
-    x |= 34;
+    x |= 66;
+# endif
+# if defined(AO_HAVE_xor_full)
+    AO_xor_full(&x, 181);
+    TA_assert(x == 223);
+# else
+    MISSING(AO_xor);
+    x ^= 181;
+# endif
+# if defined(AO_HAVE_and_full)
+    AO_and_full(&x, 57);
+    TA_assert(x == 25);
+# else
+    MISSING(AO_and);
+    x &= 57;
 # endif
 # if defined(AO_HAVE_compare_double_and_swap_double_full)
     TA_assert(!AO_compare_double_and_swap_double_full(&w, 17, 42, 12, 13));
@@ -1222,14 +1282,11 @@ void test_atomic_full(void)
     MISSING(AO_compare_and_swap_double);
 # endif
 }
-
-
-    
 /*
  * Copyright (c) 2003 by Hewlett-Packard Company.  All rights reserved.
  *
  * This file is covered by the GNU general public license, version 2.
- * see doc/COPYING for details.
+ * see COPYING for details.
  */
 
 /* Some basic sanity tests.  These do not test the barrier semantics. */
@@ -1237,7 +1294,7 @@ void test_atomic_full(void)
 #undef TA_assert
 #define TA_assert(e) \
   if (!(e)) { fprintf(stderr, "Assertion failed %s:%d (barrier: _release_write)\n", \
-		    __FILE__, __LINE__), exit(1); }
+                    __FILE__, __LINE__), exit(1); }
 
 #undef MISSING
 #define MISSING(name) \
@@ -1401,7 +1458,21 @@ void test_atomic_release_write(void)
     TA_assert(x == 106);
 # else
     MISSING(AO_or);
-    x |= 34;
+    x |= 66;
+# endif
+# if defined(AO_HAVE_xor_release_write)
+    AO_xor_release_write(&x, 181);
+    TA_assert(x == 223);
+# else
+    MISSING(AO_xor);
+    x ^= 181;
+# endif
+# if defined(AO_HAVE_and_release_write)
+    AO_and_release_write(&x, 57);
+    TA_assert(x == 25);
+# else
+    MISSING(AO_and);
+    x &= 57;
 # endif
 # if defined(AO_HAVE_compare_double_and_swap_double_release_write)
     TA_assert(!AO_compare_double_and_swap_double_release_write(&w, 17, 42, 12, 13));
@@ -1425,14 +1496,11 @@ void test_atomic_release_write(void)
     MISSING(AO_compare_and_swap_double);
 # endif
 }
-
-
-    
 /*
  * Copyright (c) 2003 by Hewlett-Packard Company.  All rights reserved.
  *
  * This file is covered by the GNU general public license, version 2.
- * see doc/COPYING for details.
+ * see COPYING for details.
  */
 
 /* Some basic sanity tests.  These do not test the barrier semantics. */
@@ -1440,7 +1508,7 @@ void test_atomic_release_write(void)
 #undef TA_assert
 #define TA_assert(e) \
   if (!(e)) { fprintf(stderr, "Assertion failed %s:%d (barrier: _acquire_read)\n", \
-		    __FILE__, __LINE__), exit(1); }
+                    __FILE__, __LINE__), exit(1); }
 
 #undef MISSING
 #define MISSING(name) \
@@ -1604,7 +1672,21 @@ void test_atomic_acquire_read(void)
     TA_assert(x == 106);
 # else
     MISSING(AO_or);
-    x |= 34;
+    x |= 66;
+# endif
+# if defined(AO_HAVE_xor_acquire_read)
+    AO_xor_acquire_read(&x, 181);
+    TA_assert(x == 223);
+# else
+    MISSING(AO_xor);
+    x ^= 181;
+# endif
+# if defined(AO_HAVE_and_acquire_read)
+    AO_and_acquire_read(&x, 57);
+    TA_assert(x == 25);
+# else
+    MISSING(AO_and);
+    x &= 57;
 # endif
 # if defined(AO_HAVE_compare_double_and_swap_double_acquire_read)
     TA_assert(!AO_compare_double_and_swap_double_acquire_read(&w, 17, 42, 12, 13));
@@ -1628,6 +1710,3 @@ void test_atomic_acquire_read(void)
     MISSING(AO_compare_and_swap_double);
 # endif
 }
-
-
-    

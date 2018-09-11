@@ -37,7 +37,6 @@ AO_nop_full(void)
   /* Note: "mfence" (SSE2) is supported on all x86_64/amd64 chips.      */
   __asm__ __volatile__("mfence" : : : "memory");
 }
-
 #define AO_HAVE_nop_full
 
 /* As far as we can tell, the lfence and sfence instructions are not    */
@@ -53,7 +52,6 @@ AO_fetch_and_add_full (volatile AO_t *p, AO_t incr)
                         : "memory");
   return result;
 }
-
 #define AO_HAVE_fetch_and_add_full
 
 AO_INLINE unsigned char
@@ -66,7 +64,6 @@ AO_char_fetch_and_add_full (volatile unsigned char *p, unsigned char incr)
                         : "memory");
   return result;
 }
-
 #define AO_HAVE_char_fetch_and_add_full
 
 AO_INLINE unsigned short
@@ -79,7 +76,6 @@ AO_short_fetch_and_add_full (volatile unsigned short *p, unsigned short incr)
                         : "memory");
   return result;
 }
-
 #define AO_HAVE_short_fetch_and_add_full
 
 AO_INLINE unsigned int
@@ -92,17 +88,31 @@ AO_int_fetch_and_add_full (volatile unsigned int *p, unsigned int incr)
                         : "memory");
   return result;
 }
-
 #define AO_HAVE_int_fetch_and_add_full
 
 AO_INLINE void
-AO_or_full (volatile AO_t *p, AO_t incr)
+AO_and_full (volatile AO_t *p, AO_t value)
+{
+  __asm__ __volatile__ ("lock; andq %1, %0" :
+                        "=m" (*p) : "r" (value), "m" (*p) : "memory");
+}
+#define AO_HAVE_and_full
+
+AO_INLINE void
+AO_or_full (volatile AO_t *p, AO_t value)
 {
   __asm__ __volatile__ ("lock; orq %1, %0" :
-                        "=m" (*p) : "r" (incr), "m" (*p) : "memory");
+                        "=m" (*p) : "r" (value), "m" (*p) : "memory");
 }
-
 #define AO_HAVE_or_full
+
+AO_INLINE void
+AO_xor_full (volatile AO_t *p, AO_t value)
+{
+  __asm__ __volatile__ ("lock; xorq %1, %0" :
+                        "=m" (*p) : "r" (value), "m" (*p) : "memory");
+}
+#define AO_HAVE_xor_full
 
 AO_INLINE AO_TS_VAL_t
 AO_test_and_set_full(volatile AO_TS_t *addr)
@@ -111,10 +121,9 @@ AO_test_and_set_full(volatile AO_TS_t *addr)
   /* Note: the "xchg" instruction does not need a "lock" prefix */
   __asm__ __volatile__("xchgb %0, %1"
                 : "=q"(oldval), "=m"(*addr)
-                : "0"(0xff), "m"(*addr) : "memory");
+                : "0"((unsigned char)0xff), "m"(*addr) : "memory");
   return (AO_TS_VAL_t)oldval;
 }
-
 #define AO_HAVE_test_and_set_full
 
 /* Returns nonzero if the comparison succeeded. */
@@ -131,10 +140,10 @@ AO_compare_and_swap_full(volatile AO_t *addr, AO_t old, AO_t new_val)
     return (int) result;
 # endif
 }
-
 #define AO_HAVE_compare_and_swap_full
 
 #ifdef AO_CMPXCHG16B_AVAILABLE
+
 /* NEC LE-IT: older AMD Opterons are missing this instruction.
  * On these machines SIGILL will be thrown.
  * Define AO_WEAK_DOUBLE_CAS_EMULATION to have an emulated
@@ -157,6 +166,7 @@ AO_compare_double_and_swap_double_full(volatile AO_double_t *addr,
   return (int) result;
 }
 #define AO_HAVE_compare_double_and_swap_double_full
+
 #else
 /* this one provides spinlock based emulation of CAS implemented in     */
 /* atomic_ops.c.  We probably do not want to do this here, since it is  */
@@ -172,10 +182,10 @@ AO_compare_double_and_swap_double_full(volatile AO_double_t *addr,
                                        AO_t old_val1, AO_t old_val2,
                                        AO_t new_val1, AO_t new_val2)
 {
-        return AO_compare_double_and_swap_double_emulation(addr,
-                                                           old_val1, old_val2,
-                                                           new_val1, new_val2);
+  return AO_compare_double_and_swap_double_emulation(addr, old_val1, old_val2,
+                                                     new_val1, new_val2);
 }
 #define AO_HAVE_compare_double_and_swap_double_full
 #endif /* AO_WEAK_DOUBLE_CAS_EMULATION */
+
 #endif /* AO_CMPXCHG16B_AVAILABLE */
