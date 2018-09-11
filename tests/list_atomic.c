@@ -34,7 +34,7 @@ void list_atomic(void)
     static AO_t newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_fetch_and_add) || defined(AO_HAVE_and) \
      || defined(AO_HAVE_or) || defined(AO_HAVE_xor)
@@ -155,7 +155,7 @@ void list_atomic_release(void)
     static AO_t newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set_release)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_fetch_and_add_release) || defined(AO_HAVE_and_release) \
      || defined(AO_HAVE_or_release) || defined(AO_HAVE_xor_release)
@@ -276,7 +276,7 @@ void list_atomic_acquire(void)
     static AO_t newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set_acquire)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_fetch_and_add_acquire) || defined(AO_HAVE_and_acquire) \
      || defined(AO_HAVE_or_acquire) || defined(AO_HAVE_xor_acquire)
@@ -397,7 +397,7 @@ void list_atomic_read(void)
     static AO_t newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set_read)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_fetch_and_add_read) || defined(AO_HAVE_and_read) \
      || defined(AO_HAVE_or_read) || defined(AO_HAVE_xor_read)
@@ -518,7 +518,7 @@ void list_atomic_write(void)
     static AO_t newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set_write)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_fetch_and_add_write) || defined(AO_HAVE_and_write) \
      || defined(AO_HAVE_or_write) || defined(AO_HAVE_xor_write)
@@ -639,7 +639,7 @@ void list_atomic_full(void)
     static AO_t newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set_full)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_fetch_and_add_full) || defined(AO_HAVE_and_full) \
      || defined(AO_HAVE_or_full) || defined(AO_HAVE_xor_full)
@@ -760,7 +760,7 @@ void list_atomic_release_write(void)
     static AO_t newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set_release_write)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_fetch_and_add_release_write) || defined(AO_HAVE_and_release_write) \
      || defined(AO_HAVE_or_release_write) || defined(AO_HAVE_xor_release_write)
@@ -881,7 +881,7 @@ void list_atomic_acquire_read(void)
     static AO_t newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set_acquire_read)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_fetch_and_add_acquire_read) || defined(AO_HAVE_and_acquire_read) \
      || defined(AO_HAVE_or_acquire_read) || defined(AO_HAVE_xor_acquire_read)
@@ -1002,7 +1002,7 @@ void list_atomic_dd_acquire_read(void)
     static AO_t newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set_dd_acquire_read)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_fetch_and_add_dd_acquire_read) || defined(AO_HAVE_and_dd_acquire_read) \
      || defined(AO_HAVE_or_dd_acquire_read) || defined(AO_HAVE_xor_dd_acquire_read)
@@ -1123,7 +1123,7 @@ void char_list_atomic(void)
     static unsigned/**/char newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_char_fetch_and_add) || defined(AO_HAVE_char_and) \
      || defined(AO_HAVE_char_or) || defined(AO_HAVE_char_xor)
@@ -1244,7 +1244,7 @@ void char_list_atomic_release(void)
     static unsigned/**/char newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set_release)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_char_fetch_and_add_release) || defined(AO_HAVE_char_and_release) \
      || defined(AO_HAVE_char_or_release) || defined(AO_HAVE_char_xor_release)
@@ -1365,7 +1365,7 @@ void char_list_atomic_acquire(void)
     static unsigned/**/char newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set_acquire)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_char_fetch_and_add_acquire) || defined(AO_HAVE_char_and_acquire) \
      || defined(AO_HAVE_char_or_acquire) || defined(AO_HAVE_char_xor_acquire)
@@ -1486,7 +1486,7 @@ void char_list_atomic_read(void)
     static unsigned/**/char newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set_read)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_char_fetch_and_add_read) || defined(AO_HAVE_char_and_read) \
      || defined(AO_HAVE_char_or_read) || defined(AO_HAVE_char_xor_read)
@@ -1607,7 +1607,7 @@ void char_list_atomic_write(void)
     static unsigned/**/char newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set_write)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_char_fetch_and_add_write) || defined(AO_HAVE_char_and_write) \
      || defined(AO_HAVE_char_or_write) || defined(AO_HAVE_char_xor_write)
@@ -1728,7 +1728,7 @@ void char_list_atomic_full(void)
     static unsigned/**/char newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set_full)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_char_fetch_and_add_full) || defined(AO_HAVE_char_and_full) \
      || defined(AO_HAVE_char_or_full) || defined(AO_HAVE_char_xor_full)
@@ -1849,7 +1849,7 @@ void char_list_atomic_release_write(void)
     static unsigned/**/char newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set_release_write)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_char_fetch_and_add_release_write) || defined(AO_HAVE_char_and_release_write) \
      || defined(AO_HAVE_char_or_release_write) || defined(AO_HAVE_char_xor_release_write)
@@ -1970,7 +1970,7 @@ void char_list_atomic_acquire_read(void)
     static unsigned/**/char newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set_acquire_read)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_char_fetch_and_add_acquire_read) || defined(AO_HAVE_char_and_acquire_read) \
      || defined(AO_HAVE_char_or_acquire_read) || defined(AO_HAVE_char_xor_acquire_read)
@@ -2091,7 +2091,7 @@ void char_list_atomic_dd_acquire_read(void)
     static unsigned/**/char newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set_dd_acquire_read)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_char_fetch_and_add_dd_acquire_read) || defined(AO_HAVE_char_and_dd_acquire_read) \
      || defined(AO_HAVE_char_or_dd_acquire_read) || defined(AO_HAVE_char_xor_dd_acquire_read)
@@ -2212,7 +2212,7 @@ void short_list_atomic(void)
     static unsigned/**/short newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_short_fetch_and_add) || defined(AO_HAVE_short_and) \
      || defined(AO_HAVE_short_or) || defined(AO_HAVE_short_xor)
@@ -2333,7 +2333,7 @@ void short_list_atomic_release(void)
     static unsigned/**/short newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set_release)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_short_fetch_and_add_release) || defined(AO_HAVE_short_and_release) \
      || defined(AO_HAVE_short_or_release) || defined(AO_HAVE_short_xor_release)
@@ -2454,7 +2454,7 @@ void short_list_atomic_acquire(void)
     static unsigned/**/short newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set_acquire)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_short_fetch_and_add_acquire) || defined(AO_HAVE_short_and_acquire) \
      || defined(AO_HAVE_short_or_acquire) || defined(AO_HAVE_short_xor_acquire)
@@ -2575,7 +2575,7 @@ void short_list_atomic_read(void)
     static unsigned/**/short newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set_read)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_short_fetch_and_add_read) || defined(AO_HAVE_short_and_read) \
      || defined(AO_HAVE_short_or_read) || defined(AO_HAVE_short_xor_read)
@@ -2696,7 +2696,7 @@ void short_list_atomic_write(void)
     static unsigned/**/short newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set_write)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_short_fetch_and_add_write) || defined(AO_HAVE_short_and_write) \
      || defined(AO_HAVE_short_or_write) || defined(AO_HAVE_short_xor_write)
@@ -2817,7 +2817,7 @@ void short_list_atomic_full(void)
     static unsigned/**/short newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set_full)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_short_fetch_and_add_full) || defined(AO_HAVE_short_and_full) \
      || defined(AO_HAVE_short_or_full) || defined(AO_HAVE_short_xor_full)
@@ -2938,7 +2938,7 @@ void short_list_atomic_release_write(void)
     static unsigned/**/short newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set_release_write)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_short_fetch_and_add_release_write) || defined(AO_HAVE_short_and_release_write) \
      || defined(AO_HAVE_short_or_release_write) || defined(AO_HAVE_short_xor_release_write)
@@ -3059,7 +3059,7 @@ void short_list_atomic_acquire_read(void)
     static unsigned/**/short newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set_acquire_read)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_short_fetch_and_add_acquire_read) || defined(AO_HAVE_short_and_acquire_read) \
      || defined(AO_HAVE_short_or_acquire_read) || defined(AO_HAVE_short_xor_acquire_read)
@@ -3180,7 +3180,7 @@ void short_list_atomic_dd_acquire_read(void)
     static unsigned/**/short newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set_dd_acquire_read)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_short_fetch_and_add_dd_acquire_read) || defined(AO_HAVE_short_and_dd_acquire_read) \
      || defined(AO_HAVE_short_or_dd_acquire_read) || defined(AO_HAVE_short_xor_dd_acquire_read)
@@ -3301,7 +3301,7 @@ void int_list_atomic(void)
     static unsigned newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_int_fetch_and_add) || defined(AO_HAVE_int_and) \
      || defined(AO_HAVE_int_or) || defined(AO_HAVE_int_xor)
@@ -3422,7 +3422,7 @@ void int_list_atomic_release(void)
     static unsigned newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set_release)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_int_fetch_and_add_release) || defined(AO_HAVE_int_and_release) \
      || defined(AO_HAVE_int_or_release) || defined(AO_HAVE_int_xor_release)
@@ -3543,7 +3543,7 @@ void int_list_atomic_acquire(void)
     static unsigned newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set_acquire)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_int_fetch_and_add_acquire) || defined(AO_HAVE_int_and_acquire) \
      || defined(AO_HAVE_int_or_acquire) || defined(AO_HAVE_int_xor_acquire)
@@ -3664,7 +3664,7 @@ void int_list_atomic_read(void)
     static unsigned newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set_read)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_int_fetch_and_add_read) || defined(AO_HAVE_int_and_read) \
      || defined(AO_HAVE_int_or_read) || defined(AO_HAVE_int_xor_read)
@@ -3785,7 +3785,7 @@ void int_list_atomic_write(void)
     static unsigned newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set_write)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_int_fetch_and_add_write) || defined(AO_HAVE_int_and_write) \
      || defined(AO_HAVE_int_or_write) || defined(AO_HAVE_int_xor_write)
@@ -3906,7 +3906,7 @@ void int_list_atomic_full(void)
     static unsigned newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set_full)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_int_fetch_and_add_full) || defined(AO_HAVE_int_and_full) \
      || defined(AO_HAVE_int_or_full) || defined(AO_HAVE_int_xor_full)
@@ -4027,7 +4027,7 @@ void int_list_atomic_release_write(void)
     static unsigned newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set_release_write)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_int_fetch_and_add_release_write) || defined(AO_HAVE_int_and_release_write) \
      || defined(AO_HAVE_int_or_release_write) || defined(AO_HAVE_int_xor_release_write)
@@ -4148,7 +4148,7 @@ void int_list_atomic_acquire_read(void)
     static unsigned newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set_acquire_read)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_int_fetch_and_add_acquire_read) || defined(AO_HAVE_int_and_acquire_read) \
      || defined(AO_HAVE_int_or_acquire_read) || defined(AO_HAVE_int_xor_acquire_read)
@@ -4269,7 +4269,7 @@ void int_list_atomic_dd_acquire_read(void)
     static unsigned newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set_dd_acquire_read)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_int_fetch_and_add_dd_acquire_read) || defined(AO_HAVE_int_and_dd_acquire_read) \
      || defined(AO_HAVE_int_or_dd_acquire_read) || defined(AO_HAVE_int_xor_dd_acquire_read)
@@ -4390,7 +4390,7 @@ void double_list_atomic(void)
     static AO_double_t newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_double_fetch_and_add) || defined(AO_HAVE_double_and) \
      || defined(AO_HAVE_double_or) || defined(AO_HAVE_double_xor)
@@ -4511,7 +4511,7 @@ void double_list_atomic_release(void)
     static AO_double_t newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set_release)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_double_fetch_and_add_release) || defined(AO_HAVE_double_and_release) \
      || defined(AO_HAVE_double_or_release) || defined(AO_HAVE_double_xor_release)
@@ -4632,7 +4632,7 @@ void double_list_atomic_acquire(void)
     static AO_double_t newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set_acquire)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_double_fetch_and_add_acquire) || defined(AO_HAVE_double_and_acquire) \
      || defined(AO_HAVE_double_or_acquire) || defined(AO_HAVE_double_xor_acquire)
@@ -4753,7 +4753,7 @@ void double_list_atomic_read(void)
     static AO_double_t newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set_read)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_double_fetch_and_add_read) || defined(AO_HAVE_double_and_read) \
      || defined(AO_HAVE_double_or_read) || defined(AO_HAVE_double_xor_read)
@@ -4874,7 +4874,7 @@ void double_list_atomic_write(void)
     static AO_double_t newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set_write)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_double_fetch_and_add_write) || defined(AO_HAVE_double_and_write) \
      || defined(AO_HAVE_double_or_write) || defined(AO_HAVE_double_xor_write)
@@ -4995,7 +4995,7 @@ void double_list_atomic_full(void)
     static AO_double_t newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set_full)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_double_fetch_and_add_full) || defined(AO_HAVE_double_and_full) \
      || defined(AO_HAVE_double_or_full) || defined(AO_HAVE_double_xor_full)
@@ -5116,7 +5116,7 @@ void double_list_atomic_release_write(void)
     static AO_double_t newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set_release_write)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_double_fetch_and_add_release_write) || defined(AO_HAVE_double_and_release_write) \
      || defined(AO_HAVE_double_or_release_write) || defined(AO_HAVE_double_xor_release_write)
@@ -5237,7 +5237,7 @@ void double_list_atomic_acquire_read(void)
     static AO_double_t newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set_acquire_read)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_double_fetch_and_add_acquire_read) || defined(AO_HAVE_double_and_acquire_read) \
      || defined(AO_HAVE_double_or_acquire_read) || defined(AO_HAVE_double_xor_acquire_read)
@@ -5358,7 +5358,7 @@ void double_list_atomic_dd_acquire_read(void)
     static AO_double_t newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_set_dd_acquire_read)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_double_fetch_and_add_dd_acquire_read) || defined(AO_HAVE_double_and_dd_acquire_read) \
      || defined(AO_HAVE_double_or_dd_acquire_read) || defined(AO_HAVE_double_xor_dd_acquire_read)
