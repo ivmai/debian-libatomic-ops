@@ -1,6 +1,6 @@
 /* src/config.h.in.  Generated from configure.ac by autoheader.  */
 
-/* Inline assembly avalable (only VC/x86_64) */
+/* Inline assembly available (only VC/x86_64) */
 #undef AO_ASM_X64_AVAILABLE
 
 /* Assume Windows Server 2003, Vista or later target (only VC/x86) */
