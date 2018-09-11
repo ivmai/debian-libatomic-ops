@@ -66,6 +66,12 @@ void list_atomic(void)
 # else
     "No AO_compare_and_swap";
 # endif
+# if defined(AO_HAVE_fetch_compare_and_swap)
+    "AO_fetch_compare_and_swap(&val, oldval, newval):";
+    AO_fetch_compare_and_swap(&val, oldval, newval);
+# else
+    "No AO_fetch_compare_and_swap";
+# endif
 }
 /*
  * Copyright (c) 2003 by Hewlett-Packard Company.  All rights reserved.
@@ -133,6 +139,12 @@ void list_atomic_release(void)
     AO_compare_and_swap_release(&val, oldval, newval);
 # else
     "No AO_compare_and_swap_release";
+# endif
+# if defined(AO_HAVE_fetch_compare_and_swap_release)
+    "AO_fetch_compare_and_swap_release(&val, oldval, newval):";
+    AO_fetch_compare_and_swap_release(&val, oldval, newval);
+# else
+    "No AO_fetch_compare_and_swap_release";
 # endif
 }
 /*
@@ -202,6 +214,12 @@ void list_atomic_acquire(void)
 # else
     "No AO_compare_and_swap_acquire";
 # endif
+# if defined(AO_HAVE_fetch_compare_and_swap_acquire)
+    "AO_fetch_compare_and_swap_acquire(&val, oldval, newval):";
+    AO_fetch_compare_and_swap_acquire(&val, oldval, newval);
+# else
+    "No AO_fetch_compare_and_swap_acquire";
+# endif
 }
 /*
  * Copyright (c) 2003 by Hewlett-Packard Company.  All rights reserved.
@@ -269,6 +287,12 @@ void list_atomic_read(void)
     AO_compare_and_swap_read(&val, oldval, newval);
 # else
     "No AO_compare_and_swap_read";
+# endif
+# if defined(AO_HAVE_fetch_compare_and_swap_read)
+    "AO_fetch_compare_and_swap_read(&val, oldval, newval):";
+    AO_fetch_compare_and_swap_read(&val, oldval, newval);
+# else
+    "No AO_fetch_compare_and_swap_read";
 # endif
 }
 /*
@@ -338,6 +362,12 @@ void list_atomic_write(void)
 # else
     "No AO_compare_and_swap_write";
 # endif
+# if defined(AO_HAVE_fetch_compare_and_swap_write)
+    "AO_fetch_compare_and_swap_write(&val, oldval, newval):";
+    AO_fetch_compare_and_swap_write(&val, oldval, newval);
+# else
+    "No AO_fetch_compare_and_swap_write";
+# endif
 }
 /*
  * Copyright (c) 2003 by Hewlett-Packard Company.  All rights reserved.
@@ -405,6 +435,12 @@ void list_atomic_full(void)
     AO_compare_and_swap_full(&val, oldval, newval);
 # else
     "No AO_compare_and_swap_full";
+# endif
+# if defined(AO_HAVE_fetch_compare_and_swap_full)
+    "AO_fetch_compare_and_swap_full(&val, oldval, newval):";
+    AO_fetch_compare_and_swap_full(&val, oldval, newval);
+# else
+    "No AO_fetch_compare_and_swap_full";
 # endif
 }
 /*
@@ -474,6 +510,12 @@ void list_atomic_release_write(void)
 # else
     "No AO_compare_and_swap_release_write";
 # endif
+# if defined(AO_HAVE_fetch_compare_and_swap_release_write)
+    "AO_fetch_compare_and_swap_release_write(&val, oldval, newval):";
+    AO_fetch_compare_and_swap_release_write(&val, oldval, newval);
+# else
+    "No AO_fetch_compare_and_swap_release_write";
+# endif
 }
 /*
  * Copyright (c) 2003 by Hewlett-Packard Company.  All rights reserved.
@@ -541,5 +583,11 @@ void list_atomic_acquire_read(void)
     AO_compare_and_swap_acquire_read(&val, oldval, newval);
 # else
     "No AO_compare_and_swap_acquire_read";
+# endif
+# if defined(AO_HAVE_fetch_compare_and_swap_acquire_read)
+    "AO_fetch_compare_and_swap_acquire_read(&val, oldval, newval):";
+    AO_fetch_compare_and_swap_acquire_read(&val, oldval, newval);
+# else
+    "No AO_fetch_compare_and_swap_acquire_read";
 # endif
 }

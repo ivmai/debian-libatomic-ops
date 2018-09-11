@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003 Hewlett-Packard Development Company, L.P.
+ * Copyright (c) 2003-2011 Hewlett-Packard Development Company, L.P.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -150,7 +150,7 @@ static void lock_ool(volatile AO_TS_t *l)
 
 AO_INLINE void lock(volatile AO_TS_t *l)
 {
-  if (AO_test_and_set_acquire(l) == AO_TS_SET)
+  if (AO_EXPECT_FALSE(AO_test_and_set_acquire(l) == AO_TS_SET))
     lock_ool(l);
 }
 
@@ -166,7 +166,7 @@ AO_INLINE void unlock(volatile AO_TS_t *l)
 
   AO_INLINE void block_all_signals(sigset_t *old_sigs_ptr)
   {
-    if (!AO_load_acquire(&initialized))
+    if (AO_EXPECT_FALSE(!AO_load_acquire(&initialized)))
     {
       lock(&init_lock);
       if (!initialized)
@@ -185,29 +185,25 @@ AO_INLINE void unlock(volatile AO_TS_t *l)
   }
 #endif /* !AO_USE_NO_SIGNALS */
 
-int AO_compare_and_swap_emulation(volatile AO_t *addr, AO_t old,
-                                  AO_t new_val)
+AO_t AO_fetch_compare_and_swap_emulation(volatile AO_t *addr, AO_t old_val,
+                                         AO_t new_val)
 {
   AO_TS_t *my_lock = AO_locks + AO_HASH(addr);
-  int result;
+  AO_t fetched_val;
 
 # ifndef AO_USE_NO_SIGNALS
     sigset_t old_sigs;
     block_all_signals(&old_sigs);
 # endif
   lock(my_lock);
-  if (*addr == old)
-    {
-      *addr = new_val;
-      result = 1;
-    }
-  else
-    result = 0;
+  fetched_val = *addr;
+  if (fetched_val == old_val)
+    *addr = new_val;
   unlock(my_lock);
 # ifndef AO_USE_NO_SIGNALS
     sigprocmask(SIG_SETMASK, &old_sigs, NULL);
 # endif
-  return result;
+  return fetched_val;
 }
 
 int AO_compare_double_and_swap_double_emulation(volatile AO_double_t *addr,

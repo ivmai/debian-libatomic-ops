@@ -137,7 +137,7 @@ AO_stack_push_explicit_aux_release(volatile AO_t *list, AO_t *x,
       next = AO_load(list);
       *x = next;
     }
-  while(!AO_compare_and_swap_release(list, next, x_bits));
+  while (AO_EXPECT_FALSE(!AO_compare_and_swap_release(list, next, x_bits)));
 }
 
 /*
@@ -192,13 +192,13 @@ AO_stack_pop_explicit_aux_acquire(volatile AO_t *list, AO_stack_aux * a)
   /* We need to make sure that first is still the first entry on the    */
   /* list.  Otherwise it's possible that a reinsertion of it was        */
   /* already started before we added the black list entry.              */
-  if (first != AO_load(list)) {
+  if (AO_EXPECT_FALSE(first != AO_load(list))) {
     AO_store_release(a->AO_stack_bl+i, 0);
     goto retry;
   }
   first_ptr = AO_REAL_NEXT_PTR(first);
   next = AO_load(first_ptr);
-  if (!AO_compare_and_swap_release(list, first, next)) {
+  if (AO_EXPECT_FALSE(!AO_compare_and_swap_release(list, first, next))) {
     AO_store_release(a->AO_stack_bl+i, 0);
     goto retry;
   }
@@ -231,8 +231,8 @@ void AO_stack_push_release(AO_stack_t *list, AO_t *element)
     do {
       next = AO_load(&(list -> ptr));
       *element = next;
-    } while (!AO_compare_and_swap_release
-                    ( &(list -> ptr), next, (AO_t) element));
+    } while (AO_EXPECT_FALSE(!AO_compare_and_swap_release(&(list -> ptr),
+                                                      next, (AO_t)element)));
     /* This uses a narrow CAS here, an old optimization suggested       */
     /* by Treiber.  Pop is still safe, since we run into the ABA        */
     /* problem only if there were both intervening "pop"s and "push"es. */
@@ -241,7 +241,13 @@ void AO_stack_push_release(AO_stack_t *list, AO_t *element)
 
 AO_t *AO_stack_pop_acquire(AO_stack_t *list)
 {
-    AO_t *cptr;
+#   ifdef __clang__
+      AO_t *volatile cptr;
+                        /* Use volatile to workaround a bug in          */
+                        /* clang-1.1/x86 causing test_stack failure.    */
+#   else
+      AO_t *cptr;
+#   endif
     AO_t next;
     AO_t cversion;
 
@@ -251,8 +257,9 @@ AO_t *AO_stack_pop_acquire(AO_stack_t *list)
       cptr = (AO_t *)AO_load(&(list -> ptr));
       if (cptr == 0) return 0;
       next = *cptr;
-    } while (!AO_compare_double_and_swap_double_release
-                    (list, cversion, (AO_t) cptr, cversion+1, (AO_t) next));
+    } while (AO_EXPECT_FALSE(!AO_compare_double_and_swap_double_release(list,
+                                        cversion, (AO_t)cptr,
+                                        cversion+1, (AO_t)next)));
     return cptr;
 }
 

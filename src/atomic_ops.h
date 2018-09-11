@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003 Hewlett-Packard Development Company, L.P.
+ * Copyright (c) 2003-2011 Hewlett-Packard Development Company, L.P.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -77,6 +77,7 @@
 /* AO_or                                                        */
 /* AO_xor                                                       */
 /* AO_compare_and_swap                                          */
+/* AO_fetch_compare_and_swap                                    */
 /*                                                              */
 /* Note that atomicity guarantees are valid only if both        */
 /* readers and writers use AO_ operations to access the         */
@@ -90,9 +91,14 @@
 /* or can only be read concurrently, then x can be accessed     */
 /* via ordinary references and assignments.                     */
 /*                                                              */
-/* Compare_and_exchange takes an address and an expected old    */
-/* value and a new value, and returns an int.  Nonzero          */
+/* AO_compare_and_swap takes an address and an expected old     */
+/* value and a new value, and returns an int.  Non-zero result  */
 /* indicates that it succeeded.                                 */
+/* AO_fetch_compare_and_swap takes an address and an expected   */
+/* old value and a new value, and returns the real old value.   */
+/* The operation succeeded if and only if the expected old      */
+/* value matches the old value returned.                        */
+/*                                                              */
 /* Test_and_set takes an address, atomically replaces it by     */
 /* AO_TS_SET, and returns the prior value.                      */
 /* An AO_TS_t location can be reset with the                    */
@@ -163,6 +169,13 @@
 # define AO_INLINE static
 #endif
 
+#if __GNUC__ >= 3 && !defined(LINT2)
+# define AO_EXPECT_FALSE(expr) __builtin_expect(expr, 0)
+  /* Equivalent to (expr) but predict that usually (expr) == 0. */
+#else
+# define AO_EXPECT_FALSE(expr) (expr)
+#endif /* !__GNUC__ */
+
 #if defined(__GNUC__) && !defined(__INTEL_COMPILER)
 # define AO_compiler_barrier() __asm__ __volatile__("" : : : "memory")
 #elif defined(_MSC_VER) || defined(__DMC__) || defined(__BORLANDC__) \
@@ -220,7 +233,8 @@
 #   include "atomic_ops/sysdeps/gcc/x86.h"
 # endif /* __i386__ */
 # if defined(__x86_64__)
-#   if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 2)
+#   if (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 2)) \
+       && !defined(AO_USE_SYNC_CAS_BUILTIN)
       /* It is safe to use __sync CAS built-in on this architecture.    */
 #     define AO_USE_SYNC_CAS_BUILTIN
 #   endif
@@ -296,7 +310,7 @@
 #     include "atomic_ops/sysdeps/gcc/x86.h"
 #   endif /* __i386__ */
 #   if defined(__x86_64__)
-#     if __INTEL_COMPILER > 1110
+#     if (__INTEL_COMPILER > 1110) && !defined(AO_USE_SYNC_CAS_BUILTIN)
 #       define AO_USE_SYNC_CAS_BUILTIN
 #     endif
 #     include "atomic_ops/sysdeps/gcc/x86_64.h"
@@ -343,8 +357,11 @@
 #endif
 
 #if defined(AO_REQUIRE_CAS) && !defined(AO_HAVE_compare_and_swap) \
+    && !defined(AO_HAVE_fetch_compare_and_swap) \
     && !defined(AO_HAVE_compare_and_swap_full) \
-    && !defined(AO_HAVE_compare_and_swap_acquire)
+    && !defined(AO_HAVE_fetch_compare_and_swap_full) \
+    && !defined(AO_HAVE_compare_and_swap_acquire) \
+    && !defined(AO_HAVE_fetch_compare_and_swap_acquire)
 # if defined(AO_CAN_EMUL_CAS)
 #   include "atomic_ops/sysdeps/emul_cas.h"
 # else
@@ -363,7 +380,8 @@
 
 /* The generalization section.  */
 #if !defined(AO_GENERALIZE_TWICE) && defined(AO_CAN_EMUL_CAS) \
-    && !defined(AO_HAVE_compare_and_swap_full)
+    && !defined(AO_HAVE_compare_and_swap_full) \
+    && !defined(AO_HAVE_fetch_compare_and_swap_full)
 # define AO_GENERALIZE_TWICE
 #endif
 
@@ -371,6 +389,16 @@
 /* In fact, we observe that this converges after a small fixed number   */
 /* of iterations, usually one.                                          */
 #include "atomic_ops/generalize.h"
+
+#ifdef AO_T_IS_INT
+  /* Included after the first generalization pass.      */
+# include "atomic_ops/sysdeps/ao_t_is_int.h"
+# ifndef AO_GENERALIZE_TWICE
+    /* Always generalize again. */
+#   define AO_GENERALIZE_TWICE
+# endif
+#endif /* AO_T_IS_INT */
+
 #ifdef AO_GENERALIZE_TWICE
 # include "atomic_ops/generalize.h"
 #endif

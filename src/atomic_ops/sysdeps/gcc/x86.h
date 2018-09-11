@@ -56,6 +56,7 @@ AO_nop_full(void)
 /* currently needed or useful for cached memory accesses.               */
 
 /* Really only works for 486 and later */
+#ifndef AO_PREFER_GENERALIZED
 AO_INLINE AO_t
 AO_fetch_and_add_full (volatile AO_t *p, AO_t incr)
 {
@@ -67,6 +68,7 @@ AO_fetch_and_add_full (volatile AO_t *p, AO_t incr)
   return result;
 }
 #define AO_HAVE_fetch_and_add_full
+#endif /* !AO_PREFER_GENERALIZED */
 
 AO_INLINE unsigned char
 AO_char_fetch_and_add_full (volatile unsigned char *p, unsigned char incr)
@@ -92,6 +94,7 @@ AO_short_fetch_and_add_full (volatile unsigned short *p, unsigned short incr)
 }
 #define AO_HAVE_short_fetch_and_add_full
 
+#ifndef AO_PREFER_GENERALIZED
 /* Really only works for 486 and later */
 AO_INLINE void
 AO_and_full (volatile AO_t *p, AO_t value)
@@ -116,6 +119,7 @@ AO_xor_full (volatile AO_t *p, AO_t value)
                         "=m" (*p) : "r" (value), "m" (*p) : "memory");
 }
 #define AO_HAVE_xor_full
+#endif /* !AO_PREFER_GENERALIZED */
 
 AO_INLINE AO_TS_VAL_t
 AO_test_and_set_full(volatile AO_TS_t *addr)
@@ -129,25 +133,46 @@ AO_test_and_set_full(volatile AO_TS_t *addr)
 }
 #define AO_HAVE_test_and_set_full
 
-/* Returns nonzero if the comparison succeeded. */
-AO_INLINE int
-AO_compare_and_swap_full(volatile AO_t *addr, AO_t old, AO_t new_val)
-{
-# ifdef AO_USE_SYNC_CAS_BUILTIN
-    return (int)__sync_bool_compare_and_swap(addr, old, new_val
-                                             /* empty protection list */);
+#ifndef AO_GENERALIZE_ASM_BOOL_CAS
+  /* Returns nonzero if the comparison succeeded.       */
+  AO_INLINE int
+  AO_compare_and_swap_full(volatile AO_t *addr, AO_t old, AO_t new_val)
+  {
+#   ifdef AO_USE_SYNC_CAS_BUILTIN
+      return (int)__sync_bool_compare_and_swap(addr, old, new_val
+                                               /* empty protection list */);
                 /* Note: an empty list of variables protected by the    */
                 /* memory barrier should mean all globally accessible   */
                 /* variables are protected.                             */
+#   else
+      char result;
+      __asm__ __volatile__("lock; cmpxchgl %3, %0; setz %1"
+                           : "=m" (*addr), "=a" (result)
+                           : "m" (*addr), "r" (new_val), "a" (old)
+                           : "memory");
+      return (int)result;
+#   endif
+  }
+# define AO_HAVE_compare_and_swap_full
+#endif /* !AO_GENERALIZE_ASM_BOOL_CAS */
+
+AO_INLINE AO_t
+AO_fetch_compare_and_swap_full(volatile AO_t *addr, AO_t old_val,
+                               AO_t new_val)
+{
+# ifdef AO_USE_SYNC_CAS_BUILTIN
+    return __sync_val_compare_and_swap(addr, old_val, new_val
+                                       /* empty protection list */);
 # else
-    char result;
-    __asm__ __volatile__("lock; cmpxchgl %3, %0; setz %1"
-                         : "=m" (*addr), "=a" (result)
-                         : "m" (*addr), "r" (new_val), "a" (old) : "memory");
-    return (int)result;
+    AO_t fetched_val;
+    __asm__ __volatile__("lock; cmpxchgl %3, %4"
+                         : "=a" (fetched_val), "=m" (*addr)
+                         : "0" (old_val), "q" (new_val), "m" (*addr)
+                         : "memory");
+    return fetched_val;
 # endif
 }
-#define AO_HAVE_compare_and_swap_full
+#define AO_HAVE_fetch_compare_and_swap_full
 
 /* Returns nonzero if the comparison succeeded. */
 /* Really requires at least a Pentium.          */
@@ -161,13 +186,16 @@ AO_compare_double_and_swap_double_full(volatile AO_double_t *addr,
   /* If PIC is turned on, we can't use %ebx as it is reserved for the
      GOT pointer.  We can save and restore %ebx because GCC won't be
      using it for anything else (such as any of the m operands) */
-  __asm__ __volatile__("pushl %%ebx;"   /* save ebx used for PIC GOT ptr */
-                       "movl %6,%%ebx;" /* move new_val2 to %ebx */
+  /* We use %edi (for new_val1) instead of a memory operand and swap    */
+  /* instruction instead of push/pop because some GCC releases have     */
+  /* a bug in processing memory operands (if address base is %esp) in   */
+  /* the inline assembly after push.                                    */
+  __asm__ __volatile__("xchg %%ebx,%6;" /* swap GOT ptr and new_val1 */
                        "lock; cmpxchg8b %0; setz %1;"
-                       "pop %%ebx;"     /* restore %ebx */
+                       "xchg %%ebx,%6;" /* restore ebx and edi */
                        : "=m"(*addr), "=a"(result)
                        : "m"(*addr), "d" (old_val2), "a" (old_val1),
-                         "c" (new_val2), "m" (new_val1) : "memory");
+                         "c" (new_val2), "D" (new_val1) : "memory");
 #else
   /* We can't just do the same thing in non-PIC mode, because GCC
    * might be using %ebx as the memory operand.  We could have ifdef'd
@@ -182,4 +210,4 @@ AO_compare_double_and_swap_double_full(volatile AO_double_t *addr,
 }
 #define AO_HAVE_compare_double_and_swap_double_full
 
-#include "../ao_t_is_int.h"
+#define AO_T_IS_INT

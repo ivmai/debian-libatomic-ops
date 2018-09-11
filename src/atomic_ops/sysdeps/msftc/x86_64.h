@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003 Hewlett-Packard Development Company, L.P.
+ * Copyright (c) 2003-2011 Hewlett-Packard Development Company, L.P.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -46,13 +46,13 @@
 /* Assume _MSC_VER >= 1400 */
 #include <intrin.h>
 
-#pragma intrinsic (_ReadWriteBarrier)
-
-#pragma intrinsic (_InterlockedIncrement64)
-#pragma intrinsic (_InterlockedDecrement64)
-#pragma intrinsic (_InterlockedExchange64)
-#pragma intrinsic (_InterlockedExchangeAdd64)
 #pragma intrinsic (_InterlockedCompareExchange64)
+
+#ifndef AO_PREFER_GENERALIZED
+
+# pragma intrinsic (_InterlockedIncrement64)
+# pragma intrinsic (_InterlockedDecrement64)
+# pragma intrinsic (_InterlockedExchangeAdd64)
 
 AO_INLINE AO_t
 AO_fetch_and_add_full (volatile AO_t *p, AO_t incr)
@@ -74,16 +74,16 @@ AO_fetch_and_sub1_full (volatile AO_t *p)
   return _InterlockedDecrement64((LONGLONG volatile *)p) + 1;
 }
 #define AO_HAVE_fetch_and_sub1_full
+#endif /* !AO_PREFER_GENERALIZED */
 
-AO_INLINE int
-AO_compare_and_swap_full(volatile AO_t *addr,
-                         AO_t old, AO_t new_val)
+AO_INLINE AO_t
+AO_fetch_compare_and_swap_full(volatile AO_t *addr, AO_t old_val,
+                               AO_t new_val)
 {
-    return _InterlockedCompareExchange64((LONGLONG volatile *)addr,
-                                         (LONGLONG)new_val, (LONGLONG)old)
-           == (LONGLONG)old;
+  return (AO_t)_InterlockedCompareExchange64((LONGLONG volatile *)addr,
+                                        (LONGLONG)new_val, (LONGLONG)old_val);
 }
-#define AO_HAVE_compare_and_swap_full
+#define AO_HAVE_fetch_compare_and_swap_full
 
 /* As far as we can tell, the lfence and sfence instructions are not    */
 /* currently needed or useful for cached memory accesses.               */

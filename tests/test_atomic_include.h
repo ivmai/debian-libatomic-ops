@@ -25,7 +25,8 @@ void test_atomic(void)
 # if defined(AO_HAVE_test_and_set)
     AO_TS_t z = AO_TS_INITIALIZER;
 # endif
-# if defined(AO_HAVE_double_t)
+# if defined(AO_HAVE_compare_and_swap_double) \
+     || defined(AO_HAVE_compare_double_and_swap_double)
     AO_double_t w;
     w.AO_val1 = 0;
     w.AO_val2 = 0;
@@ -191,6 +192,15 @@ void test_atomic(void)
     MISSING(AO_and);
     x &= 57;
 # endif
+# if defined(AO_HAVE_fetch_compare_and_swap)
+    TA_assert(AO_fetch_compare_and_swap(&x, 14, 117) == 25);
+    TA_assert(x == 25);
+    TA_assert(AO_fetch_compare_and_swap(&x, 25, 117) == 25);
+    TA_assert(x == 117);
+# else
+    MISSING(AO_fetch_compare_and_swap);
+    if (x == 25) x = 117;
+# endif
 # if defined(AO_HAVE_compare_double_and_swap_double)
     TA_assert(!AO_compare_double_and_swap_double(&w, 17, 42, 12, 13));
     TA_assert(w.AO_val1 == 0 && w.AO_val2 == 0);
@@ -240,7 +250,8 @@ void test_atomic_release(void)
 # if defined(AO_HAVE_test_and_set_release)
     AO_TS_t z = AO_TS_INITIALIZER;
 # endif
-# if defined(AO_HAVE_double_t)
+# if defined(AO_HAVE_compare_and_swap_double_release) \
+     || defined(AO_HAVE_compare_double_and_swap_double_release)
     AO_double_t w;
     w.AO_val1 = 0;
     w.AO_val2 = 0;
@@ -406,6 +417,15 @@ void test_atomic_release(void)
     MISSING(AO_and);
     x &= 57;
 # endif
+# if defined(AO_HAVE_fetch_compare_and_swap_release)
+    TA_assert(AO_fetch_compare_and_swap_release(&x, 14, 117) == 25);
+    TA_assert(x == 25);
+    TA_assert(AO_fetch_compare_and_swap_release(&x, 25, 117) == 25);
+    TA_assert(x == 117);
+# else
+    MISSING(AO_fetch_compare_and_swap);
+    if (x == 25) x = 117;
+# endif
 # if defined(AO_HAVE_compare_double_and_swap_double_release)
     TA_assert(!AO_compare_double_and_swap_double_release(&w, 17, 42, 12, 13));
     TA_assert(w.AO_val1 == 0 && w.AO_val2 == 0);
@@ -455,7 +475,8 @@ void test_atomic_acquire(void)
 # if defined(AO_HAVE_test_and_set_acquire)
     AO_TS_t z = AO_TS_INITIALIZER;
 # endif
-# if defined(AO_HAVE_double_t)
+# if defined(AO_HAVE_compare_and_swap_double_acquire) \
+     || defined(AO_HAVE_compare_double_and_swap_double_acquire)
     AO_double_t w;
     w.AO_val1 = 0;
     w.AO_val2 = 0;
@@ -621,6 +642,15 @@ void test_atomic_acquire(void)
     MISSING(AO_and);
     x &= 57;
 # endif
+# if defined(AO_HAVE_fetch_compare_and_swap_acquire)
+    TA_assert(AO_fetch_compare_and_swap_acquire(&x, 14, 117) == 25);
+    TA_assert(x == 25);
+    TA_assert(AO_fetch_compare_and_swap_acquire(&x, 25, 117) == 25);
+    TA_assert(x == 117);
+# else
+    MISSING(AO_fetch_compare_and_swap);
+    if (x == 25) x = 117;
+# endif
 # if defined(AO_HAVE_compare_double_and_swap_double_acquire)
     TA_assert(!AO_compare_double_and_swap_double_acquire(&w, 17, 42, 12, 13));
     TA_assert(w.AO_val1 == 0 && w.AO_val2 == 0);
@@ -670,7 +700,8 @@ void test_atomic_read(void)
 # if defined(AO_HAVE_test_and_set_read)
     AO_TS_t z = AO_TS_INITIALIZER;
 # endif
-# if defined(AO_HAVE_double_t)
+# if defined(AO_HAVE_compare_and_swap_double_read) \
+     || defined(AO_HAVE_compare_double_and_swap_double_read)
     AO_double_t w;
     w.AO_val1 = 0;
     w.AO_val2 = 0;
@@ -836,6 +867,15 @@ void test_atomic_read(void)
     MISSING(AO_and);
     x &= 57;
 # endif
+# if defined(AO_HAVE_fetch_compare_and_swap_read)
+    TA_assert(AO_fetch_compare_and_swap_read(&x, 14, 117) == 25);
+    TA_assert(x == 25);
+    TA_assert(AO_fetch_compare_and_swap_read(&x, 25, 117) == 25);
+    TA_assert(x == 117);
+# else
+    MISSING(AO_fetch_compare_and_swap);
+    if (x == 25) x = 117;
+# endif
 # if defined(AO_HAVE_compare_double_and_swap_double_read)
     TA_assert(!AO_compare_double_and_swap_double_read(&w, 17, 42, 12, 13));
     TA_assert(w.AO_val1 == 0 && w.AO_val2 == 0);
@@ -885,7 +925,8 @@ void test_atomic_write(void)
 # if defined(AO_HAVE_test_and_set_write)
     AO_TS_t z = AO_TS_INITIALIZER;
 # endif
-# if defined(AO_HAVE_double_t)
+# if defined(AO_HAVE_compare_and_swap_double_write) \
+     || defined(AO_HAVE_compare_double_and_swap_double_write)
     AO_double_t w;
     w.AO_val1 = 0;
     w.AO_val2 = 0;
@@ -1051,6 +1092,15 @@ void test_atomic_write(void)
     MISSING(AO_and);
     x &= 57;
 # endif
+# if defined(AO_HAVE_fetch_compare_and_swap_write)
+    TA_assert(AO_fetch_compare_and_swap_write(&x, 14, 117) == 25);
+    TA_assert(x == 25);
+    TA_assert(AO_fetch_compare_and_swap_write(&x, 25, 117) == 25);
+    TA_assert(x == 117);
+# else
+    MISSING(AO_fetch_compare_and_swap);
+    if (x == 25) x = 117;
+# endif
 # if defined(AO_HAVE_compare_double_and_swap_double_write)
     TA_assert(!AO_compare_double_and_swap_double_write(&w, 17, 42, 12, 13));
     TA_assert(w.AO_val1 == 0 && w.AO_val2 == 0);
@@ -1100,7 +1150,8 @@ void test_atomic_full(void)
 # if defined(AO_HAVE_test_and_set_full)
     AO_TS_t z = AO_TS_INITIALIZER;
 # endif
-# if defined(AO_HAVE_double_t)
+# if defined(AO_HAVE_compare_and_swap_double_full) \
+     || defined(AO_HAVE_compare_double_and_swap_double_full)
     AO_double_t w;
     w.AO_val1 = 0;
     w.AO_val2 = 0;
@@ -1266,6 +1317,15 @@ void test_atomic_full(void)
     MISSING(AO_and);
     x &= 57;
 # endif
+# if defined(AO_HAVE_fetch_compare_and_swap_full)
+    TA_assert(AO_fetch_compare_and_swap_full(&x, 14, 117) == 25);
+    TA_assert(x == 25);
+    TA_assert(AO_fetch_compare_and_swap_full(&x, 25, 117) == 25);
+    TA_assert(x == 117);
+# else
+    MISSING(AO_fetch_compare_and_swap);
+    if (x == 25) x = 117;
+# endif
 # if defined(AO_HAVE_compare_double_and_swap_double_full)
     TA_assert(!AO_compare_double_and_swap_double_full(&w, 17, 42, 12, 13));
     TA_assert(w.AO_val1 == 0 && w.AO_val2 == 0);
@@ -1315,7 +1375,8 @@ void test_atomic_release_write(void)
 # if defined(AO_HAVE_test_and_set_release_write)
     AO_TS_t z = AO_TS_INITIALIZER;
 # endif
-# if defined(AO_HAVE_double_t)
+# if defined(AO_HAVE_compare_and_swap_double_release_write) \
+     || defined(AO_HAVE_compare_double_and_swap_double_release_write)
     AO_double_t w;
     w.AO_val1 = 0;
     w.AO_val2 = 0;
@@ -1481,6 +1542,15 @@ void test_atomic_release_write(void)
     MISSING(AO_and);
     x &= 57;
 # endif
+# if defined(AO_HAVE_fetch_compare_and_swap_release_write)
+    TA_assert(AO_fetch_compare_and_swap_release_write(&x, 14, 117) == 25);
+    TA_assert(x == 25);
+    TA_assert(AO_fetch_compare_and_swap_release_write(&x, 25, 117) == 25);
+    TA_assert(x == 117);
+# else
+    MISSING(AO_fetch_compare_and_swap);
+    if (x == 25) x = 117;
+# endif
 # if defined(AO_HAVE_compare_double_and_swap_double_release_write)
     TA_assert(!AO_compare_double_and_swap_double_release_write(&w, 17, 42, 12, 13));
     TA_assert(w.AO_val1 == 0 && w.AO_val2 == 0);
@@ -1530,7 +1600,8 @@ void test_atomic_acquire_read(void)
 # if defined(AO_HAVE_test_and_set_acquire_read)
     AO_TS_t z = AO_TS_INITIALIZER;
 # endif
-# if defined(AO_HAVE_double_t)
+# if defined(AO_HAVE_compare_and_swap_double_acquire_read) \
+     || defined(AO_HAVE_compare_double_and_swap_double_acquire_read)
     AO_double_t w;
     w.AO_val1 = 0;
     w.AO_val2 = 0;
@@ -1695,6 +1766,15 @@ void test_atomic_acquire_read(void)
 # else
     MISSING(AO_and);
     x &= 57;
+# endif
+# if defined(AO_HAVE_fetch_compare_and_swap_acquire_read)
+    TA_assert(AO_fetch_compare_and_swap_acquire_read(&x, 14, 117) == 25);
+    TA_assert(x == 25);
+    TA_assert(AO_fetch_compare_and_swap_acquire_read(&x, 25, 117) == 25);
+    TA_assert(x == 117);
+# else
+    MISSING(AO_fetch_compare_and_swap);
+    if (x == 25) x = 117;
 # endif
 # if defined(AO_HAVE_compare_double_and_swap_double_acquire_read)
     TA_assert(!AO_compare_double_and_swap_double_acquire_read(&w, 17, 42, 12, 13));
