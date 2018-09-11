@@ -43,6 +43,10 @@
 
 #include "atomic_ops_stack.h" /* includes atomic_ops.h as well */
 
+#if (defined(_WIN32_WCE) || defined(__MINGW32CE__)) && !defined(abort)
+# define abort() _exit(-1) /* there is no abort() in WinCE */
+#endif
+
 #ifndef MAX_NTHREADS
 # define MAX_NTHREADS 100
 #endif
@@ -241,6 +245,11 @@ int main(int argc, char **argv)
         long long start_time;
         list_element * le;
 
+#       ifdef VERBOSE
+          printf("Before add_elements: exper_n=%d, nthreads=%d,"
+                 " max_nthreads=%d, list_length=%d\n",
+                 exper_n, nthreads, max_nthreads, list_length);
+#       endif
         add_elements(list_length);
 #       ifdef VERBOSE
           printf("Initial list (nthreads = %d):\n", nthreads);

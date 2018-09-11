@@ -1,13 +1,11 @@
 == TODO tasks ==
 
-Move all primitives based on __sync intrinsic from gcc/x86.h to gcc/generic.h;
-offer more sync-base alternatives if AO_USE_SYNC_BUILTINS defined.
-
 Add C++0x ATM (atomic memory operations) layer.
 
 
 == FIXME tasks ==
 
+RHELinux6/POWER7 (gcc-4.4.7-3/ppc64), Fedora16/POWER7 (gcc-4.6.2-1/ppc64),
 Debian/powerpc (gcc 4.6.3-7):
 test_stack failed (Debian Bug #680100).
 
