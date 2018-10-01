@@ -1,3 +1,9 @@
+libatomic-ops (7.6.6-3) UNRELEASED; urgency=medium
+
+  * d/changelog: Remove trailing whitespaces
+
+ -- Ondřej Nový <onovy@debian.org>  Mon, 01 Oct 2018 09:35:05 +0200
+
 libatomic-ops (7.6.6-2) unstable; urgency=medium
 
   * Add debian watch file
@@ -308,7 +314,7 @@ libatomic-ops (1.0-2) unstable; urgency=low
   * Add /doc subdir into package documents
   * Closes: bug#321291 -- use "Q" constraint in
     src/atomic_ops/sysdeps/gcc/x86.h for AO_test_and_set_full, see
-    http://gcc.gnu.org/bugzilla/show_bug.cgi?id=23242 
+    http://gcc.gnu.org/bugzilla/show_bug.cgi?id=23242
   * Reopening #307448 -- the asm needs to be reconsidered and possibly
     rewritten for ARM.
 
@@ -319,8 +325,8 @@ libatomic-ops (1.0-1) unstable; urgency=low
   * Closes: bug#307503 -- FTBS.  Update to upstream 1.0 (ianw)
   * The 'libatomic-ops' package now contains only a statically linked
     library, as upstream wishes (which makes sense, in this case, and
-    still fits within policy).  The 'libatomic-ops-dev' package now 
-    depends on the 'libatomic-ops' as a result to ensure a developer 
+    still fits within policy).  The 'libatomic-ops-dev' package now
+    depends on the 'libatomic-ops' as a result to ensure a developer
     can still properly link against the package (ahs3).
   * Update standards version to 3.6.2 (ahs3)
   * Closes: bug#307448 -- variable 'ret' undefined on ARM.  I think
