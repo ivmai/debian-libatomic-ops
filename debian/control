@@ -9,7 +9,6 @@ Vcs-Browser: https://salsa.debian.org/debian/libatomic-ops
 Vcs-Git: https://salsa.debian.org/debian/libatomic-ops.git
 
 Package: libatomic-ops-dev
-Section: libdevel
 Depends: ${misc:Depends}
 Architecture: any
 Replaces: libatomic-ops
@@ -25,4 +24,3 @@ Description: A library for atomic operations (development files)
  .
  This package provides the header files and documentation needed by
  developers.
-
