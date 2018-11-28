@@ -1,16 +1,13 @@
 #!/usr/bin/make -f
 
-include /usr/share/cdbs/1/rules/debhelper.mk
-include /usr/share/cdbs/1/class/autotools.mk
-include /usr/share/dpkg/architecture.mk
-include /usr/share/cdbs/1/rules/autoreconf.mk
-
-ifeq (,$(findstring $(DEB_BUILD_ARCH), powerpc ppc64 ppc64el armel))
-  DEB_MAKE_CHECK_TARGET := check
-endif
+%:
+	dh $@
 
 # use .install to pick out relevant stuff
-DEB_DESTDIR = $(CURDIR)/debian/tmp
+override_dh_auto_install:
+	dh_auto_install --destdir=debian/tmp
 
-# multiarch
-DEB_CONFIGURE_EXTRA_FLAGS += --libdir=\$${prefix}/lib/$(DEB_HOST_MULTIARCH)
+override_dh_auto_test:
+ifeq (,$(findstring $(DEB_BUILD_ARCH), powerpc ppc64 ppc64el armel))
+	dh_auto_test
+endif

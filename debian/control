@@ -3,11 +3,7 @@ Priority: optional
 Section: libdevel
 Maintainer: Ian Wienand <ianw@debian.org>
 Uploaders: Al Stone <ahs3@debian.org>
-Build-Depends: cdbs,
- autotools-dev,
- debhelper,
- dh-buildinfo,
- dh-autoreconf, quilt
+Build-Depends: debhelper
 Standards-Version: 4.1.1
 Vcs-Browser: https://salsa.debian.org/debian/libatomic-ops
 Vcs-Git: https://salsa.debian.org/debian/libatomic-ops.git
