@@ -6,8 +6,3 @@
 # use .install to pick out relevant stuff
 override_dh_auto_install:
 	dh_auto_install --destdir=debian/tmp
-
-override_dh_auto_test:
-ifeq (,$(findstring $(DEB_BUILD_ARCH), powerpc ppc64 ppc64el armel))
-	dh_auto_test
-endif
