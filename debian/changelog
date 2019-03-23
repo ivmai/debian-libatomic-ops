@@ -1,3 +1,9 @@
+libatomic-ops (7.6.10-1) unstable; urgency=medium
+
+  * New upstream release
+
+ -- Ian Wienand <ianw@debian.org>  Sat, 23 Mar 2019 12:22:03 +1100
+
 libatomic-ops (7.6.6-3) UNRELEASED; urgency=medium
 
   * d/changelog: Remove trailing whitespaces
