@@ -1,3 +1,16 @@
+libatomic-ops (7.6.12-1) unstable; urgency=medium
+
+  [ Jeremy Bicha ]
+  * Convert from cdbs to dh
+  * Bump debhelper compat to 11
+  * debian/control: Add Homepage field
+  * Run dh_auto_test everywhere again
+
+  [ Ian Wienand ]
+  * New upstream version 7.6.12
+
+ -- Ian Wienand <ianw@debian.org>  Tue, 21 Sep 2021 16:24:11 +1000
+
 libatomic-ops (7.6.10-2) unstable; urgency=medium
 
   * Remove myself as an Uploader.
