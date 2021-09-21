@@ -1,28 +1,19 @@
+dist: xenial
 language: c
+os: linux
 
-matrix:
+jobs:
   include:
-  - os: linux
-    compiler: clang
-  - os: linux
-    compiler: gcc
+  - compiler: clang
+  - compiler: gcc
   - os: osx
-  - os: linux
-    env:
-    - MAKEFILE_TARGET=distcheck
-    - AUTOMAKE_VER=1.15
-    - M4_VER=1.4.18
-    - LIBTOOL_VER=2.4.6
-  - os: linux
-    env:
+  - env:
     - MAKEFILE_TARGET=dist
-  - os: linux
-    compiler: clang
+  - compiler: clang
     env:
     - CFLAGS_EXTRA="-O3 -march=native"
     - CONF_OPTIONS="--enable-assertions"
-  - os: linux
-    compiler: gcc
+  - compiler: gcc
     env:
     - CFLAGS_EXTRA="-O3 -march=native"
     - CONF_OPTIONS="--enable-assertions"
@@ -30,25 +21,31 @@ matrix:
     env:
     - CFLAGS_EXTRA="-O3 -march=native -D AO_USE_ALMOST_LOCK_FREE"
     - CONF_OPTIONS="--enable-assertions"
-  - os: linux
-    compiler: clang
+  - compiler: clang
     env:
     - CFLAGS_EXTRA="-march=native -std=c11"
-  - os: linux
-    compiler: gcc
+  - compiler: clang
+    env:
+    - CFLAGS_EXTRA="-O3 -march=native -std=c11 -D AO_BL_SIZE=4 -D DEFAULT_NTHREADS=32"
+  - compiler: gcc
     env:
     - CFLAGS_EXTRA="-march=native -D _FORTIFY_SOURCE=2 -std=c89"
-  - os: linux
-    addons:
+  - addons:
       apt:
         packages:
         - gcc-multilib
     compiler: clang
     env:
-    - CFLAGS_EXTRA="-m32 -march=native"
+    - CFLAGS_EXTRA="-m32"
     - CONF_OPTIONS="--enable-assertions"
-  - os: linux
-    addons:
+  - addons:
+      apt:
+        packages:
+        - gcc-multilib
+    compiler: clang
+    env:
+    - CFLAGS_EXTRA="-m32 -O3 -march=native"
+  - addons:
       apt:
         packages:
         - gcc-multilib
@@ -56,8 +53,7 @@ matrix:
     env:
     - CFLAGS_EXTRA="-m32 -march=native"
     - CONF_OPTIONS="--disable-atomic-intrinsics"
-  - os: linux
-    addons:
+  - addons:
       apt:
         packages:
         - gcc-multilib
@@ -65,8 +61,7 @@ matrix:
     env:
     - CFLAGS_EXTRA="-m32 -march=native -D AO_USE_ALMOST_LOCK_FREE"
     - CONF_OPTIONS="--enable-assertions"
-  - os: linux
-    addons:
+  - addons:
       apt:
         packages:
         - gcc-multilib
@@ -78,44 +73,19 @@ matrix:
     env:
     - CFLAGS_EXTRA="-m32 -march=native -D _FORTIFY_SOURCE=2"
     - CONF_OPTIONS="--enable-assertions"
-  - os: linux
-    compiler: gcc
+  - compiler: gcc
     env:
     - CFLAGS_EXTRA="-D AO_GENERALIZE_ASM_BOOL_CAS -D AO_USE_NANOSLEEP -D AO_USE_NO_SIGNALS"
     - CONF_OPTIONS="--enable-assertions"
-  - os: linux
-    compiler: clang
+  - compiler: clang
     env:
     - CFLAGS_EXTRA="-D AO_STACK_PREFER_CAS_DOUBLE -D AO_USE_PTHREAD_DEFS"
     - CONF_OPTIONS="--enable-assertions"
-  - os: linux
-    compiler: clang
+  - compiler: clang
     env:
     - CFLAGS_EXTRA="-D DONT_USE_MMAP -O3"
     - CONF_OPTIONS="--enable-assertions --enable-shared"
-  - os: linux
-    addons:
-      apt:
-        packages:
-        - clang-5.0
-        sources:
-        - llvm-toolchain-trusty-5.0
-    compiler: clang-5.0
-    env:
-    - CFLAGS_EXTRA="-O3 -march=native -std=c11 -D AO_BL_SIZE=4 -D DEFAULT_NTHREADS=32"
-  - os: linux
-    addons:
-      apt:
-        packages:
-        - clang-5.0
-        - gcc-multilib
-        sources:
-        - llvm-toolchain-trusty-5.0
-    compiler: clang-5.0
-    env:
-    - CFLAGS_EXTRA="-m32 -O3 -march=native"
-  - os: linux
-    addons:
+  - addons:
       apt:
         packages:
         - gcc-8
@@ -124,8 +94,7 @@ matrix:
     compiler: gcc-8
     env:
     - CFLAGS_EXTRA="-O3 -march=native"
-  - os: linux
-    addons:
+  - addons:
       apt:
         packages:
         - gcc-8
@@ -134,8 +103,7 @@ matrix:
     compiler: gcc-8
     env:
     - CFLAGS_EXTRA="-O3 -march=native"
-  - os: linux
-    addons:
+  - addons:
       apt:
         packages:
         - gcc-8
@@ -145,8 +113,7 @@ matrix:
     compiler: gcc-8
     env:
     - CFLAGS_EXTRA="-m32 -O3 -march=native"
-  - os: linux
-    addons:
+  - addons:
       apt:
         packages:
         - gcc-8
@@ -157,8 +124,7 @@ matrix:
     env:
     - CFLAGS_EXTRA="-mx32 -march=native -D _FORTIFY_SOURCE=2"
     - CONF_OPTIONS="--enable-assertions --enable-shared"
-  - os: linux
-    addons:
+  - addons:
       apt:
         packages:
         - gcc-8
@@ -169,31 +135,19 @@ matrix:
     env:
     - CFLAGS_EXTRA="-mx32 -march=native"
     - CONF_OPTIONS="--disable-atomic-intrinsics --disable-docs"
-  - os: linux
-    compiler: clang
+  - compiler: clang
     env:
     - CFLAGS_EXTRA="-fsanitize=address -D AO_USE_ALMOST_LOCK_FREE -fno-omit-frame-pointer"
     - TESTS_CUSTOM_RUN=true
-    sudo: required
-  - os: linux
-    addons:
-      apt:
-        packages:
-        - clang-5.0
-        sources:
-        - llvm-toolchain-trusty-5.0
-    compiler: clang-5.0
+  - compiler: clang
     env:
     - CFLAGS_EXTRA="-fsanitize=address -march=native -fno-common -fno-omit-frame-pointer"
     - CONF_OPTIONS="--enable-assertions"
-    sudo: required
-  - os: linux
-    compiler: gcc
+  - compiler: gcc
     env:
     - CFLAGS_EXTRA="-fsanitize=address -fno-omit-frame-pointer -D AO_USE_ALMOST_LOCK_FREE -D USE_STANDARD_MALLOC"
     - CONF_OPTIONS="--enable-assertions"
-  - os: linux
-    addons:
+  - addons:
       apt:
         packages:
         - gcc-8
@@ -204,81 +158,64 @@ matrix:
     env:
     - CFLAGS_EXTRA="-fsanitize=address -m32 -march=native -fno-omit-frame-pointer"
     - LDFLAGS="-fuse-ld=gold"
-    sudo: required
   - os: osx
     env:
     - CFLAGS_EXTRA="-fsanitize=address -m32 -fno-omit-frame-pointer"
-  - os: linux
-    compiler: clang
+  - compiler: clang
     env:
     - CFLAGS_EXTRA="-fsanitize=memory,undefined -march=native -fno-omit-frame-pointer"
     - TESTS_CUSTOM_RUN=true
-    sudo: required
-  - os: linux
-    compiler: clang
+  - compiler: clang
     env:
     - CFLAGS_EXTRA="-fsanitize=thread -D AO_USE_ALMOST_LOCK_FREE -fno-omit-frame-pointer"
-  - os: linux
-    compiler: clang
+  - compiler: clang
     env:
     - CFLAGS_EXTRA="-fsanitize=thread -march=native -fno-omit-frame-pointer"
     - CONF_OPTIONS="--enable-assertions"
-  - os: linux
-    compiler: clang
+  - compiler: clang
     env:
     - CONF_OPTIONS="--disable-atomic-intrinsics"
     - CFLAGS_EXTRA="-march=native"
-  - os: linux
-    addons:
+  - addons:
       apt:
         packages:
         - lcov
     compiler: gcc
     env:
     - CONF_OPTIONS="--enable-gcov --enable-shared"
+    - CC_FOR_CHECK=gcc
+    - MAKEFILE_TARGET=all
     - REPORT_COVERAGE=true
     - CFLAGS_EXTRA="-march=native -D DEBUG_RUN_ONE_TEST -D VERBOSE"
-  - os: linux
-    addons:
+  - addons:
       apt:
         packages:
         - cppcheck
     env:
     - CPPCHECK_ENABLE="-j16 -q --enable=information,performance,portability,style,warning"
     - MAKEFILE_TARGET=all
-  - os: linux
-    addons:
+  - addons:
       apt:
         packages:
         - cppcheck
     env:
     - CPPCHECK_ENABLE="-q --enable=unusedFunction -D AO_TEST_EMULATION"
     - MAKEFILE_TARGET=all
-  - os: linux
-    addons:
-      apt:
-        packages:
-        - clang-5.0
-        sources:
-        - llvm-toolchain-trusty-5.0
-    compiler: clang-5.0
+  - compiler: clang
     env:
     - CSA_CHECK=true
     - MAKEFILE_TARGET=all
     - CFLAGS_EXTRA="-D AO_TRACE_MALLOC -D HAVE_MMAP -D VERBOSE"
-  - os: linux
-    compiler: clang
+  - compiler: clang
     env:
     - CFLAGS_EXTRA="-x c++ -march=native -D VERBOSE"
     - CONF_OPTIONS="--enable-assertions"
     - MAKEFILE_TARGET=all
-  - os: linux
-    compiler: gcc
+  - compiler: gcc
     env:
     - CC_FOR_CHECK=g++
     - MAKEFILE_TARGET=all
-  - os: linux
-    addons:
+  - addons:
       apt:
         packages:
         - musl-tools
@@ -286,8 +223,7 @@ matrix:
     env:
     - CFLAGS_EXTRA="-march=native"
     - CONF_OPTIONS="--enable-assertions"
-  - os: linux
-    addons:
+  - addons:
       apt:
         packages:
         - gcc-mingw-w64
@@ -295,8 +231,7 @@ matrix:
     env:
     - CONF_OPTIONS="--host=x86_64-w64-mingw32 --enable-shared"
     - MAKEFILE_TARGET=all
-  - os: linux
-    addons:
+  - addons:
       apt:
         packages:
         - gcc-mingw-w64
@@ -304,32 +239,28 @@ matrix:
     env:
     - CONF_OPTIONS="--host=i686-w64-mingw32"
     - MAKEFILE_TARGET=all
-  - os: linux
-    addons:
+  - addons:
       apt:
         packages:
         - gcc-multilib
     env:
     - CROSS_GCC_VER=4.9.0
     - NOLIBC_ARCH_ABI=aarch64-linux
-  - os: linux
-    addons:
+  - addons:
       apt:
         packages:
         - gcc-multilib
     env:
     - CROSS_GCC_VER=4.9.0
     - NOLIBC_ARCH_ABI=alpha-linux
-  - os: linux
-    addons:
+  - addons:
       apt:
         packages:
         - gcc-multilib
     env:
     - CROSS_GCC_VER=4.9.0
     - NOLIBC_ARCH_ABI=arm-unknown-linux-gnueabi
-  - os: linux
-    addons:
+  - addons:
       apt:
         packages:
         - gcc-4.6
@@ -341,8 +272,7 @@ matrix:
     - CROSS_GCC_VER=4.2.4
     - NOLIBC_ARCH_ABI=avr32-linux
     - CFLAGS_EXTRA="-fno-strict-aliasing"
-  - os: linux
-    addons:
+  - addons:
       apt:
         packages:
         - gcc-4.6
@@ -353,80 +283,70 @@ matrix:
     env:
     - CROSS_GCC_VER=4.6.3
     - NOLIBC_ARCH_ABI=cris-linux
-  - os: linux
-    addons:
+  - addons:
       apt:
         packages:
         - gcc-multilib
     env:
     - CROSS_GCC_VER=4.9.0
     - NOLIBC_ARCH_ABI=hppa-linux
-  - os: linux
-    addons:
+  - addons:
       apt:
         packages:
         - gcc-multilib
     env:
     - CROSS_GCC_VER=4.9.0
     - NOLIBC_ARCH_ABI=ia64-linux
-  - os: linux
-    addons:
+  - addons:
       apt:
         packages:
         - gcc-multilib
     env:
     - CROSS_GCC_VER=4.9.0
     - NOLIBC_ARCH_ABI=m68k-linux
-  - os: linux
-    addons:
+  - addons:
       apt:
         packages:
         - gcc-multilib
     env:
     - CROSS_GCC_VER=4.9.0
     - NOLIBC_ARCH_ABI=mips-linux
-  - os: linux
-    addons:
+  - addons:
       apt:
         packages:
         - gcc-multilib
     env:
     - CROSS_GCC_VER=4.9.0
     - NOLIBC_ARCH_ABI=mips64-linux
-  - os: linux
-    addons:
+  - addons:
       apt:
         packages:
         - gcc-multilib
     env:
     - CROSS_GCC_VER=4.9.0
     - NOLIBC_ARCH_ABI=powerpc-linux
-  - os: linux
-    addons:
+  - addons:
       apt:
         packages:
         - gcc-multilib
     env:
     - CROSS_GCC_VER=4.9.0
     - NOLIBC_ARCH_ABI=powerpc64-linux
-  - os: linux
-    addons:
+  - addons:
       apt:
         packages:
         - gcc-multilib
     env:
     - CROSS_GCC_VER=4.9.0
     - NOLIBC_ARCH_ABI=ppc64le-linux
-  - os: linux
-    addons:
+  - addons:
       apt:
         packages:
         - gcc-multilib
     env:
     - CROSS_GCC_VER=4.9.0
     - NOLIBC_ARCH_ABI=s390x-linux
-  - os: linux
-    addons:
+  - addons:
       apt:
         packages:
         - gcc-4.6
@@ -437,8 +357,7 @@ matrix:
     env:
     - CROSS_GCC_VER=4.6.3
     - NOLIBC_ARCH_ABI=sh4-linux
-  - os: linux
-    addons:
+  - addons:
       apt:
         packages:
         - gcc-multilib
@@ -446,16 +365,14 @@ matrix:
     - CROSS_GCC_VER=4.9.0
     - NOLIBC_ARCH_ABI=sparc-linux
     - CFLAGS_EXTRA="-D AO_NO_SPARC_V9"
-  - os: linux
-    addons:
+  - addons:
       apt:
         packages:
         - gcc-multilib
     env:
     - CROSS_GCC_VER=4.9.0
     - NOLIBC_ARCH_ABI=sparc64-linux
-  - os: linux
-    addons:
+  - addons:
       apt:
         packages:
         - gcc-4.6
@@ -466,6 +383,11 @@ matrix:
     env:
     - CROSS_GCC_VER=4.6.2
     - NOLIBC_ARCH_ABI=tilegx-linux
+  - env:
+    - MAKEFILE_TARGET=distcheck
+    - AUTOMAKE_VER=1.15
+    - M4_VER=1.4.18
+    - LIBTOOL_VER=2.4.6
 
 before_install:
 - if [[ "$CROSS_GCC_VER" != "" ]]; then
@@ -544,11 +466,9 @@ after_success:
 
 deploy:
   provider: releases
-  api_key:
-    secure: wDAkRwV0lFrzLqdMhrnzD+fVZDODB32q2riJKXKZ3eC70VdliJzX59G60iJqIdN6YSSGGjpDTcaKTmim/T1zgAW+UIcXvpveX3jtocmsJJemZyFKAT++hHbeakNr4Mhgs0ddv3+JsgX375KOmL+ZkUzW0+5uIf9CXK80kE5v6E6p5LC6+Jg8Tqj2uSmUDfrYCFdIDQ901vAjxdPbFsFL8STy0ahBhUCrTThi9emAMR2vBwxf+0We58la936hMFmXs320ZtYN4fksuxNMgQu/3HL/UZIINT2IXgstWiNoU3yK6Z5IvOKWw0iPLMg7SS6L4WYJTu4Z26YnIlJ8XM3f7hO+c+jdffup59O1oklCl6JwlbqNFWtZhfJ+TW8fX8rpsvZIovBI4oOsZthpMNcvb3ZZ6UczUbhaInCvcYl5aTw/8K63Vh2HhKTFdMYMLn1X+qNIfXyKRL15C8VZOHB3Os14G03FNPlTqFE4IRnU3TyXTKBIwYOXf5Nb7fmOYZ11lHejco3rE0n3MiqIL0QJAAwExozV6Af/aJefyTWqfycgaGEfUzBQQpcMVlrDJg1I+LU7vExYYYYYoVPCKHn3CDsmdftUpJcPeKMHuasrfp54RBnY+B9s+hJQRtA7C70JbtoJpC+nxfwIzprBkdLudD+mI52zgFmU7JC1UeWDBik=
+  edge: true
   file: libatomic_ops-*.tar.gz
   file_glob: true
-  skip_cleanup: true
   on:
     condition: $MAKEFILE_TARGET = distcheck
     repo: ivmai/libatomic_ops
