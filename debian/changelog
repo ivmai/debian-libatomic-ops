@@ -1,3 +1,9 @@
+libatomic-ops (7.6.10-2) unstable; urgency=medium
+
+  * Remove myself as an Uploader.
+
+ -- Al Stone <ahs3@debian.org>  Sun, 21 Mar 2021 14:00:37 -0600
+
 libatomic-ops (7.6.10-1) unstable; urgency=medium
 
   * New upstream release

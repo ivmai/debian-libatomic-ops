@@ -2,7 +2,6 @@ Source: libatomic-ops
 Priority: optional
 Section: libdevel
 Maintainer: Ian Wienand <ianw@debian.org>
-Uploaders: Al Stone <ahs3@debian.org>
 Build-Depends: cdbs,
  autotools-dev,
  debhelper,
