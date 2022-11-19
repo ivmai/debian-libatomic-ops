@@ -12,6 +12,7 @@ Package: libatomic-ops-dev
 Depends: ${misc:Depends}
 Architecture: any
 Replaces: libatomic-ops
+Multi-Arch: same
 Description: A library for atomic operations (development files)
  Libatomic-ops implements a large collection of operations, each one
  of which is a combination of an (optional) atomic memory operation,
