@@ -19,7 +19,7 @@ Two small libraries are built and installed:
 
 - libatomic_ops.a is a support library, which is not needed on some platforms.
   This is intended to be usable, under some mild restrictions, in free or
-  proprietary code, as are all the header files.  See doc/LICENSING.txt.
+  proprietary code, as are all the header files.  See LICENSING.txt.
 - libatomic_ops_gpl.a contains some higher level facilities.  This code is
   currently covered by the GPL.  The contents currently correspond to
   the headers atomic_ops_stack.h and atomic_ops_malloc.h.
@@ -32,4 +32,4 @@ welcome.
 The M68K port was contributed by Roman Zippel <zippel@linux-m68k.org>,
 and is not currently part of the upstream source.
 
- -- Ian Wienand <ianw@gelato.unsw.edu.au>, Mon, 16 Oct 2006 09:47:19 +1000
+ -- Ian Wienand <ianw@debian.org>, Sat,  1 Apr 2023 10:12:30 +1100
