@@ -1,3 +1,16 @@
+libatomic-ops (7.8.2-1) unstable; urgency=medium
+
+  [ Ian Wienand ]
+  * New upstream version 7.8.2
+
+  [ Ivan Maidanski ]
+  * Fix LICENSE filename in doc files
+  * Add AUTHORS, LICENSE and README.md to package docs
+  * Remove outdated note that m68k support is not in upstream
+  * Remove outdated comment of non-full testing on some architectures
+
+ -- Ian Wienand <ianw@debian.org>  Mon, 29 Jan 2024 20:56:30 +1100
+
 libatomic-ops (7.8.0-1) unstable; urgency=medium
 
   * New upstream version 7.8.0
