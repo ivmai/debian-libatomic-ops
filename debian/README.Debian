@@ -29,7 +29,4 @@ However, only i386, ia64 and amd64 have been fully tested due to
 limited access to some of the other architectures.  Corrections are
 welcome.
 
-The M68K port was contributed by Roman Zippel <zippel@linux-m68k.org>,
-and is not currently part of the upstream source.
-
  -- Ian Wienand <ianw@debian.org>, Sat,  1 Apr 2023 10:12:30 +1100

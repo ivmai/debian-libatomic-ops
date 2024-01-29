@@ -1,0 +1,26 @@
+From c0efdfe5a89180c5424e247a4d1ec753741788bc Mon Sep 17 00:00:00 2001
+From: Ivan Maidanski <ivmai@mail.ru>
+Date: Mon, 29 Jan 2024 08:24:12 +0300
+Subject: [PATCH] Update AUTHORS file (add Roman Zippel) (fix of commit
+ df2d8771f)
+
+Roman Zippel contributed the initial version of m68k support.
+---
+ AUTHORS | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/AUTHORS b/AUTHORS
+index 231d4e9..90a4531 100644
+--- a/AUTHORS
++++ b/AUTHORS
+@@ -49,6 +49,7 @@ Petter Urkedal <urkedal@nbi.dk>
+ Philipp Zambelli <pzamb@iicm.edu>
+ Ranko Zivojnovic <ranko@spidernet.net>
+ Roger Hoover <roger.hoover@gmail.com>
++Roman Zippel <zippel@linux-m68k.org>
+ Sebastian Siewior <sebastian@breakpoint.cc>
+ Shea Levy <shea@shealevy.com>
+ Steve Capper <steve.capper@linaro.org>
+-- 
+2.43.0
+
