@@ -20,16 +20,16 @@
 # SOFTWARE.
 ##
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.5)
 
-set(PACKAGE_VERSION 7.8.0)
+set(PACKAGE_VERSION 7.8.2)
 # Version must match that in AC_INIT of configure.ac and that in README.
 # Version must conform to: [0-9]+[.][0-9]+[.][0-9]+
 
 # Info (current:revision:age) for the Libtool versioning system.
 # These values should match those in src/Makefile.am.
 set(LIBATOMIC_OPS_VER_INFO      3:0:2)
-set(LIBATOMIC_OPS_GPL_VER_INFO  3:0:2)
+set(LIBATOMIC_OPS_GPL_VER_INFO  3:1:2)
 
 project(libatomic_ops C)
 
@@ -178,27 +178,29 @@ if (enable_gpl)
 endif(enable_gpl)
 
 if (BUILD_SHARED_LIBS)
-  if (${CMAKE_VERSION} VERSION_LESS "3.18.0")
-    set(WL_NO_UNDEFINED_OPT "-Wl,--no-undefined")
-    check_c_compiler_flag(${WL_NO_UNDEFINED_OPT} HAVE_FLAG_WL_NO_UNDEFINED)
-  else()
-    set(WL_NO_UNDEFINED_OPT "LINKER:--no-undefined")
-    check_linker_flag(C "${WL_NO_UNDEFINED_OPT}" HAVE_FLAG_WL_NO_UNDEFINED)
-  endif()
-  if (HAVE_FLAG_WL_NO_UNDEFINED)
-    # Declare that the libraries do not refer to external symbols.
-    if (${CMAKE_VERSION} VERSION_LESS "3.13.0")
-      target_link_libraries(atomic_ops PRIVATE ${WL_NO_UNDEFINED_OPT})
-      if (enable_gpl)
-        target_link_libraries(atomic_ops_gpl PRIVATE ${WL_NO_UNDEFINED_OPT})
-      endif(enable_gpl)
+  if (NOT (${CMAKE_SYSTEM_NAME} MATCHES "BSD"))
+    if (${CMAKE_VERSION} VERSION_LESS "3.18.0")
+      set(WL_NO_UNDEFINED_OPT "-Wl,--no-undefined")
+      check_c_compiler_flag(${WL_NO_UNDEFINED_OPT} HAVE_FLAG_WL_NO_UNDEFINED)
     else()
-      target_link_options(atomic_ops PRIVATE ${WL_NO_UNDEFINED_OPT})
-      if (enable_gpl)
-        target_link_options(atomic_ops_gpl PRIVATE ${WL_NO_UNDEFINED_OPT})
-      endif(enable_gpl)
+      set(WL_NO_UNDEFINED_OPT "LINKER:--no-undefined")
+      check_linker_flag(C "${WL_NO_UNDEFINED_OPT}" HAVE_FLAG_WL_NO_UNDEFINED)
     endif()
-  endif(HAVE_FLAG_WL_NO_UNDEFINED)
+    if (HAVE_FLAG_WL_NO_UNDEFINED)
+      # Declare that the libraries do not refer to external symbols.
+      if (${CMAKE_VERSION} VERSION_LESS "3.13.0")
+        target_link_libraries(atomic_ops PRIVATE ${WL_NO_UNDEFINED_OPT})
+        if (enable_gpl)
+          target_link_libraries(atomic_ops_gpl PRIVATE ${WL_NO_UNDEFINED_OPT})
+        endif(enable_gpl)
+      else()
+        target_link_options(atomic_ops PRIVATE ${WL_NO_UNDEFINED_OPT})
+        if (enable_gpl)
+          target_link_options(atomic_ops_gpl PRIVATE ${WL_NO_UNDEFINED_OPT})
+        endif(enable_gpl)
+      endif()
+    endif(HAVE_FLAG_WL_NO_UNDEFINED)
+  endif()
   set_property(TARGET atomic_ops PROPERTY VERSION ${AO_VERSION_PROP})
   set_property(TARGET atomic_ops PROPERTY SOVERSION ${AO_SOVERSION})
 endif(BUILD_SHARED_LIBS)

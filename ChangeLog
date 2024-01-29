@@ -1,4 +1,18 @@
 
+== [7.8.2] 2023-12-15 ==
+
+* Eliminate 'atomic_thread_fence is unsupported with tsan' gcc-11 warning
+* Eliminate 'comparing signed/unsigned values' lcc warning in add_chunk_as
+* Fix 'undefined reference to AO_pt_lock' if configure is using clang-16
+* Fix 'undefined reference to __atomic_load/store/cas_16' Mingw64-gcc error
+* Fix 'undefined reference' linker errors if shared build on OpenBSD (CMake)
+* Fix get_chunk for case of mmap area is located before AO_initial_heap
+* Fix typo in AO_HAVE_compare_and_swap_double name in atomic_ops_stack.h
+* Fix typo in comment of run_one_test of test_stack
+* Fix typos in comments of atomic_ops_malloc.c and atomic_ops_stack.c/h
+* Update cmake minimum required version to 3.5
+
+
 == [7.8.0] 2023-03-26 ==
 
 * Add AUTHORS file to the list of installed documentation
@@ -48,8 +62,20 @@
 * Support build with CMake
 * Support double-wide CAS on armv7+ and UWP/arm64 (MS VC)
 * Support test_atomic with MS build w/o the need to run GNU make first
+* Update autotools for release tarball preparation (ac-2.71, m4-1.4.19)
 * Use GCC atomic intrinsics for SPARC
 * Use builtin_expect in AO_stack_push_explicit_aux_release
+
+
+== [7.6.16] 2023-12-15 ==
+
+* Eliminate 'atomic_thread_fence is unsupported with tsan' gcc-11 warning
+* Eliminate 'comparing signed/unsigned values' lcc warning in add_chunk_as
+* Fix 'undefined reference to AO_pt_lock' if configure is using clang-16
+* Fix 'undefined reference to __atomic_load/store/cas_16' Mingw64-gcc error
+* Fix get_chunk for case of mmap area is located before AO_initial_heap
+* Fix typo in AO_HAVE_compare_and_swap_double name in atomic_ops_stack.h
+* Fix typos in comments of atomic_ops_malloc.c and atomic_ops_stack.c/h
 
 
 == [7.6.14] 2022-08-25 ==
@@ -243,6 +269,14 @@ Also, includes 7.4.8 changes
 * Workaround a bug in double-wide intrinsics of Clang/x64 with ASan enabled
 * Workaround MSan warning about uninitialized data read by generalized store
 Also, includes 7.4.6 changes
+
+
+== [7.4.20] 2023-12-15 ==
+
+* Eliminate 'comparing signed/unsigned values' lcc warning in add_chunk_as
+* Fix get_chunk for case of mmap area is located before AO_initial_heap
+* Fix typo in AO_HAVE_compare_and_swap_double name in atomic_ops_stack.h
+* Fix typos in comments of atomic_ops_malloc.c and atomic_ops_stack.c/h
 
 
 == [7.4.18] 2022-08-25 ==
@@ -480,6 +514,13 @@ Also, includes 7.2e changes
 * Turn off AO primitives inlining if AO_NO_INLINE defined
 * Use __builtin_expect in CAS failure loop condition checks (GCC only)
 Also, includes 7.2 changes
+
+
+== [7.2l] 2023-12-15 ==
+
+* Fix get_chunk for case of mmap area is located before AO_initial_heap
+* Fix typo in AO_HAVE_compare_and_swap_double name in atomic_ops_stack.h
+* Fix typos in comments of atomic_ops_malloc.c and atomic_ops_stack.c/h
 
 
 == [7.2k] 2022-08-24 ==
