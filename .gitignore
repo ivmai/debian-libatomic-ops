@@ -26,6 +26,7 @@ Makefile
 *.pdb
 *.so
 
+/build/
 /out/
 
 /src/.deps/
@@ -55,6 +56,7 @@ Makefile
 /config.guess
 /config.sub
 /configure
+/configure~
 /depcomp
 /install-sh
 /missing
