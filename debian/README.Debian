@@ -13,13 +13,13 @@ styles with sufficient generality.
 This package is only available as a static library; much of the magic
 is in the header files anyway.
 
-Please be aware of the dual nature of the license, from LICENSING.txt
+Please be aware of the dual nature of the license, from LICENSE file.
 
 Two small libraries are built and installed:
 
 - libatomic_ops.a is a support library, which is not needed on some platforms.
   This is intended to be usable, under some mild restrictions, in free or
-  proprietary code, as are all the header files.  See LICENSING.txt.
+  proprietary code, as are all the header files.  See LICENSE file.
 - libatomic_ops_gpl.a contains some higher level facilities.  This code is
   currently covered by the GPL.  The contents currently correspond to
   the headers atomic_ops_stack.h and atomic_ops_malloc.h.
