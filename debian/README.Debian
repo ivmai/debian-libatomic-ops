@@ -24,9 +24,4 @@ Two small libraries are built and installed:
   currently covered by the GPL.  The contents currently correspond to
   the headers atomic_ops_stack.h and atomic_ops_malloc.h.
 
-NB: the Debian package has been enabled to build on any architecture.
-However, only i386, ia64 and amd64 have been fully tested due to
-limited access to some of the other architectures.  Corrections are
-welcome.
-
  -- Ian Wienand <ianw@debian.org>, Sat,  1 Apr 2023 10:12:30 +1100
